@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 hitboxSize = new Vector2(1, 1);
     [SerializeField] private float attackCooldown = 0.2f;
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private GameObject visualSlash;
+    [SerializeField] private float slashDuration = 0.1f;
 
     private PlayerInputActions playerInputActions;
     private bool isTopLane = true;
@@ -70,8 +72,13 @@ public class PlayerController : MonoBehaviour
         if (Time.time < lastAttackTime + attackCooldown) return;
 
         lastAttackTime = Time.time;
-        Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
 
+        // 1. Show Visuals
+        visualSlash.SetActive(true);
+        Invoke(nameof(DisableSlash), slashDuration);
+
+        // 2. Perform Logic
+        Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
         if (hitEnemy != null)
         {
             Destroy(hitEnemy.gameObject);
@@ -85,5 +92,10 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Player has been destroyed!");
             Destroy(gameObject);
         }
+    }
+
+    private void DisableSlash()
+    {
+        visualSlash.SetActive(false);
     }
 }
