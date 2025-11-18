@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - MeleeHitbox
+  - Obstacle
   layers:
   - Default
   - TransparentFX

@@ -73,11 +73,9 @@ public class PlayerController : MonoBehaviour
 
         lastAttackTime = Time.time;
 
-        // 1. Show Visuals
         visualSlash.SetActive(true);
         Invoke(nameof(DisableSlash), slashDuration);
 
-        // 2. Perform Logic
         Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
         if (hitEnemy != null)
         {
@@ -85,12 +83,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Obstacle"))
         {
-            Debug.Log("Player has been destroyed!");
-            Destroy(gameObject);
+            Debug.Log("Game Over!");
+            Time.timeScale = 0;
         }
     }
 
