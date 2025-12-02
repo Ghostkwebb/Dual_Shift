@@ -97,4 +97,13 @@ public class PlayerController : MonoBehaviour
     {
         visualSlash.SetActive(false);
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (meleeHitboxTransform != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(meleeHitboxTransform.position, hitboxSize);
+        }
+    }
 }
