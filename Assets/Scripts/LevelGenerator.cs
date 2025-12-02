@@ -47,7 +47,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void Update()
     {
-        if (activeChunks.Peek().transform.position.x < -chunkWidth)
+        if (activeChunks.Peek().transform.position.x < -(chunkWidth * 2))
         {
             DespawnChunk();
             SpawnChunk();

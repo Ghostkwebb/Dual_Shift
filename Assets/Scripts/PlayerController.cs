@@ -60,6 +60,17 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (speedEffect != null)
+        {
+            if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
+            {
+                if (!speedEffect.isPlaying) speedEffect.Play();
+            }
+            else
+            {
+                if (speedEffect.isPlaying) speedEffect.Stop();
+            }
+        }
         HandleLaneSwitch();
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, laneSwitchDuration);
     }

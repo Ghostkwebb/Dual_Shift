@@ -3,8 +3,12 @@ using UnityEngine;
 
 public class ShooterAI : MonoBehaviour
 {
+    [Header("Settings")]
     [SerializeField] private GameObject projectilePrefab;
-    [SerializeField] private float startDelay = 1.0f; // Wait before firing
+    [SerializeField] private float startDelay = 0.5f; // Reduced default (was 1.0)
+    [SerializeField] private float fireRate = 1.5f;   // Time between shots
+
+    [Header("References")]
     [SerializeField] private SpriteRenderer render;
 
     private void Start()
@@ -14,22 +18,31 @@ public class ShooterAI : MonoBehaviour
 
     private IEnumerator FireRoutine()
     {
-        // Wait for the enemy to enter the screen roughly
+        // 1. Wait a tiny bit after spawning so it doesn't shoot INSTANTLY off-screen
         yield return new WaitForSeconds(startDelay);
 
-        // Telegraph (Flash Bright)
-        Color originalColor = render.color;
-        render.color = Color.white;
-        yield return new WaitForSeconds(0.5f);
-        render.color = originalColor;
-
-        // Fire
-        GameObject proj = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-
-        // Pass the current world speed to the projectile
-        if (proj.TryGetComponent(out ProjectileBehavior behavior))
+        while (true) // Loop forever
         {
-            behavior.Initialize(GameManager.Instance.worldSpeed);
+            // 2. Telegraph (Flash White)
+            Color originalColor = render.color;
+            render.color = Color.white;
+            yield return new WaitForSeconds(0.5f); // 0.5s Warning
+            render.color = originalColor;
+
+            // 3. Fire
+            if (projectilePrefab != null)
+            {
+                GameObject proj = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+
+                // Projectile inherits world speed + extra speed
+                if (proj.TryGetComponent(out ProjectileBehavior behavior))
+                {
+                    behavior.Initialize(GameManager.Instance.worldSpeed);
+                }
+            }
+
+            // 4. Wait for next shot
+            yield return new WaitForSeconds(fireRate);
         }
     }
 }
