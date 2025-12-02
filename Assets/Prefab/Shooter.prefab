@@ -150,4 +150,4 @@ MonoBehaviour:
   projectilePrefab: {fileID: 1404721371130906673, guid: 6269cb8e2d7ea484eaf644aeae6d7b15, type: 3}
   startDelay: 0.3
   fireRate: 3
-  render: {fileID: 0}
+  render: {fileID: 4833257583666382191}
