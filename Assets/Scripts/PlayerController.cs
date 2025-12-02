@@ -79,6 +79,7 @@ public class PlayerController : MonoBehaviour
         Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
         if (hitEnemy != null)
         {
+            GameManager.Instance.AddKill();
             Destroy(hitEnemy.gameObject);
         }
     }
@@ -87,7 +88,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Enemy") || other.CompareTag("Obstacle"))
         {
-            Debug.Log("Game Over!");
+            GameManager.Instance.GameOver();
             Time.timeScale = 0;
         }
     }
