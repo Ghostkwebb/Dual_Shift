@@ -16,12 +16,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text comboText;
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject pausePanel;
     [SerializeField] private TMP_Text finalScoreText;
+
 
     private float score;
     private int comboMultiplier;
     private float comboTimer;
     private bool isGameOver = false;
+    private bool isPaused = false;
 
     private void Awake()
     {
@@ -97,4 +100,30 @@ public class GameManager : MonoBehaviour
             comboText.gameObject.SetActive(false);
         }
     }
+
+    public void TogglePause()
+    {
+        if (isGameOver) return;
+
+        isPaused = !isPaused;
+
+        if (isPaused)
+        {
+            Time.timeScale = 0; // Freeze time
+            pausePanel.SetActive(true);
+        }
+        else
+        {
+            Time.timeScale = 1; // Resume time
+            pausePanel.SetActive(false);
+        }
+    }
+
+    public void QuitToMenu()
+    {
+        Time.timeScale = 1;
+        // We will create the MainMenu scene later. For now, reload.
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
 }
