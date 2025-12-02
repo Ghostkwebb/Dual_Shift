@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float topLaneY = 2.0f;
     [SerializeField] private float bottomLaneY = -2.0f;
     [SerializeField] private float laneSwitchDuration = 0.1f;
+    [SerializeField] private ParticleSystem speedEffect;
+
 
     [Header("Melee Attack")]
     [SerializeField] private Transform meleeHitboxTransform;
@@ -35,6 +37,17 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
+        if (speedEffect != null)
+        {
+            if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
+            {
+                if (!speedEffect.isPlaying) speedEffect.Play();
+            }
+            else
+            {
+                if (speedEffect.isPlaying) speedEffect.Stop();
+            }
+        }
         playerInputActions.Player.Enable();
         playerInputActions.Player.LaneSwitch.performed += OnLaneSwitch;
     }
@@ -58,6 +71,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleLaneSwitch()
     {
+        if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
         if (!laneSwitchTriggered) return;
         if (!EventSystem.current.IsPointerOverGameObject())
         {
@@ -69,6 +83,7 @@ public class PlayerController : MonoBehaviour
 
     public void MeleeAttack()
     {
+        if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
         if (Time.time < lastAttackTime + attackCooldown) return;
 
         lastAttackTime = Time.time;

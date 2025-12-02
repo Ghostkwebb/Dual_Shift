@@ -6,8 +6,12 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    public enum GameState { Menu, Playing, GameOver }
+    public GameState CurrentState { get; private set; }
+
     [Header("Settings")]
-    public float worldSpeed = 10f;
+    public float initialWorldSpeed = 10f;
+    public float worldSpeed; // Internal tracking
     public float speedRamp = 0.1f;
     public int scorePerKill = 50;
     public float comboDuration = 2.0f;
@@ -16,14 +20,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text comboText;
     [SerializeField] private GameObject gameOverPanel;
-    [SerializeField] private GameObject pausePanel;
     [SerializeField] private TMP_Text finalScoreText;
-
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private GameObject mainMenuPanel;
+    [SerializeField] private GameObject gameHUD; // Parent object for Score/Combo/PauseButton
 
     private float score;
     private int comboMultiplier;
     private float comboTimer;
-    private bool isGameOver = false;
     private bool isPaused = false;
 
     private void Awake()
@@ -32,17 +36,45 @@ public class GameManager : MonoBehaviour
         else Instance = this;
     }
 
+    private void Start()
+    {
+        ShowMainMenu();
+    }
+
+    public void ShowMainMenu()
+    {
+        CurrentState = GameState.Menu;
+
+        // Reset Logic
+        worldSpeed = 0; // Stop the world
+        score = 0;
+
+        // UI State
+        mainMenuPanel.SetActive(true);
+        gameHUD.SetActive(false);
+        gameOverPanel.SetActive(false);
+        pausePanel.SetActive(false);
+
+        Time.timeScale = 1; // Keep time running so Idle animations play
+    }
+
+    public void StartGame()
+    {
+        CurrentState = GameState.Playing;
+        worldSpeed = initialWorldSpeed;
+
+        mainMenuPanel.SetActive(false);
+        gameHUD.SetActive(true);
+    }
+
     private void Update()
     {
-        if (isGameOver) return;
+        if (CurrentState != GameState.Playing) return;
 
-        // 1. Distance Score
+        // Score & Speed logic
         score += worldSpeed * Time.deltaTime;
-
-        // 2. Speed Ramp (Difficulty)
         worldSpeed += speedRamp * Time.deltaTime;
 
-        // 3. Combo Timer
         if (comboTimer > 0)
         {
             comboTimer -= Time.deltaTime;
@@ -52,7 +84,6 @@ public class GameManager : MonoBehaviour
                 UpdateUI();
             }
         }
-
         UpdateUI();
     }
 
@@ -66,16 +97,13 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        isGameOver = true;
-        Time.timeScale = 0; // Freeze Game
+        CurrentState = GameState.GameOver;
+        Time.timeScale = 0;
 
-        // Save High Score
         float bestScore = PlayerPrefs.GetFloat("BestScore", 0);
         if (score > bestScore) PlayerPrefs.SetFloat("BestScore", score);
 
-        // Show UI
-        scoreText.gameObject.SetActive(false);
-        comboText.gameObject.SetActive(false);
+        gameHUD.SetActive(false);
         gameOverPanel.SetActive(true);
         finalScoreText.text = $"Score: {(int)score}\nBest: {(int)PlayerPrefs.GetFloat("BestScore")}";
     }
@@ -86,44 +114,25 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    private void UpdateUI()
-    {
-        scoreText.text = ((int)score).ToString("D5");
-
-        if (comboMultiplier > 1)
-        {
-            comboText.text = $"x{comboMultiplier}";
-            comboText.gameObject.SetActive(true);
-        }
-        else
-        {
-            comboText.gameObject.SetActive(false);
-        }
-    }
-
     public void TogglePause()
     {
-        if (isGameOver) return;
+        if (CurrentState != GameState.Playing) return;
 
         isPaused = !isPaused;
-
-        if (isPaused)
-        {
-            Time.timeScale = 0; // Freeze time
-            pausePanel.SetActive(true);
-        }
-        else
-        {
-            Time.timeScale = 1; // Resume time
-            pausePanel.SetActive(false);
-        }
+        pausePanel.SetActive(isPaused);
+        Time.timeScale = isPaused ? 0 : 1;
     }
 
     public void QuitToMenu()
     {
         Time.timeScale = 1;
-        // We will create the MainMenu scene later. For now, reload.
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        RestartGame(); // Simpler for now, reloads scene to Menu
     }
 
+    private void UpdateUI()
+    {
+        scoreText.text = ((int)score).ToString("D5");
+        comboText.gameObject.SetActive(comboMultiplier > 1);
+        if (comboMultiplier > 1) comboText.text = $"x{comboMultiplier}";
+    }
 }
