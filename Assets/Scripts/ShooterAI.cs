@@ -32,9 +32,8 @@ public class ShooterAI : MonoBehaviour
             // 3. Fire
             if (projectilePrefab != null)
             {
-                GameObject proj = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+                GameObject proj = ObjectPooler.Instance.GetProjectile(transform.position, Quaternion.identity);
 
-                // Projectile inherits world speed + extra speed
                 if (proj.TryGetComponent(out ProjectileBehavior behavior))
                 {
                     behavior.Initialize(GameManager.Instance.worldSpeed);

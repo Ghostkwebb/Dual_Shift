@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class ProjectileBehavior : MonoBehaviour
 {
@@ -6,13 +7,23 @@ public class ProjectileBehavior : MonoBehaviour
 
     public void Initialize(float worldSpeed)
     {
-        // Move slightly faster than the world (1.5x)
         this.speed = worldSpeed * 1.5f;
-        Destroy(gameObject, 5f); // Auto-destroy after 5 seconds
+        StartCoroutine(DeactivateRoutine());
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     void Update()
     {
         transform.position += Vector3.left * speed * Time.deltaTime;
+    }
+
+    private IEnumerator DeactivateRoutine()
+    {
+        yield return new WaitForSeconds(5f);
+        ObjectPooler.Instance.ReturnProjectile(this.gameObject);
     }
 }
