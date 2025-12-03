@@ -80,6 +80,7 @@ public class PlayerController : MonoBehaviour
     private void OnLaneSwitch(InputAction.CallbackContext context)
     {
         laneSwitchTriggered = true;
+        AudioManager.Instance.PlayJump();
     }
 
     private void HandleLaneSwitch()
@@ -100,6 +101,7 @@ public class PlayerController : MonoBehaviour
         if (Time.time < lastAttackTime + attackCooldown) return;
 
         lastAttackTime = Time.time;
+        AudioManager.Instance.PlayAttack();
 
         visualSlash.SetActive(true);
         Invoke(nameof(DisableSlash), slashDuration);
@@ -110,6 +112,7 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.AddKill();
             CameraShake.Instance.Shake(0.1f, 0.2f);
             HitStop.Instance.Stop(0.1f);
+            AudioManager.Instance.PlayHit();
             Instantiate(deathVFXPrefab, hitEnemy.transform.position, Quaternion.identity);
             Destroy(hitEnemy.gameObject);
         }

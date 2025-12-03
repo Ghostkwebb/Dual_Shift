@@ -106,6 +106,7 @@ public class GameManager : MonoBehaviour
     private System.Collections.IEnumerator GameOverSequence()
     {
         CurrentState = GameState.GameOver;
+        AudioManager.Instance.PlayDeath();
 
         // 1. Trigger massive shake
         CameraShake.Instance.Shake(1.2f, 0.5f);
