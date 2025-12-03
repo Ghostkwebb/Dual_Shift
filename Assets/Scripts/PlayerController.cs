@@ -106,6 +106,7 @@ public class PlayerController : MonoBehaviour
         if (hitEnemy != null)
         {
             GameManager.Instance.AddKill();
+            CameraShake.Instance.Shake(0.1f, 0.2f);
             Destroy(hitEnemy.gameObject);
         }
     }

@@ -98,7 +98,25 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (CurrentState == GameState.GameOver) return; // Prevent double trigger
+
+        StartCoroutine(GameOverSequence());
+    }
+
+    private System.Collections.IEnumerator GameOverSequence()
+    {
         CurrentState = GameState.GameOver;
+
+        // 1. Trigger massive shake
+        CameraShake.Instance.Shake(0.5f, 0.5f);
+
+        // 2. Slow motion effect (The "Matrix" stop)
+        Time.timeScale = 0.1f;
+
+        // 3. Wait for 1 real second (ignoring the slow motion)
+        yield return new WaitForSecondsRealtime(1.0f);
+
+        // 4. Now fully freeze and show UI
         Time.timeScale = 0;
 
         float bestScore = PlayerPrefs.GetFloat("BestScore", 0);
