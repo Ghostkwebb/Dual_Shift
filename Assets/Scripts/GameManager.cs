@@ -108,7 +108,7 @@ public class GameManager : MonoBehaviour
         CurrentState = GameState.GameOver;
 
         // 1. Trigger massive shake
-        CameraShake.Instance.Shake(0.5f, 0.5f);
+        CameraShake.Instance.Shake(1.2f, 0.5f);
 
         // 2. Slow motion effect (The "Matrix" stop)
         Time.timeScale = 0.1f;
