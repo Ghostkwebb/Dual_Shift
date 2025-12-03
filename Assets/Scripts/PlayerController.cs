@@ -109,6 +109,7 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance.AddKill();
             CameraShake.Instance.Shake(0.1f, 0.2f);
+            HitStop.Instance.Stop(0.1f);
             Instantiate(deathVFXPrefab, hitEnemy.transform.position, Quaternion.identity);
             Destroy(hitEnemy.gameObject);
         }
