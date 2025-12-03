@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private GameObject visualSlash;
     [SerializeField] private float slashDuration = 0.1f;
+    [SerializeField] private GameObject deathVFXPrefab;
+
 
     private PlayerInputActions playerInputActions;
     private bool isTopLane = true;
@@ -107,6 +109,7 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance.AddKill();
             CameraShake.Instance.Shake(0.1f, 0.2f);
+            Instantiate(deathVFXPrefab, hitEnemy.transform.position, Quaternion.identity);
             Destroy(hitEnemy.gameObject);
         }
     }

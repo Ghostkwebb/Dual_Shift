@@ -6696,6 +6696,7 @@ MonoBehaviour:
     m_Bits: 64
   visualSlash: {fileID: 17007273}
   slashDuration: 0.1
+  deathVFXPrefab: {fileID: 1478058352805709650, guid: 529e58c8bacab4cfb8ff0412af123486, type: 3}
 --- !u!1 &1312779936
 GameObject:
   m_ObjectHideFlags: 0
