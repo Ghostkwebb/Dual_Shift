@@ -16,6 +16,9 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown fpsDropdown;
     [SerializeField] private GameObject settingsPanel;
 
+    [Header("Panels")]
+    [SerializeField] private GameObject controlsOverlay;
+
     private const string MIXER_MUSIC = "MusicVol";
     private const string MIXER_SFX = "SFXVol";
 
@@ -102,5 +105,17 @@ public class SettingsManager : MonoBehaviour
         int fpsIndex = PlayerPrefs.GetInt("FPS", 1); // Default to 60
         fpsDropdown.value = fpsIndex;
         SetFPS(fpsIndex);
+    }
+
+    public void OpenControls()
+    {
+        settingsPanel.SetActive(false); // Hide settings to declutter
+        controlsOverlay.SetActive(true);
+    }
+
+    public void CloseControls()
+    {
+        controlsOverlay.SetActive(false);
+        settingsPanel.SetActive(true); // Show settings again
     }
 }
