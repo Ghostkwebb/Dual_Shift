@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gameHUD; // Parent object for Score/Combo/PauseButton
 
     private float score;
+    private int kills;
+
     private int comboMultiplier;
     private float comboTimer;
     private bool isPaused = false;
@@ -49,6 +51,8 @@ public class GameManager : MonoBehaviour
         // Reset Logic
         worldSpeed = 0; // Stop the world
         score = 0;
+        kills = 0;
+        comboMultiplier = 0;
 
         // UI State
         mainMenuPanel.SetActive(true);
@@ -90,6 +94,7 @@ public class GameManager : MonoBehaviour
 
     public void AddKill()
     {
+        kills++;
         comboMultiplier++;
         comboTimer = comboDuration;
         score += scorePerKill * comboMultiplier;
@@ -106,26 +111,37 @@ public class GameManager : MonoBehaviour
     private System.Collections.IEnumerator GameOverSequence()
     {
         CurrentState = GameState.GameOver;
-        AudioManager.Instance.PlayDeath();
 
-        // 1. Trigger massive shake
         CameraShake.Instance.Shake(1.2f, 0.5f);
-
-        // 2. Slow motion effect (The "Matrix" stop)
         Time.timeScale = 0.1f;
-
-        // 3. Wait for 1 real second (ignoring the slow motion)
         yield return new WaitForSecondsRealtime(1.0f);
-
-        // 4. Now fully freeze and show UI
         Time.timeScale = 0;
 
+        // --- SAVE BEST SCORE ---
         float bestScore = PlayerPrefs.GetFloat("BestScore", 0);
-        if (score > bestScore) PlayerPrefs.SetFloat("BestScore", score);
+        if (score > bestScore)
+        {
+            bestScore = score;
+            PlayerPrefs.SetFloat("BestScore", score);
+        }
+
+        // --- SAVE MAX KILLS ---
+        int maxKills = PlayerPrefs.GetInt("MaxKills", 0);
+        if (kills > maxKills)
+        {
+            maxKills = kills;
+            PlayerPrefs.SetInt("MaxKills", kills);
+        }
 
         gameHUD.SetActive(false);
         gameOverPanel.SetActive(true);
-        finalScoreText.text = $"Score: {(int)score}\nBest: {(int)PlayerPrefs.GetFloat("BestScore")}";
+
+        // --- UPDATE FINAL TEXT ---
+        // Showing 4 stats: Score, Best, Kills, Max Kills
+        finalScoreText.text = $"SCORE: {(int)score}\n" +
+                              $"BEST: {(int)bestScore}\n\n" +
+                              $"KILLS: {kills}\n" +
+                              $"MAX KILLS: {maxKills}";
     }
 
     public void RestartGame()
