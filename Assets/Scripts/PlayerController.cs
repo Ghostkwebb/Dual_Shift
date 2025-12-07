@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float bottomLaneY = -2.0f;
     [SerializeField] private float laneSwitchDuration = 0.1f;
     [SerializeField] private ParticleSystem speedEffect;
+    [SerializeField] private float tiltStrength = 2.0f;
+    [SerializeField] private float stretchStrength = 0.005f;
 
 
     [Header("Melee Attack")]
@@ -27,10 +29,12 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     private float lastAttackTime;
     private bool laneSwitchTriggered = false;
+    private Vector3 originalScale;
 
     private void Awake()
     {
         playerInputActions = new PlayerInputActions();
+        originalScale = transform.localScale;
         Vector3 startPos = transform.position;
         startPos.y = bottomLaneY;
         transform.position = startPos;
@@ -75,6 +79,15 @@ public class PlayerController : MonoBehaviour
         }
         HandleLaneSwitch();
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, laneSwitchDuration);
+        float verticalSpeed = velocity.y;
+        float tiltAngle = verticalSpeed * tiltStrength;
+        transform.rotation = Quaternion.Euler(0, 0, tiltAngle);
+        float stretch = Mathf.Abs(verticalSpeed) * stretchStrength;
+        transform.localScale = new Vector3(
+            originalScale.x - stretch,
+            originalScale.y + stretch,
+            originalScale.z
+        );
     }
 
     private void OnLaneSwitch(InputAction.CallbackContext context)

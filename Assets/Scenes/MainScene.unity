@@ -7893,6 +7893,8 @@ MonoBehaviour:
   bottomLaneY: -3.3
   laneSwitchDuration: 0.1
   speedEffect: {fileID: 1772996411}
+  tiltStrength: 2
+  stretchStrength: 0.01
   meleeHitboxTransform: {fileID: 1530187270}
   hitboxSize: {x: 3, y: 2}
   attackCooldown: 0.2
