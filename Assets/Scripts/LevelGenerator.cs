@@ -37,11 +37,18 @@ public class LevelGenerator : MonoBehaviour
 
     private void Start()
     {
-        currentSpawnX = spawnOrigin.position.x;
+        currentSpawnX = spawnOrigin.position.x - chunkWidth;
 
-        for (int i = 0; i < chunksOnScreen; i++)
+        for (int i = 0; i < chunksOnScreen + 1; i++)
         {
-            SpawnChunk();
+            if (i <= 1) 
+            {
+                SpawnChunk(0);
+            }
+            else 
+            {
+                SpawnChunk();
+            }
         }
     }
 
@@ -54,22 +61,29 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void SpawnChunk()
+    private void SpawnChunk(int? specificIndex = null)
     {
-        int randomIndex = Random.Range(0, chunkPrefabs.Length);
-        LevelChunk prefab = chunkPrefabs[randomIndex];
+        LevelChunk prefab;
 
+        if (specificIndex.HasValue)
+        {
+            prefab = chunkPrefabs[specificIndex.Value];
+        }
+        else
+        {
+            int randomIndex = Random.Range(0, chunkPrefabs.Length);
+            prefab = chunkPrefabs[randomIndex];
+        }
+        
         LevelChunk chunk = pools[prefab.name].Get();
         chunk.transform.position = new Vector3(currentSpawnX, 0, 0);
-
-        // Manual offset because WorldScroller moves objects, not the generator's spawnX
-        // Since chunks move, we append relative to the LAST chunk, not a static X.
+        
         if (activeChunks.Count > 0)
         {
             LevelChunk lastChunk = activeChunks.ToArray()[activeChunks.Count - 1];
             chunk.transform.position = new Vector3(lastChunk.transform.position.x + chunkWidth, 0, 0);
         }
-
+        
         activeChunks.Enqueue(chunk);
     }
 
