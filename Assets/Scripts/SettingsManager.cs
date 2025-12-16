@@ -15,6 +15,8 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown graphicsDropdown;
     [SerializeField] private TMP_Dropdown fpsDropdown;
     [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private Toggle dashStrikeToggle;
+    [SerializeField] private PlayerController player; 
 
     [Header("Panels")]
     [SerializeField] private GameObject controlsOverlay;
@@ -39,6 +41,19 @@ public class SettingsManager : MonoBehaviour
         sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         graphicsDropdown.onValueChanged.AddListener(SetQuality);
         fpsDropdown.onValueChanged.AddListener(SetFPS);
+        if (dashStrikeToggle != null)
+            dashStrikeToggle.onValueChanged.AddListener(SetDashStrike);
+        
+        // Load saved pref (Dev feature persistence)
+        bool dashEnabled = PlayerPrefs.GetInt("DashStrike", 0) == 1;
+        if (dashStrikeToggle != null) dashStrikeToggle.isOn = dashEnabled;
+        if (player != null) player.ToggleDashStrike(dashEnabled);
+    }
+    
+    public void SetDashStrike(bool isEnabled)
+    {
+        if (player != null) player.ToggleDashStrike(isEnabled);
+        PlayerPrefs.SetInt("DashStrike", isEnabled ? 1 : 0);
     }
 
     public void OpenSettings()
