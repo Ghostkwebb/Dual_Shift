@@ -3403,7 +3403,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.0997241, g: 0.1599991, b: 0.254717, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -8147,12 +8147,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topLaneY: 3.3
   bottomLaneY: -3.3
-  laneSwitchDuration: 0.1
-  switchAngle: 60
-  speedEffect: {fileID: 1772996411}
-  trail: {fileID: 1059525599}
+  movementSmoothTime: 0.1
+  surgeAmount: 7
+  driftFactor: 0.5
+  maxForwardDist: 5
+  useDashStrike: 0
+  dashStrikeSurge: 6
   tiltStrength: 2
   stretchStrength: 0.01
+  speedEffect: {fileID: 1772996411}
+  trail: {fileID: 1059525599}
   meleeHitboxTransform: {fileID: 1530187270}
   hitboxSize: {x: 3, y: 2}
   attackCooldown: 0.2
@@ -8162,9 +8166,6 @@ MonoBehaviour:
   visualSlash: {fileID: 17007273}
   slashDuration: 0.1
   deathVFXPrefab: {fileID: 1478058352805709650, guid: 529e58c8bacab4cfb8ff0412af123486, type: 3}
-  useDashStrike: 0
-  dashStrikeDistance: 5
-  dashStrikeDuration: 0.2
 --- !u!1 &1312779936
 GameObject:
   m_ObjectHideFlags: 0

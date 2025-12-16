@@ -4,17 +4,25 @@ using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Lane Switching")]
+    [Header("Lane Settings")]
     [SerializeField] private float topLaneY = 3.3f;
     [SerializeField] private float bottomLaneY = -3.3f;
-    [SerializeField] private float laneSwitchDuration = 0.1f;
-    [Range(45f, 90f)] [SerializeField] private float switchAngle = 75f;
-    [SerializeField] private ParticleSystem speedEffect;
-    [SerializeField] private TrailRenderer trail;
+    [SerializeField] private float movementSmoothTime = 0.1f;
+
+    [Header("Surge & Drift")]
+    [SerializeField] private float surgeAmount = 2.0f;
+    [SerializeField] private float driftFactor = 0.5f; 
+    [SerializeField] private float maxForwardDist = 5.0f;
+
+    [Header("Dash Strike (Dev Toggle)")]
+    [SerializeField] private bool useDashStrike = false;
+    [SerializeField] private float dashStrikeSurge = 4.0f;
 
     [Header("Game Feel")]
     [SerializeField] private float tiltStrength = 2.0f;
     [SerializeField] private float stretchStrength = 0.005f;
+    [SerializeField] private ParticleSystem speedEffect;
+    [SerializeField] private TrailRenderer trail;
 
     [Header("Melee Attack")]
     [SerializeField] private Transform meleeHitboxTransform;
@@ -25,34 +33,32 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float slashDuration = 0.1f;
     [SerializeField] private GameObject deathVFXPrefab;
 
-    [Header("Dash Strike (Dev Toggle)")]
-    [SerializeField] private bool useDashStrike = false;
-    [SerializeField] private float dashStrikeDistance = 3.0f;
-    [SerializeField] private float dashStrikeDuration = 0.2f;
-
     private PlayerInputActions playerInputActions;
     private bool isTopLane = false; 
     private Vector3 targetPosition;
-    private Vector3 velocity = Vector3.zero;
+    private Vector3 velocity = Vector3.zero; 
+    private float anchorX; 
     private float lastAttackTime;
     private bool laneSwitchTriggered = false;
-    private bool isDashStriking = false; 
     private bool isKeyboardInput = false;
     
+    // NEW: Lethal State Flag
+    private bool isLethalDash = false; 
+    
     private Vector3 originalScale;
-    private float defaultX;
 
     private void Awake()
     {
         playerInputActions = new PlayerInputActions();
         originalScale = transform.localScale;
+        if (originalScale.x == 0) originalScale = Vector3.one;
 
         Vector3 startPos = transform.position;
         startPos.y = bottomLaneY;
         transform.position = startPos;
         
+        anchorX = startPos.x;
         targetPosition = startPos;
-        defaultX = startPos.x;
     }
 
     private void OnEnable()
@@ -67,83 +73,59 @@ public class PlayerController : MonoBehaviour
     {
         playerInputActions.Player.Disable();
         playerInputActions.Player.LaneSwitch.performed -= OnLaneSwitch;
-    }
-    
-    private void OnPause(InputAction.CallbackContext context)
-    {
-        // Toggle pause regardless of game state (unless in Menu)
-        if (GameManager.Instance.CurrentState != GameManager.GameState.Menu)
-        {
-            GameManager.Instance.TogglePause();
-        }
+        playerInputActions.Player.Pause.performed -= OnPause;
     }
 
     private void Update()
     {
-        bool isDriftingBack = velocity.x < -0.1f;
         bool isPlaying = GameManager.Instance.CurrentState == GameManager.GameState.Playing;
 
-        if (speedEffect != null)
-        {
-            if (isPlaying)
-            {
-                if (!speedEffect.isPlaying) speedEffect.Play();
-                var emission = speedEffect.emission;
-                emission.enabled = !isDriftingBack; 
-            }
-            else if (speedEffect.isPlaying) speedEffect.Stop();
-        }
-
-        if (trail != null) trail.emitting = isPlaying && !isDriftingBack;
-
         HandleLaneSwitch();
+        HandleSurgeAndDrift();
 
-        // LOGIC CHANGE: Only auto-reset X if NOT Dash Striking
-        if (!isDashStriking)
-        {
-            if (Mathf.Abs(transform.position.y - targetPosition.y) < 0.2f)
-            {
-                targetPosition.x = defaultX;
-            }
-        }
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, movementSmoothTime);
 
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, laneSwitchDuration);
-
+        // Visuals
         float verticalSpeed = velocity.y;
         float tiltAngle = verticalSpeed * tiltStrength;
-        transform.rotation = Quaternion.Euler(0, 0, tiltAngle);
+        if (!float.IsNaN(tiltAngle)) transform.rotation = Quaternion.Euler(0, 0, tiltAngle);
 
         float stretch = Mathf.Abs(verticalSpeed) * stretchStrength;
-        transform.localScale = new Vector3(originalScale.x - stretch, originalScale.y + stretch, originalScale.z);
+        if (!float.IsNaN(stretch))
+        {
+            transform.localScale = new Vector3(originalScale.x - stretch, originalScale.y + stretch, originalScale.z);
+        }
+
+        UpdateEffects(isPlaying);
     }
 
-    private void OnLaneSwitch(InputAction.CallbackContext context)
+    private void HandleSurgeAndDrift()
     {
-        laneSwitchTriggered = true;
-        isKeyboardInput = context.control.device is Keyboard;
+        float returnSpeed = GameManager.Instance.worldSpeed * driftFactor;
+        targetPosition.x = Mathf.MoveTowards(targetPosition.x, anchorX, returnSpeed * Time.deltaTime);
     }
 
     private void HandleLaneSwitch()
     {
         if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
         if (!laneSwitchTriggered) return;
+
         if (isKeyboardInput || !EventSystem.current.IsPointerOverGameObject())
         {
             isTopLane = !isTopLane;
             targetPosition.y = isTopLane ? topLaneY : bottomLaneY;
 
-            if (switchAngle < 90f)
-            {
-                float height = Mathf.Abs(topLaneY - bottomLaneY);
-                float forwardDist = height / Mathf.Tan(switchAngle * Mathf.Deg2Rad);
-                targetPosition.x = defaultX + forwardDist;
-            }
-            
-            // Play sound only if move is successful
+            float surgeTarget = targetPosition.x + surgeAmount;
+            targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
+
             AudioManager.Instance.PlayJump();
         }
         laneSwitchTriggered = false;
-        AudioManager.Instance.PlayJump();
+    }
+
+    public void ToggleDashStrike(bool state)
+    {
+        useDashStrike = state;
     }
 
     public void MeleeAttack()
@@ -153,47 +135,64 @@ public class PlayerController : MonoBehaviour
 
         lastAttackTime = Time.time;
 
-        // --- DASH STRIKE LOGIC ---
-        if (useDashStrike)
-        {
-            isDashStriking = true;
-            targetPosition.x = defaultX + dashStrikeDistance;
-            Invoke(nameof(EndDashStrike), dashStrikeDuration);
-        }
-        // -------------------------
-
         visualSlash.SetActive(true);
         Invoke(nameof(DisableSlash), slashDuration);
         AudioManager.Instance.PlayAttack();
 
-        // Note: Hitbox moves with player, so we don't need to change overlap logic
+        if (useDashStrike)
+        {
+            // 1. Surge Forward
+            float surgeTarget = targetPosition.x + dashStrikeSurge;
+            targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
+
+            // 2. Make Player Lethal
+            isLethalDash = true;
+            Invoke(nameof(EndLethalDash), slashDuration + 0.1f); // Lethal slightly longer than slash
+        }
+
+        // Standard Hitbox Check (Still useful for range)
         Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
         if (hitEnemy != null)
         {
-            GameManager.Instance.AddKill();
-            CameraShake.Instance.Shake(0.1f, 0.2f);
-            HitStop.Instance.Stop(0.05f);
-            AudioManager.Instance.PlayHit();
-            Instantiate(deathVFXPrefab, hitEnemy.transform.position, Quaternion.identity);
-            Destroy(hitEnemy.gameObject);
+            KillEnemy(hitEnemy.gameObject);
         }
     }
 
-    private void EndDashStrike()
+    private void EndLethalDash()
     {
-        isDashStriking = false;
-        // X will be reset by Update loop automatically now
+        isLethalDash = false;
     }
 
-    public void ToggleDashStrike(bool state)
+    // Helper method to handle kills (used by both Hitbox and Dash collision)
+    private void KillEnemy(GameObject enemy)
     {
-        useDashStrike = state;
+        GameManager.Instance.AddKill();
+        CameraShake.Instance.Shake(0.1f, 0.2f);
+        HitStop.Instance.Stop(0.05f);
+        AudioManager.Instance.PlayHit();
+        Instantiate(deathVFXPrefab, enemy.transform.position, Quaternion.identity);
+        Destroy(enemy);
     }
 
-    // ... (Triggers and Gizmos unchanged) ...
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy") || other.CompareTag("Obstacle"))
+        // 1. Handle Enemy Collision
+        if (other.CompareTag("Enemy"))
+        {
+            if (isLethalDash)
+            {
+                // If dashing, WE kill THEM
+                KillEnemy(other.gameObject);
+            }
+            else
+            {
+                // If not dashing, THEY kill US
+                GameManager.Instance.GameOver();
+                Time.timeScale = 0;
+            }
+        }
+        // 2. Handle Obstacle Collision (Always lethal)
+        else if (other.CompareTag("Obstacle"))
         {
             GameManager.Instance.GameOver();
             Time.timeScale = 0;
@@ -211,6 +210,37 @@ public class PlayerController : MonoBehaviour
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(meleeHitboxTransform.position, hitboxSize);
+        }
+    }
+    
+    // Input Handlers
+    private void UpdateEffects(bool isPlaying)
+    {
+        bool isSurgingForward = velocity.x > 0.5f; 
+        
+        if (speedEffect != null)
+        {
+            if (isPlaying) {
+                if (!speedEffect.isPlaying) speedEffect.Play();
+                var emission = speedEffect.emission;
+                emission.enabled = isSurgingForward; 
+            } else if (speedEffect.isPlaying) speedEffect.Stop();
+        }
+
+        if (trail != null) trail.emitting = isPlaying && isSurgingForward;
+    }
+
+    private void OnLaneSwitch(InputAction.CallbackContext context)
+    {
+        laneSwitchTriggered = true;
+        isKeyboardInput = context.control.device is Keyboard;
+    }
+
+    private void OnPause(InputAction.CallbackContext context)
+    {
+        if (GameManager.Instance.CurrentState != GameManager.GameState.Menu)
+        {
+            GameManager.Instance.TogglePause();
         }
     }
 }
