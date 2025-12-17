@@ -8148,9 +8148,9 @@ MonoBehaviour:
   topLaneY: 3.3
   bottomLaneY: -3.3
   movementSmoothTime: 0.1
-  surgeAmount: 7
+  switchAngle: 60
   driftFactor: 0.5
-  maxForwardDist: 5
+  maxForwardDist: 10
   useDashStrike: 0
   dashStrikeSurge: 6
   tiltStrength: 2

@@ -13,8 +13,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float movementSmoothTime = 0.1f;
 
     [Header("Surge & Drift")]
-    [Tooltip("Distance the player lunges forward when switching lanes.")]
-    [SerializeField] private float surgeAmount = 2.0f;
+    [Tooltip("The angle of movement when switching lanes (90 = Vertical, 45 = Diagonal).")]
+    [Range(1f, 89f)] [SerializeField] private float switchAngle = 75f;
     [Tooltip("Multiplies world speed to calculate drift back speed. 0.5 = half world speed.")]
     [SerializeField] private float driftFactor = 0.5f;
     [Tooltip("Maximum X distance forward from the anchor point.")]
@@ -144,7 +144,12 @@ public class PlayerController : MonoBehaviour
             targetPosition.y = isTopLane ? topLaneY : bottomLaneY;
             
             isSurging = true;
-            float surgeTarget = transform.position.x + surgeAmount;
+            float height = Mathf.Abs(topLaneY - bottomLaneY);
+            
+            float angleRad = switchAngle * Mathf.Deg2Rad;
+            float requiredSurge = height / Mathf.Tan(angleRad);
+
+            float surgeTarget = transform.position.x + requiredSurge;
             targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
 
             AudioManager.Instance.PlayJump();
