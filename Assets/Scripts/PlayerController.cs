@@ -251,22 +251,21 @@ public class PlayerController : MonoBehaviour
         }
     }
     
-    // Input Handlers
     private void UpdateEffects(bool isPlaying)
-    {
-        bool isSurgingForward = velocity.x > 0.5f; 
-        
-        if (speedEffect != null)
         {
-            if (isPlaying) {
-                if (!speedEffect.isPlaying) speedEffect.Play();
-                var emission = speedEffect.emission;
-                emission.enabled = isSurgingForward; 
-            } else if (speedEffect.isPlaying) speedEffect.Stop();
+            bool showEffects = velocity.x > -0.1f; 
+            
+            if (speedEffect != null)
+            {
+                if (isPlaying) {
+                    if (!speedEffect.isPlaying) speedEffect.Play();
+                    var emission = speedEffect.emission;
+                    emission.enabled = showEffects; 
+                } else if (speedEffect.isPlaying) speedEffect.Stop();
+            }
+    
+            if (trail != null) trail.emitting = isPlaying && showEffects;
         }
-
-        if (trail != null) trail.emitting = isPlaying && isSurgingForward;
-    }
 
     private void OnLaneSwitch(InputAction.CallbackContext context)
     {
