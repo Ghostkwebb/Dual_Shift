@@ -126,11 +126,10 @@ public class PlayerController : MonoBehaviour
             {
                 isSurging = false;
             }
-            return;
+            return; 
         }
-
-        float returnSpeed = GameManager.Instance.worldSpeed * driftFactor;
-        targetPosition.x = Mathf.MoveTowards(targetPosition.x, anchorX, returnSpeed * Time.deltaTime);
+        
+        targetPosition.x = Mathf.Lerp(targetPosition.x, anchorX, Time.deltaTime * driftFactor);
     }
 
     private void HandleLaneSwitch()
