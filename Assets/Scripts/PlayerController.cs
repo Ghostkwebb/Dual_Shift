@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour
     private float lastAttackTime;
     private bool laneSwitchTriggered = false;
     private bool isKeyboardInput = false;
+    private bool isSurging = false;
+    private bool isDashStriking = false;
     
     // NEW: Lethal State Flag
     private bool isLethalDash = false; 
@@ -101,6 +103,15 @@ public class PlayerController : MonoBehaviour
 
     private void HandleSurgeAndDrift()
     {
+        if (isSurging || isDashStriking)
+        {
+            if (isSurging && Mathf.Abs(transform.position.y - targetPosition.y) < 0.05f)
+            {
+                isSurging = false;
+            }
+            return;
+        }
+
         float returnSpeed = GameManager.Instance.worldSpeed * driftFactor;
         targetPosition.x = Mathf.MoveTowards(targetPosition.x, anchorX, returnSpeed * Time.deltaTime);
     }
@@ -114,8 +125,9 @@ public class PlayerController : MonoBehaviour
         {
             isTopLane = !isTopLane;
             targetPosition.y = isTopLane ? topLaneY : bottomLaneY;
-
-            float surgeTarget = targetPosition.x + surgeAmount;
+            
+            isSurging = true;
+            float surgeTarget = transform.position.x + surgeAmount;
             targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
 
             AudioManager.Instance.PlayJump();
@@ -135,27 +147,33 @@ public class PlayerController : MonoBehaviour
 
         lastAttackTime = Time.time;
 
+        if (useDashStrike)
+        {
+            isDashStriking = true;
+            isLethalDash = true;  
+            
+            float surgeTarget = transform.position.x + dashStrikeSurge;
+            targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
+            
+            Invoke(nameof(EndDashStrike), 0.2f);
+        }
+
         visualSlash.SetActive(true);
         Invoke(nameof(DisableSlash), slashDuration);
         AudioManager.Instance.PlayAttack();
 
-        if (useDashStrike)
-        {
-            // 1. Surge Forward
-            float surgeTarget = targetPosition.x + dashStrikeSurge;
-            targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
-
-            // 2. Make Player Lethal
-            isLethalDash = true;
-            Invoke(nameof(EndLethalDash), slashDuration + 0.1f); // Lethal slightly longer than slash
-        }
-
-        // Standard Hitbox Check (Still useful for range)
+        // Rule 4: Attack Hitbox (Standard check)
         Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
         if (hitEnemy != null)
         {
             KillEnemy(hitEnemy.gameObject);
         }
+    }
+    
+    private void EndDashStrike()
+    {
+        isDashStriking = false; // Drift resumes
+        isLethalDash = false;   // iFrames off
     }
 
     private void EndLethalDash()
