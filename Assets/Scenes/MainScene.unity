@@ -3427,7 +3427,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5.0009894
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3482,7 +3482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b8ef14c08e1c4c1dbc03fc6e1254237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetSize: 5
+  targetSize: 8
   targetAspect: 1.7777778
 --- !u!1 &541865528
 GameObject:
@@ -7985,7 +7985,7 @@ Transform:
   m_GameObject: {fileID: 1312385850}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.42, y: 0, z: 0}
+  m_LocalPosition: {x: -13.02, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -8009,12 +8009,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topLaneY: 3.3
   bottomLaneY: -3.3
-  movementSmoothTime: 0.1
-  switchAngle: 60
-  driftFactor: 0.5
-  maxForwardDist: 10
+  movementSmoothTime: 0.06
+  switchAngle: 68.5
+  driftFactor: 0.75
+  maxForwardDist: 30
   useDashStrike: 0
-  dashStrikeSurge: 6
+  dashStrikeSurge: 4
   tiltStrength: 2
   stretchStrength: 0.01
   speedEffect: {fileID: 1772996411}
