@@ -138,6 +138,12 @@ public class PlayerController : MonoBehaviour
         if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
         if (!laneSwitchTriggered) return;
 
+        if (Mathf.Abs(transform.position.y - targetPosition.y) > 0.1f)
+        {
+            laneSwitchTriggered = false;
+            return;
+        }
+
         if (isKeyboardInput || !EventSystem.current.IsPointerOverGameObject())
         {
             isTopLane = !isTopLane;
@@ -145,7 +151,6 @@ public class PlayerController : MonoBehaviour
             
             isSurging = true;
             float height = Mathf.Abs(topLaneY - bottomLaneY);
-            
             float angleRad = switchAngle * Mathf.Deg2Rad;
             float requiredSurge = height / Mathf.Tan(angleRad);
 
