@@ -5,32 +5,51 @@ using UnityEngine.EventSystems;
 public class PlayerController : MonoBehaviour
 {
     [Header("Lane Settings")]
+    [Tooltip("Y position for the top lane.")]
     [SerializeField] private float topLaneY = 3.3f;
+    [Tooltip("Y position for the bottom lane.")]
     [SerializeField] private float bottomLaneY = -3.3f;
+    [Tooltip("Time (seconds) to smooth damp the movement. Lower is snappier.")]
     [SerializeField] private float movementSmoothTime = 0.1f;
 
     [Header("Surge & Drift")]
+    [Tooltip("Distance the player lunges forward when switching lanes.")]
     [SerializeField] private float surgeAmount = 2.0f;
-    [SerializeField] private float driftFactor = 0.5f; 
+    [Tooltip("Multiplies world speed to calculate drift back speed. 0.5 = half world speed.")]
+    [SerializeField] private float driftFactor = 0.5f;
+    [Tooltip("Maximum X distance forward from the anchor point.")]
     [SerializeField] private float maxForwardDist = 5.0f;
 
     [Header("Dash Strike (Dev Toggle)")]
+    [Tooltip("Enable the forward dash attack mechanic.")]
     [SerializeField] private bool useDashStrike = false;
+    [Tooltip("Distance the player surges forward during a dash attack.")]
     [SerializeField] private float dashStrikeSurge = 4.0f;
 
     [Header("Game Feel")]
+    [Tooltip("Amount of rotation tilt when moving vertically.")]
     [SerializeField] private float tiltStrength = 2.0f;
+    [Tooltip("Amount of squash/stretch based on vertical speed.")]
     [SerializeField] private float stretchStrength = 0.005f;
+    [Tooltip("Particle system for speed lines/exhaust.")]
     [SerializeField] private ParticleSystem speedEffect;
+    [Tooltip("Trail renderer for visual movement path.")]
     [SerializeField] private TrailRenderer trail;
 
     [Header("Melee Attack")]
+    [Tooltip("Transform representing the center of the attack.")]
     [SerializeField] private Transform meleeHitboxTransform;
+    [Tooltip("Size (Width, Height) of the attack hitbox.")]
     [SerializeField] private Vector2 hitboxSize = new Vector2(1, 1);
+    [Tooltip("Time (seconds) required between attacks.")]
     [SerializeField] private float attackCooldown = 0.2f;
+    [Tooltip("Layer mask to detect enemies and destroyables.")]
     [SerializeField] private LayerMask enemyLayer;
+    [Tooltip("Visual sprite object for the slash effect.")]
     [SerializeField] private GameObject visualSlash;
+    [Tooltip("Duration the slash visual remains active.")]
     [SerializeField] private float slashDuration = 0.1f;
+    [Tooltip("Prefab spawned when an enemy is destroyed.")]
     [SerializeField] private GameObject deathVFXPrefab;
 
     private PlayerInputActions playerInputActions;
@@ -43,8 +62,6 @@ public class PlayerController : MonoBehaviour
     private bool isKeyboardInput = false;
     private bool isSurging = false;
     private bool isDashStriking = false;
-    
-    // NEW: Lethal State Flag
     private bool isLethalDash = false; 
     
     private Vector3 originalScale;
@@ -161,8 +178,7 @@ public class PlayerController : MonoBehaviour
         visualSlash.SetActive(true);
         Invoke(nameof(DisableSlash), slashDuration);
         AudioManager.Instance.PlayAttack();
-
-        // Rule 4: Attack Hitbox (Standard check)
+        
         Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
         if (hitEnemy != null)
         {
@@ -172,16 +188,15 @@ public class PlayerController : MonoBehaviour
     
     private void EndDashStrike()
     {
-        isDashStriking = false; // Drift resumes
-        isLethalDash = false;   // iFrames off
+        isDashStriking = false; 
+        isLethalDash = false;  
     }
 
     private void EndLethalDash()
     {
         isLethalDash = false;
     }
-
-    // Helper method to handle kills (used by both Hitbox and Dash collision)
+    
     private void KillEnemy(GameObject enemy)
     {
         GameManager.Instance.AddKill();
@@ -194,22 +209,18 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 1. Handle Enemy Collision
         if (other.CompareTag("Enemy"))
         {
             if (isLethalDash)
             {
-                // If dashing, WE kill THEM
                 KillEnemy(other.gameObject);
             }
             else
             {
-                // If not dashing, THEY kill US
                 GameManager.Instance.GameOver();
                 Time.timeScale = 0;
             }
         }
-        // 2. Handle Obstacle Collision (Always lethal)
         else if (other.CompareTag("Obstacle"))
         {
             GameManager.Instance.GameOver();
