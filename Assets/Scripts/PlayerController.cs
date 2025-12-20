@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float bottomLaneY = -3.3f;
     [Tooltip("Time (seconds) to smooth damp the movement. Lower is snappier.")]
     [SerializeField] private float movementSmoothTime = 0.1f;
+    [Tooltip("0.1 = 10% from left edge. 0.5 = Center.")]
+    [Range(0.05f, 0.5f)] [SerializeField] private float screenPercentX = 0.15f;
 
     [Header("Surge & Drift")]
     [Tooltip("The angle of movement when switching lanes (90 = Vertical, 45 = Diagonal).")]
@@ -71,13 +73,18 @@ public class PlayerController : MonoBehaviour
         playerInputActions = new PlayerInputActions();
         originalScale = transform.localScale;
         if (originalScale.x == 0) originalScale = Vector3.one;
-
+    }
+    
+    private void Start()
+    {
+        // 1. Set Y positions
         Vector3 startPos = transform.position;
         startPos.y = bottomLaneY;
         transform.position = startPos;
-        
-        anchorX = startPos.x;
         targetPosition = startPos;
+
+        // 2. Calculate X based on Screen Width
+        AlignAnchorToScreen();
     }
 
     private void OnEnable()
@@ -252,20 +259,31 @@ public class PlayerController : MonoBehaviour
     }
     
     private void UpdateEffects(bool isPlaying)
+    {
+        // Trail Logic: Only visible when NOT drifting back
+        bool isNotDrifting = velocity.x > -0.1f;
+
+        // 1. Speed Particles: Always ON while playing
+        if (speedEffect != null)
         {
-            bool showEffects = velocity.x > -0.1f; 
-            
-            if (speedEffect != null)
+            if (isPlaying)
             {
-                if (isPlaying) {
-                    if (!speedEffect.isPlaying) speedEffect.Play();
-                    var emission = speedEffect.emission;
-                    emission.enabled = showEffects; 
-                } else if (speedEffect.isPlaying) speedEffect.Stop();
+                if (!speedEffect.isPlaying) speedEffect.Play();
+                var emission = speedEffect.emission;
+                emission.enabled = true; // Always emit
             }
-    
-            if (trail != null) trail.emitting = isPlaying && showEffects;
+            else if (speedEffect.isPlaying)
+            {
+                speedEffect.Stop();
+            }
         }
+
+        // 2. Line Trail: Hides during drift for the camera illusion
+        if (trail != null) 
+        {
+            trail.emitting = isPlaying && isNotDrifting;
+        }
+    }
 
     private void OnLaneSwitch(InputAction.CallbackContext context)
     {
@@ -279,5 +297,22 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance.TogglePause();
         }
+    }
+    
+    private void AlignAnchorToScreen()
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return;
+
+        float distanceToCam = Mathf.Abs(cam.transform.position.z - transform.position.z);
+        Vector3 viewPos = new Vector3(screenPercentX, 0.5f, distanceToCam);
+        Vector3 worldPos = cam.ViewportToWorldPoint(viewPos);
+
+        anchorX = worldPos.x;
+        
+        Vector3 currentPos = transform.position;
+        currentPos.x = anchorX;
+        transform.position = currentPos;
+        targetPosition = currentPos;
     }
 }

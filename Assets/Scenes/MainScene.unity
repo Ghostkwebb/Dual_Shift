@@ -822,11 +822,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 302634787}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 570, y: 261}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -187, y: 0}
   m_SizeDelta: {x: 500, y: 500}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 1}
 --- !u!114 &47054504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1807,7 +1807,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 2904.7996, y: -1268.4}
+  m_AnchoredPosition: {x: 1733, y: -614}
   m_SizeDelta: {x: 2611.7368, y: 2536.7598}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &219105410
@@ -2735,7 +2735,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 834.905, y: 415.05347}
+  m_AnchoredPosition: {x: -60, y: -60}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &442003718
@@ -3493,6 +3493,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 541865529}
+  - component: {fileID: 541865530}
   m_Layer: 5
   m_Name: GameHUD
   m_TagString: Untagged
@@ -3518,11 +3519,23 @@ RectTransform:
   - {fileID: 2087654934}
   m_Father: {fileID: 1241875806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &541865530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 541865528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e8252942235a4635be781dc2bb3822b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SafeArea
 --- !u!1 &561182222
 GameObject:
   m_ObjectHideFlags: 0
@@ -8010,6 +8023,7 @@ MonoBehaviour:
   topLaneY: 3.3
   bottomLaneY: -3.3
   movementSmoothTime: 0.06
+  screenPercentX: 0.15
   switchAngle: 68.5
   driftFactor: 0.75
   maxForwardDist: 30
@@ -15500,7 +15514,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -859.9051, y: 390.05344}
+  m_AnchoredPosition: {x: 60, y: -97}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2087654935
@@ -15799,7 +15813,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -859.9051, y: 440.05347}
+  m_AnchoredPosition: {x: 60, y: -60}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2115174020
