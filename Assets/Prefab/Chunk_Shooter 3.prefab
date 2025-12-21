@@ -1599,7 +1599,7 @@ GameObject:
   - component: {fileID: 4363465899776954265}
   - component: {fileID: 621020211993472696}
   m_Layer: 0
-  m_Name: Chunk_Shooter
+  m_Name: Chunk_Shooter 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

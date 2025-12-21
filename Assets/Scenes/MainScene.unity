@@ -8026,7 +8026,7 @@ MonoBehaviour:
   screenPercentX: 0.15
   switchAngle: 68.5
   driftFactor: 0.75
-  maxForwardDist: 30
+  maxForwardDist: 25
   useDashStrike: 0
   dashStrikeSurge: 4
   tiltStrength: 2
@@ -8708,8 +8708,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkPrefabs:
   - {fileID: 6049998166307239808, guid: 247a8fa3cfd0a4e61b589ca86c34e26b, type: 3}
-  - {fileID: 2459117861559631180, guid: 6a69dadb4952a47e4829e6b266000960, type: 3}
   - {fileID: 621020211993472696, guid: 9e53849b3d84e4d889a244d8b2ac83d5, type: 3}
+  - {fileID: 621020211993472696, guid: 67d30c945f4aa4749a8a8c6cdd46c26a, type: 3}
+  - {fileID: 621020211993472696, guid: 119a22da64386fb4aa202f628a8c490b, type: 3}
   spawnOrigin: {fileID: 1393436571}
   chunkWidth: 19.9
   chunksOnScreen: 7
