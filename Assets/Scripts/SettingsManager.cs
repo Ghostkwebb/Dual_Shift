@@ -15,7 +15,6 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown graphicsDropdown;
     [SerializeField] private TMP_Dropdown fpsDropdown;
     [SerializeField] private GameObject settingsPanel;
-    [SerializeField] private Toggle dashStrikeToggle;
     [SerializeField] private PlayerController player; 
     
 
@@ -28,38 +27,17 @@ public class SettingsManager : MonoBehaviour
     private void Start()
     {
         QualitySettings.vSyncCount = 0;
-
-        // 1. Setup Graphics Dropdown
+        
         graphicsDropdown.ClearOptions();
         List<string> options = new List<string>(QualitySettings.names);
         graphicsDropdown.AddOptions(options);
-
-        // 2. Load Saved Preferences
         LoadSettings();
-
-        // 3. Add Listeners
         musicSlider.onValueChanged.AddListener(SetMusicVolume);
         sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         graphicsDropdown.onValueChanged.AddListener(SetQuality);
         fpsDropdown.onValueChanged.AddListener(SetFPS);
-        
-        if (dashStrikeToggle != null)
-        {
-            dashStrikeToggle.onValueChanged.AddListener(SetDashStrike);
-        
-            // Load Saved
-            bool dashEnabled = PlayerPrefs.GetInt("DashStrike", 0) == 1;
-            dashStrikeToggle.isOn = dashEnabled;
-            if (player != null) player.ToggleDashStrike(dashEnabled);
-        }
-    }
-    
-    public void SetDashStrike(bool isEnabled)
-    {
-        if (player != null) player.ToggleDashStrike(isEnabled);
-        PlayerPrefs.SetInt("DashStrike", isEnabled ? 1 : 0);
-    }
 
+    }
 
     public void OpenSettings()
     {

@@ -13,6 +13,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float movementSmoothTime = 0.1f;
     [Tooltip("0.1 = 10% from left edge. 0.5 = Center.")]
     [Range(0.05f, 0.5f)] [SerializeField] private float screenPercentX = 0.15f;
+    [Tooltip("Height offset to stand ON the platform instead of IN it.")]
+    [SerializeField] private float platformLandOffset = 0.6f; 
+    [SerializeField] private LayerMask platformLayer;
 
     [Header("Surge & Drift")]
     [Tooltip("The angle of movement when switching lanes (90 = Vertical, 45 = Diagonal).")]
@@ -57,7 +60,8 @@ public class PlayerController : MonoBehaviour
     private PlayerInputActions playerInputActions;
     private bool isTopLane = false; 
     private Vector3 targetPosition;
-    private Vector3 velocity = Vector3.zero; 
+    private float velocityX = 0f;
+    private float velocityY = 0f;
     private float anchorX; 
     private float lastAttackTime;
     private bool laneSwitchTriggered = false;
@@ -65,6 +69,8 @@ public class PlayerController : MonoBehaviour
     private bool isSurging = false;
     private bool isDashStriking = false;
     private bool isLethalDash = false; 
+    private bool onPlatform = false;
+    private float rigidPlatformY; 
     
     private Vector3 originalScale;
 
@@ -77,13 +83,11 @@ public class PlayerController : MonoBehaviour
     
     private void Start()
     {
-        // 1. Set Y positions
         Vector3 startPos = transform.position;
         startPos.y = bottomLaneY;
         transform.position = startPos;
         targetPosition = startPos;
-
-        // 2. Calculate X based on Screen Width
+        
         AlignAnchorToScreen();
     }
 
@@ -104,15 +108,44 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        CheckPlatformCollision();
+
         bool isPlaying = GameManager.Instance.CurrentState == GameManager.GameState.Playing;
 
         HandleLaneSwitch();
         HandleSurgeAndDrift();
 
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, movementSmoothTime);
+        float newX = Mathf.SmoothDamp(transform.position.x, targetPosition.x, ref velocityX, movementSmoothTime);
+        float newY;
 
-        // Visuals
-        float verticalSpeed = velocity.y;
+        if (onPlatform)
+        {
+            float platformCenter = rigidPlatformY;
+            float targetSurfaceY;
+
+            if (transform.position.y < platformCenter) 
+            {
+                targetSurfaceY = platformCenter - platformLandOffset;
+            }
+            else 
+            {
+                targetSurfaceY = platformCenter + platformLandOffset;
+            }
+
+            newY = Mathf.MoveTowards(transform.position.y, targetSurfaceY, 50f * Time.deltaTime);
+            
+            velocityY = 0f;
+        }
+        else
+        {
+            newY = Mathf.SmoothDamp(transform.position.y, targetPosition.y, ref velocityY, movementSmoothTime);
+        }
+
+        transform.position = new Vector3(newX, newY, transform.position.z);
+
+        // --- VISUALS ---
+        float verticalSpeed = onPlatform ? 0f : velocityY; 
+
         float tiltAngle = verticalSpeed * tiltStrength;
         if (!float.IsNaN(tiltAngle)) transform.rotation = Quaternion.Euler(0, 0, tiltAngle);
 
@@ -144,7 +177,7 @@ public class PlayerController : MonoBehaviour
         if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
         if (!laneSwitchTriggered) return;
 
-        if (Mathf.Abs(transform.position.y - targetPosition.y) > 0.1f)
+        if (!onPlatform && Mathf.Abs(transform.position.y - targetPosition.y) > 0.1f)
         {
             laneSwitchTriggered = false;
             return;
@@ -152,6 +185,11 @@ public class PlayerController : MonoBehaviour
 
         if (isKeyboardInput || !EventSystem.current.IsPointerOverGameObject())
         {
+            if (onPlatform)
+            {
+                onPlatform = false;
+            }
+            
             isTopLane = !isTopLane;
             targetPosition.y = isTopLane ? topLaneY : bottomLaneY;
             
@@ -179,22 +217,17 @@ public class PlayerController : MonoBehaviour
         if (Time.time < lastAttackTime + attackCooldown) return;
 
         lastAttackTime = Time.time;
-
-        if (useDashStrike)
-        {
-            isDashStriking = true;
-            isLethalDash = true;  
-            
-            float surgeTarget = transform.position.x + dashStrikeSurge;
-            targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
-            
-            Invoke(nameof(EndDashStrike), 0.2f);
-        }
+        isDashStriking = true; 
+        isLethalDash = true;   
+        
+        float surgeTarget = transform.position.x + dashStrikeSurge;
+        targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
+        Invoke(nameof(EndDashStrike), 0.2f); 
 
         visualSlash.SetActive(true);
         Invoke(nameof(DisableSlash), slashDuration);
         AudioManager.Instance.PlayAttack();
-        
+
         Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
         if (hitEnemy != null)
         {
@@ -225,6 +258,19 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.CompareTag("Platform"))
+        {
+            onPlatform = true;
+            rigidPlatformY = other.transform.position.y;
+        }
+        
+        if (other.CompareTag("Obstacle"))
+        {
+            GameManager.Instance.GameOver();
+            Time.timeScale = 0;
+            return; 
+        }
+
         if (other.CompareTag("Enemy"))
         {
             if (isLethalDash)
@@ -236,11 +282,6 @@ public class PlayerController : MonoBehaviour
                 GameManager.Instance.GameOver();
                 Time.timeScale = 0;
             }
-        }
-        else if (other.CompareTag("Obstacle"))
-        {
-            GameManager.Instance.GameOver();
-            Time.timeScale = 0;
         }
     }
 
@@ -260,17 +301,15 @@ public class PlayerController : MonoBehaviour
     
     private void UpdateEffects(bool isPlaying)
     {
-        // Trail Logic: Only visible when NOT drifting back
-        bool isNotDrifting = velocity.x > -0.1f;
+        bool isNotDrifting = velocityX > -0.1f;
 
-        // 1. Speed Particles: Always ON while playing
         if (speedEffect != null)
         {
             if (isPlaying)
             {
                 if (!speedEffect.isPlaying) speedEffect.Play();
                 var emission = speedEffect.emission;
-                emission.enabled = true; // Always emit
+                emission.enabled = true; 
             }
             else if (speedEffect.isPlaying)
             {
@@ -278,7 +317,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // 2. Line Trail: Hides during drift for the camera illusion
         if (trail != null) 
         {
             trail.emitting = isPlaying && isNotDrifting;
@@ -314,5 +352,36 @@ public class PlayerController : MonoBehaviour
         currentPos.x = anchorX;
         transform.position = currentPos;
         targetPosition = currentPos;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Platform"))
+        {
+            onPlatform = false;
+        }
+    }
+    
+    private void CheckPlatformCollision()
+    {
+        float moveDist = Mathf.Abs(velocityY) * Time.deltaTime;
+        float checkDist = moveDist + 0.2f;
+        
+        Vector2 direction = velocityY > 0 ? Vector2.up : Vector2.down;
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, checkDist, platformLayer);
+
+        if (hit.collider != null && hit.collider.CompareTag("Platform"))
+        {
+            bool movingTowards = (velocityY > 0 && hit.point.y > transform.position.y) || 
+                                 (velocityY < 0 && hit.point.y < transform.position.y);
+
+            if (movingTowards)
+            {
+                onPlatform = true;
+                rigidPlatformY = hit.collider.transform.position.y;
+                velocityY = 0f;
+            }
+        }
     }
 }
