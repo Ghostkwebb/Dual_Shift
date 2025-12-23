@@ -231,7 +231,10 @@ public class PlayerController : MonoBehaviour
         Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
         if (hitEnemy != null)
         {
-            KillEnemy(hitEnemy.gameObject);
+            if (hitEnemy.CompareTag("Enemy"))
+            {
+                KillEnemy(hitEnemy.gameObject);
+            }
         }
     }
     
@@ -270,7 +273,7 @@ public class PlayerController : MonoBehaviour
             Time.timeScale = 0;
             return; 
         }
-
+        
         if (other.CompareTag("Enemy"))
         {
             if (isLethalDash)

@@ -10,20 +10,32 @@ public class GameManager : MonoBehaviour
     public GameState CurrentState { get; private set; }
 
     [Header("Settings")]
+    [Tooltip("The starting speed of the level scrolling.")]
     public float initialWorldSpeed = 10f;
-    public float worldSpeed; // Internal tracking
+    [Tooltip("Current speed of the level. Increases over time.")]
+    public float worldSpeed;
+    [Tooltip("How much the world speed increases per second.")]
     public float speedRamp = 0.1f;
+    [Tooltip("Points awarded for destroying a single enemy.")]
     public int scorePerKill = 50;
+    [Tooltip("Time in seconds before the combo multiplier resets.")]
     public float comboDuration = 2.0f;
 
     [Header("UI References")]
+    [Tooltip("UI Text for the running score.")]
     [SerializeField] private TMP_Text scoreText;
+    [Tooltip("UI Text for the current combo multiplier.")]
     [SerializeField] private TMP_Text comboText;
+    [Tooltip("The Panel object shown upon death.")]
     [SerializeField] private GameObject gameOverPanel;
+    [Tooltip("UI Text on the Game Over screen for final stats.")]
     [SerializeField] private TMP_Text finalScoreText;
+    [Tooltip("The Panel object shown when paused.")]
     [SerializeField] private GameObject pausePanel;
+    [Tooltip("The Panel object for the Main Menu.")]
     [SerializeField] private GameObject mainMenuPanel;
-    [SerializeField] private GameObject gameHUD; // Parent object for Score/Combo/PauseButton
+    [Tooltip("Parent object containing In-Game UI (Score, Pause Button).")]
+    [SerializeField] private GameObject gameHUD;
 
     private float score;
     private int kills;

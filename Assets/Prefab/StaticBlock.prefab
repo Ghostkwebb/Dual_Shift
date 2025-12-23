@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4906285377313058769}
   - component: {fileID: 8289321956705274829}
   - component: {fileID: 6025919498940776153}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: StaticBlock
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7734969159781029954}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
