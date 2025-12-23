@@ -3848,9 +3848,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42f1204475ac74ceea5f388fe8b02c20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialWorldSpeed: 10
-  worldSpeed: 10
-  speedRamp: 0.1
+  initialWorldSpeed: 20
+  worldSpeed: 20
+  speedRamp: 0
   scorePerKill: 50
   comboDuration: 2
   scoreText: {fileID: 2115174020}
@@ -7947,7 +7947,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topLaneY: 3.3
   bottomLaneY: -3.3
-  movementSmoothTime: 0.06
+  movementSmoothTime: 0.04
   screenPercentX: 0.15
   platformLandOffset: 1
   platformLayer:
@@ -8640,6 +8640,12 @@ MonoBehaviour:
   - {fileID: 621020211993472696, guid: 9e53849b3d84e4d889a244d8b2ac83d5, type: 3}
   - {fileID: 621020211993472696, guid: 67d30c945f4aa4749a8a8c6cdd46c26a, type: 3}
   - {fileID: 621020211993472696, guid: 119a22da64386fb4aa202f628a8c490b, type: 3}
+  - {fileID: 621020211993472696, guid: 1719343f551a5cb40abd59d3236b1321, type: 3}
+  - {fileID: 621020211993472696, guid: 28a0d4ed8af42724fb24f9ab63bedabd, type: 3}
+  - {fileID: 621020211993472696, guid: 93a9a83b63b24904ab02597a304ff89f, type: 3}
+  - {fileID: 621020211993472696, guid: 9c190a9a0ab562d43b65bf7cf28556b4, type: 3}
+  - {fileID: 621020211993472696, guid: ef719669f4488b14b8d9f91377bbfed1, type: 3}
+  - {fileID: 621020211993472696, guid: 8bc6086490cf8d941bc609ba58af02fd, type: 3}
   spawnOrigin: {fileID: 1393436571}
   chunkWidth: 19.9
   chunksOnScreen: 7
