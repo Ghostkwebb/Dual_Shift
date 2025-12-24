@@ -1,29 +1,32 @@
 using UnityEngine;
-using System.Collections;
 
 public class ProjectileBehavior : MonoBehaviour
 {
     private float speed;
+    private const float DESPAWN_X = -20f;
 
     public void Initialize(float worldSpeed)
     {
         this.speed = worldSpeed * 1.5f;
-        StartCoroutine(DeactivateRoutine());
     }
 
-    private void OnDisable()
+    private void Update()
     {
-        StopAllCoroutines();
-    }
-
-    void Update()
-    {
+        // Move
         transform.position += Vector3.left * speed * Time.deltaTime;
+
+        // Check Bounds
+        if (transform.position.x < DESPAWN_X)
+        {
+            ObjectPooler.Instance.ReturnProjectile(this.gameObject);
+        }
     }
 
-    private IEnumerator DeactivateRoutine()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        yield return new WaitForSeconds(5f);
-        ObjectPooler.Instance.ReturnProjectile(this.gameObject);
+        if (other.CompareTag("Obstacle") || other.CompareTag("Platform"))
+        {
+            ObjectPooler.Instance.ReturnProjectile(this.gameObject);
+        }
     }
 }

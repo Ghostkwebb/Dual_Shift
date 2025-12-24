@@ -10,12 +10,11 @@ public class GameManager : MonoBehaviour
     public GameState CurrentState { get; private set; }
 
     [Header("Settings")]
-    [Tooltip("The starting speed of the level scrolling.")]
-    public float initialWorldSpeed = 10f;
-    [Tooltip("Current speed of the level. Increases over time.")]
-    public float worldSpeed;
-    [Tooltip("How much the world speed increases per second.")]
-    public float speedRamp = 0.1f;
+    [Tooltip("The speed of the world over time. Draw a plateau for the 'Sweet Spot'.")]
+    public AnimationCurve speedCurve; 
+    [Tooltip("If the game lasts longer than the curve, add this much speed per second.")]
+    public float lateGameRamp = 0.5f;
+    public float worldSpeed; 
     [Tooltip("Points awarded for destroying a single enemy.")]
     public int scorePerKill = 50;
     [Tooltip("Time in seconds before the combo multiplier resets.")]
@@ -43,6 +42,7 @@ public class GameManager : MonoBehaviour
     private int comboMultiplier;
     private float comboTimer;
     private bool isPaused = false;
+    private float levelTime = 0f;
 
     private void Awake()
     {
@@ -61,10 +61,11 @@ public class GameManager : MonoBehaviour
         CurrentState = GameState.Menu;
 
         // Reset Logic
-        worldSpeed = 0; // Stop the world
+        worldSpeed = 0; 
         score = 0;
         kills = 0;
         comboMultiplier = 0;
+        levelTime = 0f; 
 
         // UI State
         mainMenuPanel.SetActive(true);
@@ -72,13 +73,14 @@ public class GameManager : MonoBehaviour
         gameOverPanel.SetActive(false);
         pausePanel.SetActive(false);
 
-        Time.timeScale = 1; // Keep time running so Idle animations play
+        Time.timeScale = 1; 
     }
 
     public void StartGame()
     {
         CurrentState = GameState.Playing;
-        worldSpeed = initialWorldSpeed;
+        levelTime = 0f;
+        worldSpeed = speedCurve.Evaluate(0f); 
 
         mainMenuPanel.SetActive(false);
         gameHUD.SetActive(true);
@@ -87,10 +89,25 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (CurrentState != GameState.Playing) return;
+        levelTime += Time.deltaTime;
+        
+        if (speedCurve.length > 0)
+        {
+            float curveDuration = speedCurve.keys[speedCurve.length - 1].time;
 
-        // Score & Speed logic
+            if (levelTime <= curveDuration)
+            {
+                worldSpeed = speedCurve.Evaluate(levelTime);
+            }
+            else
+            {
+                float lastSpeed = speedCurve.Evaluate(curveDuration);
+                float timePassedSinceEnd = levelTime - curveDuration;
+                worldSpeed = lastSpeed + (timePassedSinceEnd * lateGameRamp);
+            }
+        }
+
         score += worldSpeed * Time.deltaTime;
-        worldSpeed += speedRamp * Time.deltaTime;
 
         if (comboTimer > 0)
         {
@@ -115,7 +132,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        if (CurrentState == GameState.GameOver) return; // Prevent double trigger
+        if (CurrentState == GameState.GameOver) return; 
 
         StartCoroutine(GameOverSequence());
     }
@@ -148,8 +165,6 @@ public class GameManager : MonoBehaviour
         gameHUD.SetActive(false);
         gameOverPanel.SetActive(true);
 
-        // --- UPDATE FINAL TEXT ---
-        // Showing 4 stats: Score, Best, Kills, Max Kills
         finalScoreText.text = $"SCORE: {(int)score}\n" +
                               $"BEST: {(int)bestScore}\n\n" +
                               $"KILLS: {kills}\n" +
@@ -174,7 +189,7 @@ public class GameManager : MonoBehaviour
     public void QuitToMenu()
     {
         Time.timeScale = 1;
-        RestartGame(); // Simpler for now, reloads scene to Menu
+        RestartGame(); 
     }
 
     private void UpdateUI()

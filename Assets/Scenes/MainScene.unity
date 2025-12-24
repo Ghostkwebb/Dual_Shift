@@ -3848,9 +3848,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42f1204475ac74ceea5f388fe8b02c20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialWorldSpeed: 20
-  worldSpeed: 20
-  speedRamp: 0
+  speedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 10
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 30
+      value: 19.940308
+      inSlope: 0.06865641
+      outSlope: 0.06865641
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 120
+      value: 22
+      inSlope: 0.054727156
+      outSlope: 0.054727156
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 180.54262
+      value: 35.073868
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  lateGameRamp: 0.5
+  worldSpeed: 10
   scorePerKill: 50
   comboDuration: 2
   scoreText: {fileID: 2115174020}
