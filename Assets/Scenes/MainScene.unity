@@ -8646,6 +8646,10 @@ MonoBehaviour:
   - {fileID: 621020211993472696, guid: 9c190a9a0ab562d43b65bf7cf28556b4, type: 3}
   - {fileID: 621020211993472696, guid: ef719669f4488b14b8d9f91377bbfed1, type: 3}
   - {fileID: 621020211993472696, guid: 8bc6086490cf8d941bc609ba58af02fd, type: 3}
+  - {fileID: 621020211993472696, guid: b52ae9587e4c4ef438be960f6535dfbf, type: 3}
+  - {fileID: 621020211993472696, guid: 7ea14cff6d2fdf14197033d9556dfa1f, type: 3}
+  - {fileID: 621020211993472696, guid: 97fbf0a25568d214eab50a2a0f09e881, type: 3}
+  - {fileID: 621020211993472696, guid: 74a283dbe9ff3d24b9f867594f4fc0ac, type: 3}
   spawnOrigin: {fileID: 1393436571}
   chunkWidth: 19.9
   chunksOnScreen: 7

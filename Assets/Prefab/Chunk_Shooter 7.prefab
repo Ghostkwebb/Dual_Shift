@@ -4583,6 +4583,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: enemyOptions.Array.data[0].weight
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: enemyOptions.Array.data[2].weight
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4644,6 +4652,14 @@ PrefabInstance:
     - target: {fileID: 5464748433128041286, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: enemyOptions.Array.data[0].weight
+      value: 3.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: enemyOptions.Array.data[2].weight
+      value: 68.9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
