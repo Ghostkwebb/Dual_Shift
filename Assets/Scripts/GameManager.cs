@@ -15,8 +15,6 @@ public class GameManager : MonoBehaviour
     [Tooltip("If the game lasts longer than the curve, add this much speed per second.")]
     public float lateGameRamp = 0.5f;
     public float worldSpeed; 
-    [Tooltip("Points awarded for destroying a single enemy.")]
-    public int scorePerKill = 50;
     [Tooltip("Time in seconds before the combo multiplier resets.")]
     public float comboDuration = 2.0f;
 
@@ -94,7 +92,6 @@ public class GameManager : MonoBehaviour
         if (speedCurve.length > 0)
         {
             float curveDuration = speedCurve.keys[speedCurve.length - 1].time;
-
             if (levelTime <= curveDuration)
             {
                 worldSpeed = speedCurve.Evaluate(levelTime);
@@ -107,14 +104,15 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        score += worldSpeed * Time.deltaTime;
-
+        float currentMultiplier = 1 + comboMultiplier; 
+        score += (worldSpeed * Time.deltaTime) * currentMultiplier;
+        
         if (comboTimer > 0)
         {
             comboTimer -= Time.deltaTime;
             if (comboTimer <= 0)
             {
-                comboMultiplier = 0;
+                comboMultiplier = 0; 
                 UpdateUI();
             }
         }
@@ -124,9 +122,8 @@ public class GameManager : MonoBehaviour
     public void AddKill()
     {
         kills++;
-        comboMultiplier++;
+        comboMultiplier++; 
         comboTimer = comboDuration;
-        score += scorePerKill * comboMultiplier;
         UpdateUI();
     }
 
@@ -195,7 +192,8 @@ public class GameManager : MonoBehaviour
     private void UpdateUI()
     {
         scoreText.text = ((int)score).ToString("D5");
-        comboText.gameObject.SetActive(comboMultiplier > 1);
-        if (comboMultiplier > 1) comboText.text = $"x{comboMultiplier}";
+        int displayMult = 1 + comboMultiplier;
+        comboText.text = $"x{displayMult}";
+        comboText.gameObject.SetActive(displayMult > 1);
     }
 }

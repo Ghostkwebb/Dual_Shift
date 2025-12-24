@@ -214,6 +214,32 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -222,9 +248,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 50
-        y: 1
+        y: 0
         width: 27
-        height: 23
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -244,9 +270,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 190
-        y: 4
+        y: 0
         width: 27
-        height: 20
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -266,9 +292,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 330
-        y: 5
+        y: 0
         width: 27
-        height: 20
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -288,9 +314,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 470
-        y: 1
+        y: 0
         width: 27
-        height: 22
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -310,9 +336,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 610
-        y: 1
+        y: 0
         width: 27
-        height: 21
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -332,9 +358,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 750
-        y: 1
+        y: 0
         width: 27
-        height: 20
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -354,9 +380,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 892
-        y: 1
+        y: 0
         width: 28
-        height: 23
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -376,9 +402,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1034
-        y: 4
+        y: 0
         width: 26
-        height: 20
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -398,9 +424,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1174
-        y: 5
+        y: 0
         width: 26
-        height: 20
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -420,9 +446,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1313
-        y: 1
+        y: 0
         width: 27
-        height: 22
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -442,9 +468,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1452
-        y: 1
+        y: 0
         width: 28
-        height: 21
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -464,9 +490,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1594
-        y: 1
+        y: 0
         width: 26
-        height: 20
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

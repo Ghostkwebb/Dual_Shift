@@ -56,6 +56,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float slashDuration = 0.1f;
     [Tooltip("Prefab spawned when an enemy is destroyed.")]
     [SerializeField] private GameObject deathVFXPrefab;
+    
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private PlayerInputActions playerInputActions;
     private bool isTopLane = false; 
@@ -156,6 +160,7 @@ public class PlayerController : MonoBehaviour
         }
 
         UpdateEffects(isPlaying);
+        UpdateAnimations();
     }
 
     private void HandleSurgeAndDrift()
@@ -217,6 +222,7 @@ public class PlayerController : MonoBehaviour
         if (Time.time < lastAttackTime + attackCooldown) return;
 
         lastAttackTime = Time.time;
+        animator.SetTrigger("Attack");
         isDashStriking = true; 
         isLethalDash = true;   
         
@@ -269,6 +275,7 @@ public class PlayerController : MonoBehaviour
         
         if (other.CompareTag("Obstacle"))
         {
+            animator.SetTrigger("Die");
             GameManager.Instance.GameOver();
             Time.timeScale = 0;
             return; 
@@ -282,6 +289,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                animator.SetTrigger("Die");
                 GameManager.Instance.GameOver();
                 Time.timeScale = 0;
             }
@@ -385,6 +393,33 @@ public class PlayerController : MonoBehaviour
                 rigidPlatformY = hit.collider.transform.position.y;
                 velocityY = 0f;
             }
+        }
+    }
+    
+    private void UpdateAnimations()
+    {
+        bool isPlaying = GameManager.Instance.CurrentState == GameManager.GameState.Playing;
+        animator.SetBool("IsRunning", isPlaying);
+        bool isGrounded = onPlatform || Mathf.Abs(velocityY) < 0.1f;
+        animator.SetBool("IsGrounded", isGrounded);
+        
+        if (targetPosition.y > 0)
+        {
+            spriteRenderer.flipY = true;
+        }
+        else
+        {
+            spriteRenderer.flipY = false;
+        }
+        
+        if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
+        {
+            float normalizedSpeed = GameManager.Instance.worldSpeed / 10f; 
+            animator.speed = Mathf.Max(normalizedSpeed, 0.8f);
+        }
+        else
+        {
+            animator.speed = 1f;
         }
     }
 }

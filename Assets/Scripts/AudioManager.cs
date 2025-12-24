@@ -8,16 +8,21 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource runSource; 
 
     [Header("Music Clips")]
     [SerializeField] private AudioClip backgroundMusic;
 
     [Header("SFX Clips")]
-    [SerializeField] private AudioClip jumpClip;     // Lane Switch
-    [SerializeField] private AudioClip attackClip;   // Swing
-    [SerializeField] private AudioClip hitClip;      // Impact
-    [SerializeField] private AudioClip deathClip;    // Player Die
-    [SerializeField] private AudioClip uiClickClip;  // Buttons
+    [SerializeField] private AudioClip runClip;     
+    [SerializeField] private AudioClip jumpClip;     
+    [SerializeField] private AudioClip attackClip;   
+    [SerializeField] private AudioClip hitClip;      
+    [SerializeField] private AudioClip deathClip;    
+    [SerializeField] private AudioClip uiClickClip;  
+    
+    [Header("Dynamic Music")]
+    [SerializeField] private AudioLowPassFilter musicFilter;
 
     private void Awake()
     {
@@ -28,6 +33,33 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         PlayMusic();
+    }
+
+    private void Update()
+    {
+        if (musicFilter != null)
+        {
+            float targetFreq = (GameManager.Instance.CurrentState == GameManager.GameState.Playing) ? 22000f : 500f;
+            musicFilter.cutoffFrequency = Mathf.Lerp(musicFilter.cutoffFrequency, targetFreq, Time.deltaTime * 2.0f);
+        }
+        
+        if (runSource != null && runClip != null)
+        {
+            bool shouldRun = GameManager.Instance.CurrentState == GameManager.GameState.Playing && Time.timeScale > 0;
+            
+            if (shouldRun)
+            {
+                if (!runSource.isPlaying)
+                {
+                    runSource.clip = runClip;
+                    runSource.Play();
+                }
+            }
+            else
+            {
+                if (runSource.isPlaying) runSource.Stop();
+            }
+        }
     }
 
     public void PlayMusic()
@@ -47,12 +79,8 @@ public class AudioManager : MonoBehaviour
 
     private void PlaySFX(AudioClip clip)
     {
-        // Random pitch variation makes repetitive sounds less annoying
         sfxSource.pitch = Random.Range(0.9f, 1.1f);
-
         if (clip != null) sfxSource.PlayOneShot(clip);
-
-        // Reset pitch for next sound
         sfxSource.pitch = 1.0f;
     }
 }

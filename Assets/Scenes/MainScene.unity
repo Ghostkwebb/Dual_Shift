@@ -477,6 +477,7 @@ GameObject:
   m_Component:
   - component: {fileID: 30483166}
   - component: {fileID: 30483163}
+  - component: {fileID: 30483167}
   - component: {fileID: 30483165}
   - component: {fileID: 30483164}
   m_Layer: 0
@@ -501,11 +502,12 @@ MonoBehaviour:
   musicSource: {fileID: 30483165}
   sfxSource: {fileID: 30483164}
   backgroundMusic: {fileID: 0}
-  jumpClip: {fileID: 0}
-  attackClip: {fileID: 0}
-  hitClip: {fileID: 0}
+  jumpClip: {fileID: 8300000, guid: 86bc0c376958f428087cc3573df597b6, type: 3}
+  attackClip: {fileID: 8300000, guid: dbf5d7b9f8b8c4e86b65223d78f0c714, type: 3}
+  hitClip: {fileID: 8300000, guid: cefd8d21110c9444aab691d7126bd350, type: 3}
   deathClip: {fileID: 0}
   uiClickClip: {fileID: 0}
+  musicFilter: {fileID: 30483167}
 --- !u!82 &30483164
 AudioSource:
   m_ObjectHideFlags: 0
@@ -715,6 +717,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!169 &30483167
+AudioLowPassFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30483162}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_LowpassResonanceQ: 1
+  lowpassLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.022282856
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &47054502
 GameObject:
   m_ObjectHideFlags: 0
@@ -3862,9 +3889,9 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 30
-      value: 19.940308
-      inSlope: 0.06865641
-      outSlope: 0.06865641
+      value: 20
+      inSlope: 0.06666666
+      outSlope: 0.06666666
       tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
@@ -3872,8 +3899,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 120
       value: 22
-      inSlope: 0.054727156
-      outSlope: 0.054727156
+      inSlope: 0.053141102
+      outSlope: 0.053141102
       tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
@@ -7825,6 +7852,7 @@ GameObject:
   - component: {fileID: 1312385852}
   - component: {fileID: 1312385851}
   - component: {fileID: 1312385855}
+  - component: {fileID: 1312385856}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -8012,6 +8040,30 @@ MonoBehaviour:
   visualSlash: {fileID: 17007273}
   slashDuration: 0.1
   deathVFXPrefab: {fileID: 1478058352805709650, guid: 529e58c8bacab4cfb8ff0412af123486, type: 3}
+  animator: {fileID: 1312385856}
+  spriteRenderer: {fileID: 1312385853}
+--- !u!95 &1312385856
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312385850}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 33f7de894cac44e0da394f472723a2b7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1312779936
 GameObject:
   m_ObjectHideFlags: 0
