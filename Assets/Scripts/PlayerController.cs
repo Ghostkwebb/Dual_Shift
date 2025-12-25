@@ -261,8 +261,20 @@ public class PlayerController : MonoBehaviour
         CameraShake.Instance.Shake(0.1f, 0.2f);
         HitStop.Instance.Stop(0.05f);
         AudioManager.Instance.PlayHit();
-        Instantiate(deathVFXPrefab, enemy.transform.position, Quaternion.identity);
-        Destroy(enemy);
+        
+        if (enemy.TryGetComponent(out ShooterAI shooter))
+        {
+            shooter.TriggerDeath();
+        }
+        else if (enemy.TryGetComponent(out GruntAI grunt))
+        {
+            grunt.TriggerDeath();
+        }
+        else
+        {
+            Instantiate(deathVFXPrefab, enemy.transform.position, Quaternion.identity);
+            Destroy(enemy);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)

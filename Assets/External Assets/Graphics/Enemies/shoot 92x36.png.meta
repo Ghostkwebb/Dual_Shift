@@ -1,25 +1,43 @@
 fileFormatVersion: 2
-guid: 03368bf419b3f1a40ad0c328bf74d68e
+guid: 1895e9930f51a4d3b8ef1c052d451c27
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7260719708428711002
-    second: idle 92x36_0
+      213: -2597800493948358596
+    second: shoot 92x36_0
   - first:
-      213: 902656409549127844
-    second: idle 92x36_1
+      213: -1853887431465037203
+    second: shoot 92x36_1
   - first:
-      213: -2715255330596315739
-    second: idle 92x36_2
+      213: 6030266363684923156
+    second: shoot 92x36_2
   - first:
-      213: 4557243690223785050
-    second: idle 92x36_3
+      213: 3782070182318232381
+    second: shoot 92x36_3
   - first:
-      213: -6112292879612327239
-    second: idle 92x36_4
+      213: -5489865317095016860
+    second: shoot 92x36_4
   - first:
-      213: -2698057951070911965
-    second: idle 92x36_5
+      213: -1030935498404142144
+    second: shoot 92x36_5
+  - first:
+      213: -8859580466950228190
+    second: shoot 92x36_6
+  - first:
+      213: 7553233637877095336
+    second: shoot 92x36_7
+  - first:
+      213: 3794634718727171560
+    second: shoot 92x36_8
+  - first:
+      213: 4593561825607234675
+    second: shoot 92x36_9
+  - first:
+      213: 717495003455260289
+    second: shoot 92x36_10
+  - first:
+      213: 8338563487883826351
+    second: shoot 92x36_11
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,6 +130,19 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -125,24 +156,11 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: iOS
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -154,12 +172,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: idle 92x36_0
+      name: shoot 92x36_0
       rect:
         serializedVersion: 2
         x: 5
-        y: 181
-        width: 82
+        y: 180
+        width: 86
         height: 28
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
@@ -169,19 +187,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a54329a1b1243c460800000000000000
-      internalID: 7260719708428711002
+      spriteID: c30bfd8e632c2fbd0800000000000000
+      internalID: -2597800493948358596
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_1
+      name: shoot 92x36_2
       rect:
         serializedVersion: 2
         x: 5
-        y: 145
-        width: 82
+        y: 144
+        width: 86
         height: 28
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
@@ -191,19 +209,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4a0c765d831e68c00800000000000000
-      internalID: 902656409549127844
+      spriteID: 4172d6cde4fcfa350800000000000000
+      internalID: 6030266363684923156
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_2
+      name: shoot 92x36_7
       rect:
         serializedVersion: 2
         x: 5
-        y: 109
-        width: 82
+        y: 108
+        width: 86
         height: 28
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
@@ -213,19 +231,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5ad1251b9a9715ad0800000000000000
-      internalID: -2715255330596315739
+      spriteID: 8ab123399f972d860800000000000000
+      internalID: 7553233637877095336
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_3
+      name: shoot 92x36_8
       rect:
         serializedVersion: 2
         x: 5
-        y: 73
-        width: 82
+        y: 72
+        width: 86
         height: 28
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
@@ -235,19 +253,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a54ddaeadf49e3f30800000000000000
-      internalID: 4557243690223785050
+      spriteID: 8ede81efb2049a430800000000000000
+      internalID: 3794634718727171560
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_4
+      name: shoot 92x36_9
       rect:
         serializedVersion: 2
         x: 5
-        y: 37
-        width: 82
+        y: 36
+        width: 86
         height: 28
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
@@ -257,19 +275,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9bace83a206cc2ba0800000000000000
-      internalID: -6112292879612327239
+      spriteID: 3743d15842c9fbf30800000000000000
+      internalID: 4593561825607234675
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_5
+      name: shoot 92x36_10
       rect:
         serializedVersion: 2
         x: 5
-        y: 1
-        width: 82
+        y: 0
+        width: 86
         height: 28
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
@@ -279,8 +297,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3220003a6929e8ad0800000000000000
-      internalID: -2698057951070911965
+      spriteID: 186811977ed05f900800000000000000
+      internalID: 717495003455260289
       vertices: []
       indices: 
       edges: []
@@ -289,7 +307,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 441ad7a1a45102d498c1f20c28407bb2
+    spriteID: 67045b1210b60402e988223afa447569
     internalID: 0
     vertices: []
     indices: 
@@ -297,16 +315,20 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":92.0,"y":36.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      idle 92x36_0: 7260719708428711002
-      idle 92x36_1: 902656409549127844
-      idle 92x36_2: -2715255330596315739
-      idle 92x36_3: 4557243690223785050
-      idle 92x36_4: -6112292879612327239
-      idle 92x36_5: -2698057951070911965
+      shoot 92x36_0: -2597800493948358596
+      shoot 92x36_1: -1853887431465037203
+      shoot 92x36_10: 717495003455260289
+      shoot 92x36_11: 8338563487883826351
+      shoot 92x36_2: 6030266363684923156
+      shoot 92x36_3: 3782070182318232381
+      shoot 92x36_4: -5489865317095016860
+      shoot 92x36_5: -1030935498404142144
+      shoot 92x36_6: -8859580466950228190
+      shoot 92x36_7: 7553233637877095336
+      shoot 92x36_8: 3794634718727171560
+      shoot 92x36_9: 4593561825607234675
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

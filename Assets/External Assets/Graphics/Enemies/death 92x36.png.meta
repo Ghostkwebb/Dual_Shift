@@ -1,25 +1,46 @@
 fileFormatVersion: 2
-guid: 03368bf419b3f1a40ad0c328bf74d68e
+guid: ffb83153f0cf94a56a4ad1761733708b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7260719708428711002
-    second: idle 92x36_0
+      213: 53377810327845994
+    second: death 92x36_0
   - first:
-      213: 902656409549127844
-    second: idle 92x36_1
+      213: 4866758860982620739
+    second: death 92x36_1
   - first:
-      213: -2715255330596315739
-    second: idle 92x36_2
+      213: -3802151434238797178
+    second: death 92x36_2
   - first:
-      213: 4557243690223785050
-    second: idle 92x36_3
+      213: 3669110488369401914
+    second: death 92x36_3
   - first:
-      213: -6112292879612327239
-    second: idle 92x36_4
+      213: -3569385074272109807
+    second: death 92x36_4
   - first:
-      213: -2698057951070911965
-    second: idle 92x36_5
+      213: 8078559832190133845
+    second: death 92x36_5
+  - first:
+      213: -1064346247946941698
+    second: death 92x36_6
+  - first:
+      213: 178032344023174968
+    second: death 92x36_7
+  - first:
+      213: 9033893906823620026
+    second: death 92x36_8
+  - first:
+      213: 7877015679550690654
+    second: death 92x36_9
+  - first:
+      213: -8887383319194939018
+    second: death 92x36_10
+  - first:
+      213: -6506545698990303932
+    second: death 92x36_11
+  - first:
+      213: -7317773493214525258
+    second: death 92x36_12
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,6 +133,19 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -125,24 +159,11 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: iOS
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -154,13 +175,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: idle 92x36_0
+      name: death 92x36_0
       rect:
         serializedVersion: 2
         x: 5
-        y: 181
-        width: 82
-        height: 28
+        y: 360
+        width: 86
+        height: 35
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -169,20 +190,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a54329a1b1243c460800000000000000
-      internalID: 7260719708428711002
+      spriteID: a6cba7fe5d2adb000800000000000000
+      internalID: 53377810327845994
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_1
+      name: death 92x36_1
       rect:
         serializedVersion: 2
         x: 5
-        y: 145
-        width: 82
-        height: 28
+        y: 324
+        width: 85
+        height: 35
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -191,20 +212,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4a0c765d831e68c00800000000000000
-      internalID: 902656409549127844
+      spriteID: 3429a5c16633a8340800000000000000
+      internalID: 4866758860982620739
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_2
+      name: death 92x36_2
       rect:
         serializedVersion: 2
         x: 5
-        y: 109
-        width: 82
-        height: 28
+        y: 288
+        width: 86
+        height: 35
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -213,20 +234,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5ad1251b9a9715ad0800000000000000
-      internalID: -2715255330596315739
+      spriteID: 68a54fb4a6b0c3bc0800000000000000
+      internalID: -3802151434238797178
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_3
+      name: death 92x36_3
       rect:
         serializedVersion: 2
         x: 5
-        y: 73
-        width: 82
-        height: 28
+        y: 252
+        width: 86
+        height: 35
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -235,20 +256,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a54ddaeadf49e3f30800000000000000
-      internalID: 4557243690223785050
+      spriteID: a301be4ac8c4be230800000000000000
+      internalID: 3669110488369401914
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_4
+      name: death 92x36_4
       rect:
         serializedVersion: 2
         x: 5
-        y: 37
-        width: 82
-        height: 28
+        y: 216
+        width: 86
+        height: 35
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -257,20 +278,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9bace83a206cc2ba0800000000000000
-      internalID: -6112292879612327239
+      spriteID: 11bfd65bf2ff67ec0800000000000000
+      internalID: -3569385074272109807
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle 92x36_5
+      name: death 92x36_5
       rect:
         serializedVersion: 2
         x: 5
-        y: 1
-        width: 82
-        height: 28
+        y: 180
+        width: 86
+        height: 35
       alignment: 9
       pivot: {x: 0.18, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -279,8 +300,96 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3220003a6929e8ad0800000000000000
-      internalID: -2698057951070911965
+      spriteID: 556ae668d5fcc1070800000000000000
+      internalID: 8078559832190133845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: death 92x36_6
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 144
+        width: 86
+        height: 35
+      alignment: 9
+      pivot: {x: 0.18, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efa4a150abeaa31f0800000000000000
+      internalID: -1064346247946941698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: death 92x36_8
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 108
+        width: 86
+        height: 35
+      alignment: 9
+      pivot: {x: 0.18, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab5a9c605a6de5d70800000000000000
+      internalID: 9033893906823620026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: death 92x36_9
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 71
+        width: 86
+        height: 35
+      alignment: 9
+      pivot: {x: 0.18, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e551dcdb608c05d60800000000000000
+      internalID: 7877015679550690654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: death 92x36_12
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 35
+        width: 86
+        height: 35
+      alignment: 9
+      pivot: {x: 0.18, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b8cd2677cb027a90800000000000000
+      internalID: -7317773493214525258
       vertices: []
       indices: 
       edges: []
@@ -289,7 +398,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 441ad7a1a45102d498c1f20c28407bb2
+    spriteID: d2f5cb58a87eb4c1db6c99635c656dd3
     internalID: 0
     vertices: []
     indices: 
@@ -297,16 +406,21 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":92.0,"y":36.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      idle 92x36_0: 7260719708428711002
-      idle 92x36_1: 902656409549127844
-      idle 92x36_2: -2715255330596315739
-      idle 92x36_3: 4557243690223785050
-      idle 92x36_4: -6112292879612327239
-      idle 92x36_5: -2698057951070911965
+      death 92x36_0: 53377810327845994
+      death 92x36_1: 4866758860982620739
+      death 92x36_10: -8887383319194939018
+      death 92x36_11: -6506545698990303932
+      death 92x36_12: -7317773493214525258
+      death 92x36_2: -3802151434238797178
+      death 92x36_3: 3669110488369401914
+      death 92x36_4: -3569385074272109807
+      death 92x36_5: 8078559832190133845
+      death 92x36_6: -1064346247946941698
+      death 92x36_7: 178032344023174968
+      death 92x36_8: 9033893906823620026
+      death 92x36_9: 7877015679550690654
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

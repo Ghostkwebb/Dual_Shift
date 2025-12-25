@@ -8,6 +8,7 @@ public class ProjectileBehavior : MonoBehaviour
     public void Initialize(float worldSpeed)
     {
         this.speed = worldSpeed * 1.5f;
+        transform.rotation = Quaternion.Euler(0, 180, 0);
     }
 
     private void Update()
