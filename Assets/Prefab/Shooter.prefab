@@ -156,7 +156,7 @@ MonoBehaviour:
   activationX: 25
   startDelay: 0.3
   fireRate: 4
-  muzzleOffset: {x: 1.22, y: -0.17, z: 0}
+  muzzleOffset: {x: 1.32, y: -0.17, z: 0}
   render: {fileID: 4833257583666382191}
   animator: {fileID: 702121612286415915}
 --- !u!95 &702121612286415915

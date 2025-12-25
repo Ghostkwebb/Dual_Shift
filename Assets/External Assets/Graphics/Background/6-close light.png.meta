@@ -1,43 +1,37 @@
 fileFormatVersion: 2
-guid: 1895e9930f51a4d3b8ef1c052d451c27
+guid: c0e6cefc59261448b97872ef5ce638cf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2597800493948358596
-    second: shoot 92x36_0
+      213: 4728418087347496062
+    second: 6-close light_0
   - first:
-      213: -1853887431465037203
-    second: shoot 92x36_1
+      213: -6976471930366151765
+    second: 6-close light_1
   - first:
-      213: 6030266363684923156
-    second: shoot 92x36_2
+      213: -1492436985856285016
+    second: 6-close light_2
   - first:
-      213: 3782070182318232381
-    second: shoot 92x36_3
+      213: 7683397609165042311
+    second: 6-close light_3
   - first:
-      213: -5489865317095016860
-    second: shoot 92x36_4
+      213: 1130510041495159298
+    second: 6-close light_4
   - first:
-      213: -1030935498404142144
-    second: shoot 92x36_5
+      213: 4568619418552393691
+    second: 6-close light_5
   - first:
-      213: -8859580466950228190
-    second: shoot 92x36_6
+      213: 9163962500185886852
+    second: 6-close light_6
   - first:
-      213: 7553233637877095336
-    second: shoot 92x36_7
+      213: 5267387240215074968
+    second: 6-close light_7
   - first:
-      213: 3794634718727171560
-    second: shoot 92x36_8
+      213: 3110851886631114901
+    second: 6-close light_8
   - first:
-      213: 4593561825607234675
-    second: shoot 92x36_9
-  - first:
-      213: 717495003455260289
-    second: shoot 92x36_10
-  - first:
-      213: 8338563487883826351
-    second: shoot 92x36_11
+      213: -289843841757318022
+    second: 6-close light_9
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -73,9 +67,9 @@ TextureImporter:
     filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -84,7 +78,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 24
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -172,133 +166,221 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: shoot 92x36_0
+      name: 6-close light_0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 180
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c30bfd8e632c2fbd0800000000000000
-      internalID: -2597800493948358596
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shoot 92x36_2
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 144
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4172d6cde4fcfa350800000000000000
-      internalID: 6030266363684923156
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shoot 92x36_7
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 108
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8ab123399f972d860800000000000000
-      internalID: 7553233637877095336
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shoot 92x36_8
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 72
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8ede81efb2049a430800000000000000
-      internalID: 3794634718727171560
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shoot 92x36_9
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 36
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3743d15842c9fbf30800000000000000
-      internalID: 4593561825607234675
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shoot 92x36_10
-      rect:
-        serializedVersion: 2
-        x: 5
+        x: 0
         y: 0
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
+        width: 140
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 186811977ed05f900800000000000000
-      internalID: 717495003455260289
+      spriteID: e7421edb237be9140800000000000000
+      internalID: 4728418087347496062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 6-close light_1
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 0
+        width: 141
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba3ba050eb79e2f90800000000000000
+      internalID: -6976471930366151765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 6-close light_2
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 0
+        width: 134
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a6a168f77cc94be0800000000000000
+      internalID: -1492436985856285016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 6-close light_3
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 0
+        width: 150
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7823e5aca69e0aa60800000000000000
+      internalID: 7683397609165042311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 6-close light_4
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 0
+        width: 145
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 202c45e94e060bf00800000000000000
+      internalID: 1130510041495159298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 6-close light_5
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 0
+        width: 141
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bdf54c4d72ff66f30800000000000000
+      internalID: 4568619418552393691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 6-close light_6
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 0
+        width: 134
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4809496575fec2f70800000000000000
+      internalID: 9163962500185886852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 6-close light_7
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 0
+        width: 144
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 898d17389c4891940800000000000000
+      internalID: 5267387240215074968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 6-close light_8
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 0
+        width: 141
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59850831f47fb2b20800000000000000
+      internalID: 3110851886631114901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 6-close light_9
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 4
+        width: 126
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7478b3cf844afbf0800000000000000
+      internalID: -289843841757318022
       vertices: []
       indices: 
       edges: []
@@ -307,7 +389,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 67045b1210b60402e988223afa447569
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -317,18 +399,16 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      shoot 92x36_0: -2597800493948358596
-      shoot 92x36_1: -1853887431465037203
-      shoot 92x36_10: 717495003455260289
-      shoot 92x36_11: 8338563487883826351
-      shoot 92x36_2: 6030266363684923156
-      shoot 92x36_3: 3782070182318232381
-      shoot 92x36_4: -5489865317095016860
-      shoot 92x36_5: -1030935498404142144
-      shoot 92x36_6: -8859580466950228190
-      shoot 92x36_7: 7553233637877095336
-      shoot 92x36_8: 3794634718727171560
-      shoot 92x36_9: 4593561825607234675
+      6-close light_0: 4728418087347496062
+      6-close light_1: -6976471930366151765
+      6-close light_2: -1492436985856285016
+      6-close light_3: 7683397609165042311
+      6-close light_4: 1130510041495159298
+      6-close light_5: 4568619418552393691
+      6-close light_6: 9163962500185886852
+      6-close light_7: 5267387240215074968
+      6-close light_8: 3110851886631114901
+      6-close light_9: -289843841757318022
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

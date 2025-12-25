@@ -1,7 +1,9 @@
 using UnityEngine;
+using System.Collections;
 
 public class ProjectileBehavior : MonoBehaviour
 {
+    [SerializeField] private TrailRenderer trail;
     private float speed;
     private const float DESPAWN_X = -20f;
 
@@ -9,14 +11,38 @@ public class ProjectileBehavior : MonoBehaviour
     {
         this.speed = worldSpeed * 1.5f;
         transform.rotation = Quaternion.Euler(0, 180, 0);
+
+        if (trail != null)
+        {
+            trail.Clear(); 
+            trail.widthMultiplier = 0f; 
+            StartCoroutine(AnimateTrail());
+        }
+    }
+
+    private IEnumerator AnimateTrail()
+    {
+        float duration = 0.15f; 
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            trail.widthMultiplier = Mathf.Lerp(0f, 1f, elapsed / duration);
+            yield return null;
+        }
+        trail.widthMultiplier = 1f;
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines(); 
     }
 
     private void Update()
     {
-        // Move
         transform.position += Vector3.left * speed * Time.deltaTime;
 
-        // Check Bounds
         if (transform.position.x < DESPAWN_X)
         {
             ObjectPooler.Instance.ReturnProjectile(this.gameObject);

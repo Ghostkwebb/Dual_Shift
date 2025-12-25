@@ -1,43 +1,13 @@
 fileFormatVersion: 2
-guid: 1895e9930f51a4d3b8ef1c052d451c27
+guid: fc6144a87d12a4f578d48e5484cb7306
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2597800493948358596
-    second: shoot 92x36_0
+      213: -6012206201737894029
+    second: 7-tileset_0
   - first:
-      213: -1853887431465037203
-    second: shoot 92x36_1
-  - first:
-      213: 6030266363684923156
-    second: shoot 92x36_2
-  - first:
-      213: 3782070182318232381
-    second: shoot 92x36_3
-  - first:
-      213: -5489865317095016860
-    second: shoot 92x36_4
-  - first:
-      213: -1030935498404142144
-    second: shoot 92x36_5
-  - first:
-      213: -8859580466950228190
-    second: shoot 92x36_6
-  - first:
-      213: 7553233637877095336
-    second: shoot 92x36_7
-  - first:
-      213: 3794634718727171560
-    second: shoot 92x36_8
-  - first:
-      213: 4593561825607234675
-    second: shoot 92x36_9
-  - first:
-      213: 717495003455260289
-    second: shoot 92x36_10
-  - first:
-      213: 8338563487883826351
-    second: shoot 92x36_11
+      213: 8175378165879261656
+    second: 7-tileset_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -73,9 +43,9 @@ TextureImporter:
     filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -84,7 +54,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 24
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -172,133 +142,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: shoot 92x36_0
+      name: 7-tileset_0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 180
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
+        x: 0
+        y: 70
+        width: 314
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c30bfd8e632c2fbd0800000000000000
-      internalID: -2597800493948358596
+      spriteID: 3772305405a509ca0800000000000000
+      internalID: -6012206201737894029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: shoot 92x36_2
+      name: 7-tileset_1
       rect:
         serializedVersion: 2
-        x: 5
-        y: 144
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4172d6cde4fcfa350800000000000000
-      internalID: 6030266363684923156
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shoot 92x36_7
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 108
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8ab123399f972d860800000000000000
-      internalID: 7553233637877095336
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shoot 92x36_8
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 72
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8ede81efb2049a430800000000000000
-      internalID: 3794634718727171560
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shoot 92x36_9
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 36
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3743d15842c9fbf30800000000000000
-      internalID: 4593561825607234675
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shoot 92x36_10
-      rect:
-        serializedVersion: 2
-        x: 5
+        x: 0
         y: 0
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.51, y: 0.5}
+        width: 314
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 186811977ed05f900800000000000000
-      internalID: 717495003455260289
+      spriteID: 8d9c7b97027c47170800000000000000
+      internalID: 8175378165879261656
       vertices: []
       indices: 
       edges: []
@@ -307,7 +189,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 67045b1210b60402e988223afa447569
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -317,18 +199,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      shoot 92x36_0: -2597800493948358596
-      shoot 92x36_1: -1853887431465037203
-      shoot 92x36_10: 717495003455260289
-      shoot 92x36_11: 8338563487883826351
-      shoot 92x36_2: 6030266363684923156
-      shoot 92x36_3: 3782070182318232381
-      shoot 92x36_4: -5489865317095016860
-      shoot 92x36_5: -1030935498404142144
-      shoot 92x36_6: -8859580466950228190
-      shoot 92x36_7: 7553233637877095336
-      shoot 92x36_8: 3794634718727171560
-      shoot 92x36_9: 4593561825607234675
+      7-tileset_0: -6012206201737894029
+      7-tileset_1: 8175378165879261656
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
