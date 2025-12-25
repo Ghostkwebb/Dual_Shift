@@ -4,10 +4,13 @@ using UnityEngine;
 public class CameraAspectController : MonoBehaviour
 {
     [Tooltip("The vertical size you want on a standard 16:9 phone.")]
-    [SerializeField] private float targetSize = 5f;
-
-    [Tooltip("The aspect ratio you designed for (e.g., 16/9 = 1.77).")]
+    [SerializeField] private float targetSize = 5f; 
+    
+    [Tooltip("The aspect ratio you designed for (16/9 = 1.77).")]
     [SerializeField] private float targetAspect = 16f / 9f;
+
+    [Tooltip("0 = Fixed Height (Tiny on UltraWide). 1 = Fixed Width (Zoomed on UltraWide). Try 0.5.")]
+    [Range(0f, 1f)] [SerializeField] private float wideScreenZoom = 0.5f;
 
     private Camera cam;
 
@@ -20,25 +23,24 @@ public class CameraAspectController : MonoBehaviour
     void Update()
     {
 #if UNITY_EDITOR
-        AdjustCamera(); // Update in editor to test resizing
+        AdjustCamera(); 
 #endif
     }
 
     void AdjustCamera()
     {
+        if (cam == null) cam = GetComponent<Camera>();
+
         float currentAspect = (float)Screen.width / Screen.height;
 
         if (currentAspect >= targetAspect)
         {
-            // Screen is WIDER than 16:9 (e.g., iPhone X, Samsung S20)
-            // Keep fixed height. We just see more level ahead.
-            cam.orthographicSize = targetSize;
+            float ratioDifference = currentAspect / targetAspect;
+            float zoomFactor = Mathf.Lerp(1f, ratioDifference, wideScreenZoom);
+            cam.orthographicSize = targetSize / zoomFactor;
         }
         else
         {
-            // Screen is NARROWER than 16:9 (e.g., iPad)
-            // Zoom out so the width matches the 16:9 width.
-            // This prevents "blind" play where enemies appear too suddenly.
             cam.orthographicSize = targetSize * (targetAspect / currentAspect);
         }
     }
