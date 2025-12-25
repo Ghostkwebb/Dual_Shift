@@ -3479,7 +3479,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 8
+  orthographic size: 6.8900447
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3536,6 +3536,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetSize: 8
   targetAspect: 1.7777778
+  wideScreenZoom: 0.5
 --- !u!1 &541865528
 GameObject:
   m_ObjectHideFlags: 0
@@ -3988,26 +3989,26 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 30
-      value: 20
-      inSlope: 0.06666666
-      outSlope: 0.06666666
-      tangentMode: 136
+      time: 54.27282
+      value: 13.229787
+      inSlope: 0.041728694
+      outSlope: 0.041728694
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.58262616
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 120
-      value: 22
-      inSlope: 0.053141102
-      outSlope: 0.053141102
-      tangentMode: 136
+      time: 299.1754
+      value: 21.09317
+      inSlope: 0.069148645
+      outSlope: 0.069148645
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0.14811946
+      outWeight: 0.25875244
     - serializedVersion: 3
-      time: 180.54262
-      value: 35.073868
+      time: 407.89008
+      value: 30.036789
       inSlope: 0
       outSlope: 0
       tangentMode: 136
@@ -7993,7 +7994,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.49, y: 0}
   m_Size: {x: 1, y: 2}
   m_Direction: 0
 --- !u!50 &1312385852
@@ -8132,7 +8133,7 @@ MonoBehaviour:
   trail: {fileID: 1059525599}
   meleeHitboxTransform: {fileID: 1530187270}
   hitboxSize: {x: 3, y: 2}
-  attackCooldown: 0.2
+  attackCooldown: 0.15
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -8842,6 +8843,7 @@ MonoBehaviour:
   - {fileID: 621020211993472696, guid: 7ea14cff6d2fdf14197033d9556dfa1f, type: 3}
   - {fileID: 621020211993472696, guid: 97fbf0a25568d214eab50a2a0f09e881, type: 3}
   - {fileID: 621020211993472696, guid: 74a283dbe9ff3d24b9f867594f4fc0ac, type: 3}
+  - {fileID: 621020211993472696, guid: 79090d659089a9b4cbd53c49c74622b0, type: 3}
   spawnOrigin: {fileID: 1393436571}
   chunkWidth: 19.9
   chunksOnScreen: 7
