@@ -8882,7 +8882,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topLaneY: 3.3
   bottomLaneY: -3.3
-  movementSmoothTime: 0.04
+  movementSmoothTime: 0.03
   screenPercentX: 0.15
   platformLandOffset: 1
   platformLayer:
