@@ -26,8 +26,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxForwardDist = 5.0f;
 
     [Header("Dash Strike (Dev Toggle)")]
-    [Tooltip("Enable the forward dash attack mechanic.")]
-    [SerializeField] private bool useDashStrike = false;
     [Tooltip("Distance the player surges forward during a dash attack.")]
     [SerializeField] private float dashStrikeSurge = 4.0f;
 
@@ -211,35 +209,37 @@ public class PlayerController : MonoBehaviour
         laneSwitchTriggered = false;
     }
 
-    public void ToggleDashStrike(bool state)
-    {
-        useDashStrike = state;
-    }
-
     public void MeleeAttack()
     {
         if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
         if (Time.time < lastAttackTime + attackCooldown) return;
 
         lastAttackTime = Time.time;
-        animator.SetTrigger("Attack");
         isDashStriking = true; 
         isLethalDash = true;   
         
         float surgeTarget = transform.position.x + dashStrikeSurge;
         targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
-        Invoke(nameof(EndDashStrike), 0.2f); 
-
+        Invoke(nameof(EndDashStrike), 0.2f);
+        
         visualSlash.SetActive(true);
         Invoke(nameof(DisableSlash), slashDuration);
+        animator.SetTrigger("Attack"); 
+        
         AudioManager.Instance.PlayAttack();
-
-        Collider2D hitEnemy = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
-        if (hitEnemy != null)
+        
+        Collider2D hitObject = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
+        if (hitObject != null)
         {
-            if (hitEnemy.CompareTag("Enemy"))
+            if (hitObject.TryGetComponent(out ProjectileBehavior projectile))
             {
-                KillEnemy(hitEnemy.gameObject);
+                AudioManager.Instance.PlayHit();
+                CameraShake.Instance.Shake(0.05f, 0.1f);
+                projectile.HitByPlayer();
+            }
+            else
+            {
+                KillEnemy(hitObject.gameObject);
             }
         }
     }
@@ -301,6 +301,24 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                animator.SetTrigger("Die");
+                GameManager.Instance.GameOver();
+                Time.timeScale = 0;
+            }
+        }
+
+        // Projectile Collision Logic
+        if (other.TryGetComponent(out ProjectileBehavior projectile))
+        {
+            if (isLethalDash)
+            {
+                // Dash Strike destroys projectile
+                ObjectPooler.Instance.ReturnProjectile(other.gameObject);
+                AudioManager.Instance.PlayHit();
+            }
+            else
+            {
+                // Standard Hit -> Death
                 animator.SetTrigger("Die");
                 GameManager.Instance.GameOver();
                 Time.timeScale = 0;

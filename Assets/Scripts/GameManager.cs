@@ -51,6 +51,15 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (!TryGetComponent<VisualsInstaller>(out var visualInstaller))
+        {
+            gameObject.AddComponent<VisualsInstaller>();
+        }
+        if (!TryGetComponent<MaterialUpgrader>(out var matUpgrader))
+        {
+            gameObject.AddComponent<MaterialUpgrader>();
+        }
+
         ShowMainMenu();
     }
 

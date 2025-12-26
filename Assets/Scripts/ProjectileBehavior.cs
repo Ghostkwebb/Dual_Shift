@@ -11,6 +11,7 @@ public class ProjectileBehavior : MonoBehaviour
     {
         this.speed = worldSpeed * 1.5f;
         transform.rotation = Quaternion.Euler(0, 180, 0);
+        VisualsInstaller.AttachProjectileLight(gameObject, Color.cyan, 2.0f, 3.0f);
 
         if (trail != null)
         {
@@ -55,5 +56,10 @@ public class ProjectileBehavior : MonoBehaviour
         {
             ObjectPooler.Instance.ReturnProjectile(this.gameObject);
         }
+    }
+    
+    public void HitByPlayer()
+    {
+        ObjectPooler.Instance.ReturnProjectile(this.gameObject);
     }
 }

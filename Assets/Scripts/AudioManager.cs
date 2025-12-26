@@ -10,6 +10,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource sfxSource;
     [SerializeField] private AudioSource runSource; 
 
+
     [Header("Music Clips")]
     [SerializeField] private AudioClip backgroundMusic;
 
@@ -37,14 +38,17 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
-        if (musicFilter != null)
+        if (musicFilter != null && musicSource != null && musicSource.isPlaying)
         {
             float targetFreq = (GameManager.Instance.CurrentState == GameManager.GameState.Playing) ? 22000f : 500f;
             musicFilter.cutoffFrequency = Mathf.Lerp(musicFilter.cutoffFrequency, targetFreq, Time.deltaTime * 2.0f);
         }
         
-        if (runSource != null && runClip != null)
+        if (runSource != null)
         {
+            // Ensure runtime check for clip
+            if (runClip == null) return;
+
             bool shouldRun = GameManager.Instance.CurrentState == GameManager.GameState.Playing && Time.timeScale > 0;
             
             if (shouldRun)
@@ -79,6 +83,8 @@ public class AudioManager : MonoBehaviour
 
     private void PlaySFX(AudioClip clip)
     {
+        if (sfxSource == null) return;
+        
         sfxSource.pitch = Random.Range(0.9f, 1.1f);
         if (clip != null) sfxSource.PlayOneShot(clip);
         sfxSource.pitch = 1.0f;
