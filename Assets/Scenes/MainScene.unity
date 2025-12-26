@@ -4103,7 +4103,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 8.202859
+  orthographic size: 6.8900447
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -4755,22 +4755,22 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 54.27282
-      value: 13.229787
-      inSlope: 0.041728694
-      outSlope: 0.041728694
+      time: 29.990883
+      value: 13.043263
+      inSlope: 0.08393173
+      outSlope: 0.08393173
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.58262616
+      inWeight: 0.39081153
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 299.1754
-      value: 21.09317
-      inSlope: 0.069148645
-      outSlope: 0.069148645
+      time: 130.46957
+      value: 19.996046
+      inSlope: 0.061648477
+      outSlope: 0.061648477
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.14811946
+      inWeight: 0.10353077
       outWeight: 0.25875244
     - serializedVersion: 3
       time: 407.89008
@@ -8894,7 +8894,7 @@ MonoBehaviour:
   useDashStrike: 0
   dashStrikeSurge: 4
   tiltStrength: 2
-  stretchStrength: 0.01
+  stretchStrength: 0
   speedEffect: {fileID: 1772996411}
   trail: {fileID: 1059525599}
   meleeHitboxTransform: {fileID: 1530187270}
@@ -9610,6 +9610,9 @@ MonoBehaviour:
   - {fileID: 621020211993472696, guid: 97fbf0a25568d214eab50a2a0f09e881, type: 3}
   - {fileID: 621020211993472696, guid: 74a283dbe9ff3d24b9f867594f4fc0ac, type: 3}
   - {fileID: 621020211993472696, guid: 79090d659089a9b4cbd53c49c74622b0, type: 3}
+  - {fileID: 621020211993472696, guid: b9611de10200bbe4dafa89b95cf7dd9f, type: 3}
+  - {fileID: 621020211993472696, guid: ece6670338fe6084080d0f2882d348bf, type: 3}
+  - {fileID: 621020211993472696, guid: 813a7713b884b6a4cabec156bb572edf, type: 3}
   spawnOrigin: {fileID: 1393436571}
   chunkWidth: 19.9
   chunksOnScreen: 7
