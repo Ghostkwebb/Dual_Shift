@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7260719708428711002, guid: 03368bf419b3f1a40ad0c328bf74d68e, type: 3}
   m_Color: {r: 0.5176471, g: 0.03529412, b: 0.99607843, a: 1}
@@ -156,7 +156,7 @@ MonoBehaviour:
   activationX: 25
   startDelay: 0.3
   fireRate: 4
-  muzzleOffset: {x: 1.32, y: -0.17, z: 0}
+  muzzleOffset: {x: 1.55, y: -0.18, z: 0}
   render: {fileID: 4833257583666382191}
   animator: {fileID: 702121612286415915}
 --- !u!95 &702121612286415915
