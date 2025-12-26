@@ -158,18 +158,10 @@ public class MaterialUpgrader : MonoBehaviour
         // Apply Background Tint (e.g. if user wants it greyscale)
         finalColor *= backgroundTint;
 
+        
         // 5. Send to Shader
         Shader.SetGlobalFloat("_CustomGlobalLight", finalIntensity); // Legacy/Validation
         Shader.SetGlobalColor("_CustomGlobalLightColor", finalColor); 
-        
-        // 6. PLAYER/MULTI-LIGHT REMOVED (User Request)
-        // Background is now uniform.
-        
-        // DEBUG LIGHTING (Prints once every 5 seconds)
-        if (Time.frameCount % 300 == 0)
-        {
-            Debug.Log($"[MaterialUpgrader] Light Color: {finalColor} | Intensity: {finalIntensity}");
-        }
     }
 
     private void CacheGlobalLight()

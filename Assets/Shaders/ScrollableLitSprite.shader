@@ -47,7 +47,6 @@ Shader "DualShift/ScrollableLit"
                 float4 vertex   : SV_POSITION;
                 fixed4 color    : COLOR;
                 float2 texcoord : TEXCOORD0;
-                float3 worldPos : TEXCOORD1; // NEW: Needed for Point Light Math
             };
 
             fixed4 _Color;
@@ -57,11 +56,8 @@ Shader "DualShift/ScrollableLit"
             fixed4 _RendererColor;
             
             // CUSTOM VARIABLES
-            float _MouseX;
             float _CustomGlobalLight;
             fixed4 _CustomGlobalLightColor;
-            
-            // LIGHTING REMOVED (User Request)
             
             v2f vert(appdata_t IN)
             {
@@ -69,7 +65,6 @@ Shader "DualShift/ScrollableLit"
                 OUT.vertex = UnityObjectToClipPos(IN.vertex);
                 OUT.texcoord = TRANSFORM_TEX(IN.texcoord, _MainTex) + _ScrollOffset.xy;
                 OUT.color = _Color; 
-                OUT.worldPos = mul(unity_ObjectToWorld, IN.vertex).xyz;
                 return OUT;
             }
 
@@ -81,9 +76,6 @@ Shader "DualShift/ScrollableLit"
                 // 1. Global Light (Ambient)
                 fixed4 totalLight = _CustomGlobalLightColor;
                 if (length(totalLight) <= 0.001) totalLight = fixed4(1,1,1,1);
-
-                // 2. PLAYER LIGHT REMOVED (User Request)
-                // Background is now lit evenly by Global Light only.
                 
                 return c * totalLight;
             }
