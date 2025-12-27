@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
@@ -75,6 +76,7 @@ public class PlayerController : MonoBehaviour
     private float rigidPlatformY; 
     
     private Vector3 originalScale;
+    private HashSet<int> hitObjectsDuringDash = new HashSet<int>(); // Track already-hit objects
 
     private void Awake()
     {
@@ -159,6 +161,29 @@ public class PlayerController : MonoBehaviour
 
         UpdateEffects(isPlaying);
         UpdateAnimations();
+        
+        // Continuous hitbox check during dash strike to prevent tunneling
+        if (isDashStriking && isLethalDash)
+        {
+            Collider2D[] hits = Physics2D.OverlapBoxAll(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
+            foreach (var hitObject in hits)
+            {
+                int id = hitObject.gameObject.GetInstanceID();
+                if (hitObjectsDuringDash.Contains(id)) continue; // Already hit this frame/dash
+                hitObjectsDuringDash.Add(id);
+                
+                if (hitObject.TryGetComponent(out ProjectileBehavior projectile))
+                {
+                    AudioManager.Instance.PlayHit();
+                    CameraShake.Instance.Shake(0.05f, 0.1f);
+                    projectile.HitByPlayer();
+                }
+                else if (hitObject.CompareTag("Enemy"))
+                {
+                    KillEnemy(hitObject.gameObject);
+                }
+            }
+        }
     }
 
     private void HandleSurgeAndDrift()
@@ -247,7 +272,8 @@ public class PlayerController : MonoBehaviour
     private void EndDashStrike()
     {
         isDashStriking = false; 
-        isLethalDash = false;  
+        isLethalDash = false;
+        hitObjectsDuringDash.Clear(); // Reset for next dash
     }
 
     private void EndLethalDash()
@@ -312,9 +338,10 @@ public class PlayerController : MonoBehaviour
         {
             if (isLethalDash)
             {
-                // Dash Strike destroys projectile
-                ObjectPooler.Instance.ReturnProjectile(other.gameObject);
+                // Dash Strike destroys projectile with VFX
                 AudioManager.Instance.PlayHit();
+                CameraShake.Instance.Shake(0.05f, 0.1f);
+                projectile.HitByPlayer(); // This now spawns VFX
             }
             else
             {

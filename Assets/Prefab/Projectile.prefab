@@ -5009,6 +5009,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trail: {fileID: 2060032711933816714}
+  deathVFXPrefab: {fileID: 1478058352805709650, guid: 529e58c8bacab4cfb8ff0412af123486, type: 3}
 --- !u!95 &7632102457719437974
 Animator:
   serializedVersion: 7
