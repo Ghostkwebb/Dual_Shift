@@ -195,27 +195,63 @@ public class VisualsInstaller : MonoBehaviour
         colorOverLifetime.color = gradient;
 
         var renderer = dustObj.GetComponent<ParticleSystemRenderer>();
+        
+        // Try multiple shaders in order of preference
+        string shaderUsed = "NONE";
         Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
-        if (shader == null) shader = Shader.Find("Sprites/Default");
+        if (shader != null) shaderUsed = "URP/Particles/Unlit";
+        
+        if (shader == null)
+        {
+            shader = Shader.Find("Mobile/Particles/Additive");
+            if (shader != null) shaderUsed = "Mobile/Particles/Additive";
+        }
+        
+        if (shader == null)
+        {
+            shader = Shader.Find("Particles/Standard Unlit");
+            if (shader != null) shaderUsed = "Particles/Standard Unlit";
+        }
+        
+        if (shader == null) 
+        {
+            shader = Shader.Find("Sprites/Default");
+            shaderUsed = "Sprites/Default (fallback)";
+        }
+        
+        // DEBUG: Log what's happening
+        Debug.Log($"[PARTICLE DEBUG] Quality Level: {QualitySettings.names[QualitySettings.GetQualityLevel()]}");
+        Debug.Log($"[PARTICLE DEBUG] Shader Used: {shaderUsed}");
+        Debug.Log($"[PARTICLE DEBUG] HDR Enabled: {Camera.main?.allowHDR}");
         
         Material mat = new Material(shader);
-        mat.SetFloat("_Surface", 1);
-        mat.SetFloat("_Blend", 1);
-        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
-        mat.renderQueue = 3000;
         
-        Color hdrWhite = Color.white * 2.5f;
-        mat.SetColor("_BaseColor", hdrWhite);
-        mat.SetColor("_Color", hdrWhite);
-        mat.color = Color.white;
-        
-        if (mat.HasProperty("_EmissionColor"))
+        // For Mobile/Particles/Additive, just set color
+        if (shaderUsed.Contains("Mobile") || shaderUsed.Contains("Additive"))
         {
-            mat.EnableKeyword("_EMISSION");
-            mat.SetColor("_EmissionColor", Color.white * 3f);
+            mat.color = Color.white;
+        }
+        else
+        {
+            mat.SetFloat("_Surface", 1);
+            mat.SetFloat("_Blend", 1);
+            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            mat.renderQueue = 3000;
+            
+            Color hdrWhite = Color.white * 2.5f;
+            mat.SetColor("_BaseColor", hdrWhite);
+            mat.SetColor("_Color", hdrWhite);
+            mat.color = Color.white;
+            
+            if (mat.HasProperty("_EmissionColor"))
+            {
+                mat.EnableKeyword("_EMISSION");
+                mat.SetColor("_EmissionColor", Color.white * 3f);
+            }
         }
         
         renderer.material = mat;
+        Debug.Log($"[PARTICLE DEBUG] Material assigned: {mat.shader.name}");
     }
 }
