@@ -158,13 +158,14 @@ public class VisualsInstaller : MonoBehaviour
         main.loop = true;
         main.startLifetime = 5f;
         main.startSpeed = 0f;
-        main.startSize = new ParticleSystem.MinMaxCurve(0.03f, 0.06f);
+        main.startSize = new ParticleSystem.MinMaxCurve(0.04f, 0.08f);
+        // Normal white - additive blending will make it bright
         main.startColor = Color.white;
-        main.maxParticles = 40;
+        main.maxParticles = 50;
         main.simulationSpace = ParticleSystemSimulationSpace.World;
 
         var emission = dustPS.emission;
-        emission.rateOverTime = 6f;
+        emission.rateOverTime = 8f;
 
         var shape = dustPS.shape;
         shape.shapeType = ParticleSystemShapeType.Box;
@@ -174,21 +175,24 @@ public class VisualsInstaller : MonoBehaviour
         vel.enabled = true;
         vel.space = ParticleSystemSimulationSpace.World;
         vel.x = new ParticleSystem.MinMaxCurve(-8f, -12f);
-        vel.y = new ParticleSystem.MinMaxCurve(-0.5f, 0.5f);
+        vel.y = new ParticleSystem.MinMaxCurve(-0.3f, 0.3f);
         vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
 
+        // Use HDR colors in gradient (values > 1.0 trigger bloom)
         var colorOverLifetime = dustPS.colorOverLifetime;
         colorOverLifetime.enabled = true;
         Gradient gradient = new Gradient();
+        // Normal white color - additive blending creates brightness
+        Color hdrWhite = Color.white;
         gradient.SetKeys(
             new GradientColorKey[] {
-                new GradientColorKey(Color.white, 0f),
-                new GradientColorKey(Color.white, 1f)
+                new GradientColorKey(hdrWhite, 0f),
+                new GradientColorKey(hdrWhite, 1f)
             },
             new GradientAlphaKey[] {
                 new GradientAlphaKey(0f, 0f),
-                new GradientAlphaKey(0.8f, 0.2f),
-                new GradientAlphaKey(0.8f, 0.8f),
+                new GradientAlphaKey(1f, 0.15f),
+                new GradientAlphaKey(1f, 0.85f),
                 new GradientAlphaKey(0f, 1f)
             }
         );
@@ -196,62 +200,32 @@ public class VisualsInstaller : MonoBehaviour
 
         var renderer = dustObj.GetComponent<ParticleSystemRenderer>();
         
-        // Try multiple shaders in order of preference
-        string shaderUsed = "NONE";
+        // Use simple particle shader
         Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
-        if (shader != null) shaderUsed = "URP/Particles/Unlit";
-        
-        if (shader == null)
-        {
-            shader = Shader.Find("Mobile/Particles/Additive");
-            if (shader != null) shaderUsed = "Mobile/Particles/Additive";
-        }
-        
-        if (shader == null)
-        {
-            shader = Shader.Find("Particles/Standard Unlit");
-            if (shader != null) shaderUsed = "Particles/Standard Unlit";
-        }
-        
-        if (shader == null) 
-        {
-            shader = Shader.Find("Sprites/Default");
-            shaderUsed = "Sprites/Default (fallback)";
-        }
-        
-        // DEBUG: Log what's happening
-        Debug.Log($"[PARTICLE DEBUG] Quality Level: {QualitySettings.names[QualitySettings.GetQualityLevel()]}");
-        Debug.Log($"[PARTICLE DEBUG] Shader Used: {shaderUsed}");
-        Debug.Log($"[PARTICLE DEBUG] HDR Enabled: {Camera.main?.allowHDR}");
+        if (shader == null) shader = Shader.Find("Sprites/Default");
         
         Material mat = new Material(shader);
         
-        // For Mobile/Particles/Additive, just set color
-        if (shaderUsed.Contains("Mobile") || shaderUsed.Contains("Additive"))
+        // Pure additive blending (One + One) creates the glow effect!
+        mat.SetFloat("_Surface", 1); // Transparent
+        mat.SetFloat("_Blend", 1); // Additive
+        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        mat.SetInt("_ZWrite", 0);
+        mat.renderQueue = 3000;
+        
+        // Higher HDR color to trigger bloom
+        Color hdrColor = new Color(4f, 4f, 4f, 1f);
+        mat.SetColor("_BaseColor", hdrColor);
+        mat.color = Color.white;
+        
+        // Add emission for stronger glow (moderate value to avoid black centers)
+        if (mat.HasProperty("_EmissionColor"))
         {
-            mat.color = Color.white;
-        }
-        else
-        {
-            mat.SetFloat("_Surface", 1);
-            mat.SetFloat("_Blend", 1);
-            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
-            mat.renderQueue = 3000;
-            
-            Color hdrWhite = Color.white * 2.5f;
-            mat.SetColor("_BaseColor", hdrWhite);
-            mat.SetColor("_Color", hdrWhite);
-            mat.color = Color.white;
-            
-            if (mat.HasProperty("_EmissionColor"))
-            {
-                mat.EnableKeyword("_EMISSION");
-                mat.SetColor("_EmissionColor", Color.white * 3f);
-            }
+            mat.EnableKeyword("_EMISSION");
+            mat.SetColor("_EmissionColor", new Color(3f, 3f, 3f, 1f));
         }
         
         renderer.material = mat;
-        Debug.Log($"[PARTICLE DEBUG] Material assigned: {mat.shader.name}");
     }
 }
