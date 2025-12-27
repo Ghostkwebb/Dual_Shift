@@ -203,6 +203,7 @@ public class PlayerController : MonoBehaviour
     private void HandleLaneSwitch()
     {
         if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
+        if (TutorialManager.Instance != null && TutorialManager.Instance.InputsLocked) return;
         if (!laneSwitchTriggered) return;
 
         if (!onPlatform && Mathf.Abs(transform.position.y - targetPosition.y) > 0.1f)
@@ -213,44 +214,24 @@ public class PlayerController : MonoBehaviour
 
         if (isKeyboardInput || !EventSystem.current.IsPointerOverGameObject())
         {
-            if (onPlatform)
-            {
-                onPlatform = false;
-            }
-            
-            isTopLane = !isTopLane;
-            targetPosition.y = isTopLane ? topLaneY : bottomLaneY;
-            
-            isSurging = true;
-            float height = Mathf.Abs(topLaneY - bottomLaneY);
-            float angleRad = switchAngle * Mathf.Deg2Rad;
-            float requiredSurge = height / Mathf.Tan(angleRad);
-
-            float surgeTarget = transform.position.x + requiredSurge;
-            targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
-
-            AudioManager.Instance.PlayJump();
+            ExecuteLaneSwitch(); 
         }
         laneSwitchTriggered = false;
     }
-
-    public void MeleeAttack()
+    
+    public void ExecuteAttack()
     {
-        if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
-        if (Time.time < lastAttackTime + attackCooldown) return;
-
         lastAttackTime = Time.time;
+
         isDashStriking = true; 
         isLethalDash = true;   
-        
         float surgeTarget = transform.position.x + dashStrikeSurge;
         targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
         Invoke(nameof(EndDashStrike), 0.2f);
-        
+
         visualSlash.SetActive(true);
         Invoke(nameof(DisableSlash), slashDuration);
         animator.SetTrigger("Attack"); 
-        
         AudioManager.Instance.PlayAttack();
         
         Collider2D hitObject = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
@@ -267,6 +248,32 @@ public class PlayerController : MonoBehaviour
                 KillEnemy(hitObject.gameObject);
             }
         }
+    }
+    
+    public void ExecuteLaneSwitch()
+    {
+        if (onPlatform) onPlatform = false;
+        
+        isTopLane = !isTopLane;
+        targetPosition.y = isTopLane ? topLaneY : bottomLaneY;
+
+        isSurging = true;
+        float height = Mathf.Abs(topLaneY - bottomLaneY);
+        float angleRad = switchAngle * Mathf.Deg2Rad;
+        float requiredSurge = height / Mathf.Tan(angleRad);
+        float surgeTarget = transform.position.x + requiredSurge;
+        targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
+
+        AudioManager.Instance.PlayJump();
+    }
+
+    public void MeleeAttack()
+    {
+        if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
+        if (TutorialManager.Instance != null && TutorialManager.Instance.InputsLocked) return;
+        if (Time.time < lastAttackTime + attackCooldown) return;
+
+        ExecuteAttack();
     }
     
     private void EndDashStrike()
