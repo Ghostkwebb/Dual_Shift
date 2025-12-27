@@ -162,25 +162,82 @@ public class VisualsInstaller : MonoBehaviour
         dustPS = dustObj.AddComponent<ParticleSystem>();
         var main = dustPS.main;
         main.loop = true;
-        main.startLifetime = 6f;
+        main.startLifetime = 4f;
         main.startSpeed = 0f;
-        main.startSize = 0.05f;
-        main.startColor = new Color(0.6f, 0.65f, 0.8f, 0.15f);
-        main.maxParticles = 40;
-        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        main.startSize = new ParticleSystem.MinMaxCurve(0.04f, 0.08f); // Slight size variation
+        
+        // Glowing color using HDR values (intensity > 1 creates bloom/glow effect)
+        Color glowColor = new Color(0.7f, 0.8f, 1.2f, 0.4f); // Bright blue-white with glow
+        main.startColor = glowColor;
+        main.maxParticles = 60;
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
 
         var emission = dustPS.emission;
-        emission.rateOverTime = 5f;
+        emission.rateOverTime = 8f;
 
         var shape = dustPS.shape;
         shape.shapeType = ParticleSystemShapeType.Box;
-        shape.scale = new Vector3(30, 20, 1);
+        shape.scale = new Vector3(25, 15, 1);
 
+        // Move particles LEFT to simulate world scrolling
         var vel = dustPS.velocityOverLifetime;
         vel.enabled = true;
-        vel.space = ParticleSystemSimulationSpace.Local;
+        vel.space = ParticleSystemSimulationSpace.World;
+        vel.x = new ParticleSystem.MinMaxCurve(-8f, -12f);
+        vel.y = new ParticleSystem.MinMaxCurve(-0.5f, 0.5f);
+        vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+
+        // Color over lifetime for subtle fade and glow pulse
+        var colorOverLifetime = dustPS.colorOverLifetime;
+        colorOverLifetime.enabled = true;
+        Gradient gradient = new Gradient();
+        gradient.SetKeys(
+            new GradientColorKey[] {
+                new GradientColorKey(new Color(0.6f, 0.7f, 1f), 0f),    // Start: soft blue
+                new GradientColorKey(new Color(0.9f, 0.95f, 1f), 0.5f), // Mid: bright white-blue (glow peak)
+                new GradientColorKey(new Color(0.5f, 0.6f, 0.9f), 1f)   // End: fade to softer blue
+            },
+            new GradientAlphaKey[] {
+                new GradientAlphaKey(0f, 0f),      // Fade in
+                new GradientAlphaKey(0.5f, 0.3f), // Peak visibility
+                new GradientAlphaKey(0.3f, 0.7f), // Start fading
+                new GradientAlphaKey(0f, 1f)      // Fade out
+            }
+        );
+        colorOverLifetime.color = gradient;
 
         var renderer = dustObj.GetComponent<ParticleSystemRenderer>();
-        renderer.material = new Material(Shader.Find("Particles/Standard Unlit"));
+        
+        // Use URP particle shader for proper HDR/bloom support
+        var shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+        if (shader == null)
+            shader = Shader.Find("Particles/Standard Unlit");
+        
+        if (shader != null)
+        {
+            Material mat = new Material(shader);
+            
+            // Enable HDR emission for bloom glow
+            mat.EnableKeyword("_EMISSION");
+            
+            // Set base color with HDR intensity (values > 1 trigger bloom)
+            Color hdrGlowColor = Color.white * 2.5f; // White glow, 2.5x intensity for bloom
+            mat.SetColor("_BaseColor", hdrGlowColor);
+            mat.SetColor("_EmissionColor", hdrGlowColor);
+            
+            // Set to additive blending for glow effect
+            mat.SetFloat("_Surface", 1); // Transparent
+            mat.SetFloat("_Blend", 1); // Additive
+            mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
+            mat.SetFloat("_ZWrite", 0);
+            mat.renderQueue = 3000; // Transparent queue
+            
+            renderer.material = mat;
+        }
+        else
+        {
+            renderer.material = new Material(Shader.Find("Sprites/Default"));
+        }
     }
 }

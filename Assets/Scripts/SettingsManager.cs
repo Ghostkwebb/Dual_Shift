@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class SettingsManager : MonoBehaviour
 {
     [Header("Audio")]
+    [Tooltip("Main audio mixer for volume control")]
     [SerializeField] private AudioMixer mainMixer;
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
@@ -15,8 +16,6 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown graphicsDropdown;
     [SerializeField] private TMP_Dropdown fpsDropdown;
     [SerializeField] private GameObject settingsPanel;
-    [SerializeField] private PlayerController player; 
-    
 
     [Header("Panels")]
     [SerializeField] private GameObject controlsOverlay;
@@ -29,91 +28,110 @@ public class SettingsManager : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         
         graphicsDropdown.ClearOptions();
-        List<string> options = new List<string>(QualitySettings.names);
-        graphicsDropdown.AddOptions(options);
+        graphicsDropdown.AddOptions(new List<string>(QualitySettings.names));
+        
         LoadSettings();
+        
         musicSlider.onValueChanged.AddListener(SetMusicVolume);
         sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         graphicsDropdown.onValueChanged.AddListener(SetQuality);
         fpsDropdown.onValueChanged.AddListener(SetFPS);
-
     }
 
-    public void OpenSettings()
+    private void OnApplicationPause(bool pauseStatus)
     {
-        settingsPanel.SetActive(true);
+        if (pauseStatus) PlayerPrefs.Save();
     }
 
-    public void CloseSettings()
-    {
-        settingsPanel.SetActive(false);
-    }
+    private void OnApplicationQuit() => PlayerPrefs.Save();
+
+    public void OpenSettings() => settingsPanel.SetActive(true);
+    public void CloseSettings() => settingsPanel.SetActive(false);
 
     public void SetMusicVolume(float value)
     {
-        // Convert 0-1 slider to -80dB to 0dB logarithmic scale
-        float volume = Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20;
+        if (mainMixer == null) return;
+        float volume = Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20f;
         mainMixer.SetFloat(MIXER_MUSIC, volume);
         PlayerPrefs.SetFloat("MusicVol", value);
+        // Don't call PlayerPrefs.Save() here - causes lag on mobile!
     }
 
     public void SetSFXVolume(float value)
     {
-        float volume = Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20;
+        if (mainMixer == null) return;
+        float volume = Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20f;
         mainMixer.SetFloat(MIXER_SFX, volume);
         PlayerPrefs.SetFloat("SFXVol", value);
     }
 
     public void SetQuality(int index)
     {
-        QualitySettings.SetQualityLevel(index);
-        PlayerPrefs.SetInt("Quality", index);
+        // Use loading screen for quality changes (if available)
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.ShowLoadingForQualityChange(index);
+        }
+        else
+        {
+            // Fallback if no loading screen manager
+            QualitySettings.SetQualityLevel(index, true);
+            QualitySettings.vSyncCount = 0;
+            
+            int savedFPS = PlayerPrefs.GetInt("FPS", 1);
+            ApplyFPS(savedFPS);
+            
+            PlayerPrefs.SetInt("Quality", index);
+        }
     }
 
     public void SetFPS(int index)
     {
-        int fps = 60;
-        switch (index)
-        {
-            case 0: fps = 30; break;
-            case 1: fps = 60; break;
-            case 2: fps = 90; break;
-            case 3: fps = 120; break;
-        }
-        Application.targetFrameRate = fps;
-        PlayerPrefs.SetInt("FPS", index);
+        // Use MobileOptimizer which has the +1 FPS offset fix for stable frame pacing
+        MobileOptimizer.ApplyFPSSetting(index);
+    }
+
+    private void ApplyFPS(int index)
+    {
+        // Delegate to MobileOptimizer
+        MobileOptimizer.ApplyFPSSetting(index);
     }
 
     private void LoadSettings()
     {
-        // Audio
         float music = PlayerPrefs.GetFloat("MusicVol", 0.75f);
         float sfx = PlayerPrefs.GetFloat("SFXVol", 0.75f);
-        musicSlider.value = music;
-        sfxSlider.value = sfx;
-        SetMusicVolume(music);
-        SetSFXVolume(sfx);
+        
+        musicSlider.SetValueWithoutNotify(music);
+        sfxSlider.SetValueWithoutNotify(sfx);
+        
+        Invoke(nameof(ApplyAudioSettings), 0.1f);
 
-        // Quality
-        int quality = PlayerPrefs.GetInt("Quality", 2); // Default to Medium/High
-        graphicsDropdown.value = quality;
+        int quality = PlayerPrefs.GetInt("Quality", 2);
+        quality = Mathf.Clamp(quality, 0, QualitySettings.names.Length - 1);
+        graphicsDropdown.SetValueWithoutNotify(quality);
         SetQuality(quality);
 
-        // FPS
-        int fpsIndex = PlayerPrefs.GetInt("FPS", 1); // Default to 60
-        fpsDropdown.value = fpsIndex;
+        int fpsIndex = PlayerPrefs.GetInt("FPS", 1);
+        fpsDropdown.SetValueWithoutNotify(fpsIndex);
         SetFPS(fpsIndex);
+    }
+
+    private void ApplyAudioSettings()
+    {
+        SetMusicVolume(musicSlider.value);
+        SetSFXVolume(sfxSlider.value);
     }
 
     public void OpenControls()
     {
-        settingsPanel.SetActive(false); // Hide settings to declutter
+        settingsPanel.SetActive(false);
         controlsOverlay.SetActive(true);
     }
 
     public void CloseControls()
     {
         controlsOverlay.SetActive(false);
-        settingsPanel.SetActive(true); // Show settings again
+        settingsPanel.SetActive(true);
     }
 }
