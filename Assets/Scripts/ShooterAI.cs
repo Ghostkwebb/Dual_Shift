@@ -15,21 +15,26 @@ public class ShooterAI : MonoBehaviour
     [SerializeField] private Vector3 muzzleOffset = new Vector3(-1.0f, 0.1f, 0f);
     [SerializeField] private Animator animator;
 
-    private bool isDead = false;
+    public bool IsDead { get; private set; } = false;
 
     private void OnEnable()
     {
-        isDead = false;
+        IsDead = false;
         GetComponent<Collider2D>().enabled = true;
         StartCoroutine(FireRoutine());
     }
 
     public void TriggerDeath()
     {
-        isDead = true;
+        if (IsDead) return;
+        IsDead = true;
+        
+        // Disable collider FIRST to prevent any more collision events
+        var col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+        
         StopAllCoroutines();
         animator.SetTrigger("Die");
-        GetComponent<Collider2D>().enabled = false;
         Destroy(gameObject, 0.5f);
     }
 
@@ -38,7 +43,7 @@ public class ShooterAI : MonoBehaviour
         yield return new WaitUntil(() => transform.position.x <= activationX);
         yield return new WaitForSeconds(startDelay);
 
-        while (!isDead)
+        while (!IsDead)
         {
             animator.SetTrigger("Shoot");
             yield return new WaitForSeconds(fireRate);
@@ -47,7 +52,7 @@ public class ShooterAI : MonoBehaviour
     
     public void FireProjectile()
     {
-        if (isDead || projectilePrefab == null) return;
+        if (IsDead || projectilePrefab == null) return;
 
         Vector3 spawnPos = transform.position + muzzleOffset;
         GameObject proj = ObjectPooler.Instance.GetProjectile(spawnPos, Quaternion.identity);

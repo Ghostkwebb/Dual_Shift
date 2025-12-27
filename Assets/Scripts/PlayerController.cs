@@ -321,6 +321,13 @@ public class PlayerController : MonoBehaviour
         
         if (other.CompareTag("Enemy"))
         {
+            // Check if enemy is already dead (prevents race condition)
+            bool enemyAlreadyDead = false;
+            if (other.TryGetComponent(out GruntAI grunt)) enemyAlreadyDead = grunt.IsDead;
+            else if (other.TryGetComponent(out ShooterAI shooter)) enemyAlreadyDead = shooter.IsDead;
+            
+            if (enemyAlreadyDead) return; // Skip collision with dead enemies
+            
             if (isLethalDash)
             {
                 KillEnemy(other.gameObject);
