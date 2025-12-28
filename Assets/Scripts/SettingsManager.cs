@@ -21,6 +21,10 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private Toggle hdrToggle;
     [SerializeField] private TMP_Text hdrStatusText;
 
+    [Header("FPS Display")]
+    [SerializeField] private Toggle fpsDisplayToggle;
+    [SerializeField] private GameObject fpsDisplayObject;
+
     [Header("Panels")]
     [SerializeField] private GameObject controlsOverlay;
 
@@ -42,6 +46,7 @@ public class SettingsManager : MonoBehaviour
         graphicsDropdown.onValueChanged.AddListener(SetQuality);
         fpsDropdown.onValueChanged.AddListener(SetFPS);
         if (hdrToggle != null) hdrToggle.onValueChanged.AddListener(SetHDR);
+        if (fpsDisplayToggle != null) fpsDisplayToggle.onValueChanged.AddListener(SetFPSDisplay);
     }
 
     private void CheckHDRSupport()
@@ -153,6 +158,13 @@ public class SettingsManager : MonoBehaviour
     public void SetFPS(int index) => MobileOptimizer.ApplyFPSSetting(index);
     private void ApplyFPS(int index) => MobileOptimizer.ApplyFPSSetting(index);
 
+    public void SetFPSDisplay(bool enabled)
+    {
+        if (fpsDisplayObject != null)
+            fpsDisplayObject.SetActive(enabled);
+        PlayerPrefs.SetInt("FPSDisplay", enabled ? 1 : 0);
+    }
+
     private void LoadSettings()
     {
         float music = PlayerPrefs.GetFloat("MusicVol", 0.75f);
@@ -175,6 +187,14 @@ public class SettingsManager : MonoBehaviour
             bool hdrEnabled = PlayerPrefs.GetInt("HDR", 0) == 1;
             hdrToggle.SetIsOnWithoutNotify(hdrEnabled);
             SetHDR(hdrEnabled);
+        }
+
+        // FPS Display - disabled by default
+        if (fpsDisplayToggle != null)
+        {
+            bool fpsDisplayEnabled = PlayerPrefs.GetInt("FPSDisplay", 0) == 1;
+            fpsDisplayToggle.SetIsOnWithoutNotify(fpsDisplayEnabled);
+            SetFPSDisplay(fpsDisplayEnabled);
         }
     }
 

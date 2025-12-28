@@ -44,7 +44,7 @@ public class EnemySpawnPoint : MonoBehaviour
                 else if (name.Contains("cyan") || name.Contains("blue"))
                     lightColor = Color.cyan;
                 else if (name.Contains("static"))
-                    lightColor = Color.white;
+                    lightColor = new Color(0f, 0.8f, 1f); 
 
                 VisualsInstaller.AttachEnemyLight(minion, lightColor, 6.0f, 7.0f);
                 return;

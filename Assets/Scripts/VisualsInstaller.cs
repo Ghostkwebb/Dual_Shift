@@ -138,7 +138,7 @@ public class VisualsInstaller : MonoBehaviour
         Light2D light = lightObj.AddComponent<Light2D>();
         light.lightType = Light2D.LightType.Point;
         light.color = color;
-        light.intensity = intensity * 2f;
+        light.intensity = intensity;
         light.pointLightOuterRadius = Mathf.Max(radius, height * 1.5f);
         light.pointLightInnerRadius = 0.5f;
         light.falloffIntensity = 0.3f;

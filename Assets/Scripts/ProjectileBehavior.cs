@@ -49,7 +49,12 @@ public class ProjectileBehavior : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Obstacle") || other.CompareTag("Platform"))
+        {
+            // Spawn death VFX when hitting obstacle
+            if (deathVFXPrefab != null)
+                Instantiate(deathVFXPrefab, transform.position, Quaternion.identity);
             ObjectPooler.Instance.ReturnProjectile(gameObject);
+        }
     }
     
     public void HitByPlayer()
