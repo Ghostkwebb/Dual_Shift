@@ -200,30 +200,41 @@ public class VisualsInstaller : MonoBehaviour
 
         var renderer = dustObj.GetComponent<ParticleSystemRenderer>();
         
-        // Use simple particle shader
-        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
-        if (shader == null) shader = Shader.Find("Sprites/Default");
+        // Try to load pre-made material (ensures shader is included in build)
+        Material mat = Resources.Load<Material>("ParticleGlow");
         
-        Material mat = new Material(shader);
-        
-        // Pure additive blending (One + One) creates the glow effect!
-        mat.SetFloat("_Surface", 1); // Transparent
-        mat.SetFloat("_Blend", 1); // Additive
-        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
-        mat.SetInt("_ZWrite", 0);
-        mat.renderQueue = 3000;
-        
-        // Higher HDR color to trigger bloom
-        Color hdrColor = new Color(4f, 4f, 4f, 1f);
-        mat.SetColor("_BaseColor", hdrColor);
-        mat.color = Color.white;
-        
-        // Add emission for stronger glow (moderate value to avoid black centers)
-        if (mat.HasProperty("_EmissionColor"))
+        if (mat == null)
         {
-            mat.EnableKeyword("_EMISSION");
-            mat.SetColor("_EmissionColor", new Color(3f, 3f, 3f, 1f));
+            // Fallback: create material dynamically
+            Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+            if (shader == null) shader = Shader.Find("Sprites/Default");
+            
+            mat = new Material(shader);
+            
+            // Pure additive blending (One + One) creates the glow effect!
+            mat.SetFloat("_Surface", 1); // Transparent
+            mat.SetFloat("_Blend", 1); // Additive
+            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            mat.SetInt("_ZWrite", 0);
+            mat.renderQueue = 3000;
+            
+            // Higher HDR color to trigger bloom
+            Color hdrColor = new Color(4f, 4f, 4f, 1f);
+            mat.SetColor("_BaseColor", hdrColor);
+            mat.color = Color.white;
+            
+            // Add emission for stronger glow
+            if (mat.HasProperty("_EmissionColor"))
+            {
+                mat.EnableKeyword("_EMISSION");
+                mat.SetColor("_EmissionColor", new Color(3f, 3f, 3f, 1f));
+            }
+        }
+        else
+        {
+            // Clone the material so we don't modify the asset
+            mat = new Material(mat);
         }
         
         renderer.material = mat;

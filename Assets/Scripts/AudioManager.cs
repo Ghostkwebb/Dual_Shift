@@ -27,7 +27,6 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip deathClip;
     [SerializeField] private AudioClip uiClickClip;
 
-    // Runtime-created music player (isolated from SFX)
     private AudioSource musicSource;
     private AudioLowPassFilter musicFilter;
 
