@@ -90,8 +90,8 @@ Shader "DualShift/ScrollableLit"
                 float fadeFactor = lerp(1.0, 0.6, IN.depth * _DepthFade);
                 c.rgb = lerp(totalLight.rgb * 0.3, c.rgb, fadeFactor);
                 
-                // 3. Final light application
-                return c * totalLight;
+                // 3. Final output (light already applied above)
+                return c;
             }
             ENDCG
         }

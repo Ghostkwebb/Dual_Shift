@@ -4,8 +4,8 @@ using UnityEngine.Rendering.Universal;
 public class VisualsInstaller : MonoBehaviour
 {
     [Header("Global Light")]
-    [SerializeField] private Color globalLightColor = new Color(0.18f, 0.15f, 0.25f);
-    [SerializeField] private float globalLightIntensity = 1.0f;
+    [SerializeField] private Color globalLightColor = new Color(0.22f, 0.19f, 0.28f);
+    [SerializeField] private float globalLightIntensity = 1.1f;
 
     [Header("Player Light")]
     [SerializeField] private Color playerLightColor = Color.cyan;
@@ -89,6 +89,7 @@ public class VisualsInstaller : MonoBehaviour
         backlight.pointLightOuterRadius = 15.0f;
         backlight.falloffIntensity = 0.6f;
     }
+
 
     public static void AttachEnemyLight(GameObject enemyObj, Color color, float intensity, float radius)
     {
