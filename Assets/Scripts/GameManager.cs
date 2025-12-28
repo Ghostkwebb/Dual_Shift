@@ -60,7 +60,25 @@ public class GameManager : MonoBehaviour
             gameObject.AddComponent<MaterialUpgrader>();
         }
 
+        StyleScoreText();
         ShowMainMenu();
+    }
+
+    private void StyleScoreText()
+    {
+        if (scoreText == null) return;
+
+        // Gradient: Cyan top to white bottom
+        scoreText.enableVertexGradient = true;
+        scoreText.colorGradient = new VertexGradient(
+            new Color(0.4f, 0.9f, 1f),    // Top left - cyan
+            new Color(0.4f, 0.9f, 1f),    // Top right - cyan
+            new Color(1f, 1f, 1f),        // Bottom left - white
+            new Color(0.8f, 0.9f, 1f)     // Bottom right - light blue
+        );
+
+        // Character spacing for cleaner look
+        scoreText.characterSpacing = 2f;
     }
 
     public void ShowMainMenu()
@@ -200,7 +218,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        scoreText.text = ((int)score).ToString("D5");
+        scoreText.text = $"SCORE\n<size=150%>{((int)score).ToString("N0")}</size>";
         int displayMult = 1 + comboMultiplier;
         comboText.text = $"x{displayMult}";
         comboText.gameObject.SetActive(displayMult > 1);

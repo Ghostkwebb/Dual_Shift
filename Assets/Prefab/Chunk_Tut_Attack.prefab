@@ -1511,7 +1511,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dad3760c2d911412a99a56c2dd7637dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
-  textToDisplay: DASH STRIKE!
+  textToDisplay: 
   actionType: Attack
 --- !u!1 &5308110080117958270
 GameObject:
