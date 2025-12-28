@@ -159,7 +159,6 @@ public class VisualsInstaller : MonoBehaviour
         main.startLifetime = 5f;
         main.startSpeed = 0f;
         main.startSize = new ParticleSystem.MinMaxCurve(0.04f, 0.08f);
-        // Normal white - additive blending will make it bright
         main.startColor = Color.white;
         main.maxParticles = 50;
         main.simulationSpace = ParticleSystemSimulationSpace.World;
@@ -178,16 +177,13 @@ public class VisualsInstaller : MonoBehaviour
         vel.y = new ParticleSystem.MinMaxCurve(-0.3f, 0.3f);
         vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
 
-        // Use HDR colors in gradient (values > 1.0 trigger bloom)
         var colorOverLifetime = dustPS.colorOverLifetime;
         colorOverLifetime.enabled = true;
         Gradient gradient = new Gradient();
-        // Normal white color - additive blending creates brightness
-        Color hdrWhite = Color.white;
         gradient.SetKeys(
             new GradientColorKey[] {
-                new GradientColorKey(hdrWhite, 0f),
-                new GradientColorKey(hdrWhite, 1f)
+                new GradientColorKey(Color.white, 0f),
+                new GradientColorKey(Color.white, 1f)
             },
             new GradientAlphaKey[] {
                 new GradientAlphaKey(0f, 0f),
@@ -200,41 +196,23 @@ public class VisualsInstaller : MonoBehaviour
 
         var renderer = dustObj.GetComponent<ParticleSystemRenderer>();
         
-        // Try to load pre-made material (ensures shader is included in build)
+        // Load material from Resources (ensures URP Particles shader is included in build)
         Material mat = Resources.Load<Material>("ParticleGlow");
-        
-        if (mat == null)
+        if (mat != null)
         {
-            // Fallback: create material dynamically
+            mat = new Material(mat);
+        }
+        else
+        {
             Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
             if (shader == null) shader = Shader.Find("Sprites/Default");
-            
             mat = new Material(shader);
-            
-            // Pure additive blending (One + One) creates the glow effect!
-            mat.SetFloat("_Surface", 1); // Transparent
-            mat.SetFloat("_Blend", 1); // Additive
+            mat.SetFloat("_Surface", 1);
+            mat.SetFloat("_Blend", 1);
             mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
             mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
             mat.SetInt("_ZWrite", 0);
             mat.renderQueue = 3000;
-            
-            // Higher HDR color to trigger bloom
-            Color hdrColor = new Color(4f, 4f, 4f, 1f);
-            mat.SetColor("_BaseColor", hdrColor);
-            mat.color = Color.white;
-            
-            // Add emission for stronger glow
-            if (mat.HasProperty("_EmissionColor"))
-            {
-                mat.EnableKeyword("_EMISSION");
-                mat.SetColor("_EmissionColor", new Color(3f, 3f, 3f, 1f));
-            }
-        }
-        else
-        {
-            // Clone the material so we don't modify the asset
-            mat = new Material(mat);
         }
         
         renderer.material = mat;

@@ -53,18 +53,9 @@ public class HDREffectsManager : MonoBehaviour
         
         if (bloom != null)
         {
-            if (enabled)
-            {
-                bloom.intensity.value = baseBloomIntensity * hdrBloomMultiplier;
-                bloom.threshold.value = 0.7f;
-                bloom.scatter.value = 0.8f;
-            }
-            else
-            {
-                bloom.intensity.value = baseBloomIntensity;
-                bloom.threshold.value = 0.9f;
-                bloom.scatter.value = 0.7f;
-            }
+            bloom.intensity.value = enabled ? baseBloomIntensity * hdrBloomMultiplier : baseBloomIntensity;
+            bloom.threshold.value = enabled ? 0.7f : 0.9f;
+            bloom.scatter.value = enabled ? 0.8f : 0.7f;
         }
         Boost2DLights(enabled);
     }
@@ -74,21 +65,20 @@ public class HDREffectsManager : MonoBehaviour
         var lights = FindObjectsByType<Light2D>(FindObjectsSortMode.None);
         foreach (var light in lights)
         {
-            if (light.lightType == Light2D.LightType.Point)
+            if (light.lightType != Light2D.LightType.Point) continue;
+            
+            if (!light.name.Contains("_base"))
+                light.name += $"_base{light.intensity:F2}";
+            
+            float baseIntensity = light.intensity;
+            int idx = light.name.IndexOf("_base");
+            if (idx >= 0)
             {
-                if (!light.name.Contains("_base"))
-                    light.name += $"_base{light.intensity:F2}";
-                
-                float baseIntensity = light.intensity;
-                int idx = light.name.IndexOf("_base");
-                if (idx >= 0)
-                {
-                    string baseStr = light.name.Substring(idx + 5);
-                    float.TryParse(baseStr, out baseIntensity);
-                }
-                
-                light.intensity = hdrEnabled ? baseIntensity * hdrLightMultiplier : baseIntensity;
+                string baseStr = light.name.Substring(idx + 5);
+                float.TryParse(baseStr, out baseIntensity);
             }
+            
+            light.intensity = hdrEnabled ? baseIntensity * hdrLightMultiplier : baseIntensity;
         }
     }
 }
