@@ -4023,6 +4023,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: globalSpawnChance
+      value: 0.902
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: enemyOptions.Array.data[1].weight
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: enemyOptions.Array.data[2].weight
+      value: 5.9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4084,6 +4096,18 @@ PrefabInstance:
     - target: {fileID: 5464748433128041286, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: globalSpawnChance
+      value: 0.891
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: enemyOptions.Array.data[1].weight
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
+      propertyPath: enemyOptions.Array.data[2].weight
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

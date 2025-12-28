@@ -4053,7 +4053,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 8.498432
+  orthographic size: 6.769649
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -5125,7 +5125,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00018310547, y: 0}
+  m_AnchoredPosition: {x: -0.00024414062, y: 0}
   m_SizeDelta: {x: 62.094482, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &728002489
@@ -10276,6 +10276,10 @@ MonoBehaviour:
   - {fileID: 621020211993472696, guid: b9611de10200bbe4dafa89b95cf7dd9f, type: 3}
   - {fileID: 621020211993472696, guid: ece6670338fe6084080d0f2882d348bf, type: 3}
   - {fileID: 621020211993472696, guid: 813a7713b884b6a4cabec156bb572edf, type: 3}
+  - {fileID: 621020211993472696, guid: d33af5e758f786246b58c61463d4d356, type: 3}
+  - {fileID: 621020211993472696, guid: bcb26a5111028eb4ca5c8def30806c18, type: 3}
+  - {fileID: 621020211993472696, guid: e3e0f91a86a9a6d408418e34f7dc5dda, type: 3}
+  - {fileID: 621020211993472696, guid: 00f98b07155ea0b4cb146a3ff39df500, type: 3}
   spawnOrigin: {fileID: 1393436571}
   chunkWidth: 19.9
   chunksOnScreen: 7

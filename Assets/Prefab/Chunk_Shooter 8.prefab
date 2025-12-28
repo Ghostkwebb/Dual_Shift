@@ -4058,7 +4058,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
       propertyPath: enemyOptions.Array.data[0].weight
-      value: 2
+      value: 2.3
       objectReference: {fileID: 0}
     - target: {fileID: 6762703186576870378, guid: ad1f23412c8ec4f24be35c5f1cf0bf9d, type: 3}
       propertyPath: enemyOptions.Array.data[2].weight
