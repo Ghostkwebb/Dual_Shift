@@ -501,9 +501,9 @@ MonoBehaviour:
   mainMixer: {fileID: 24100000, guid: ab8ad14e527f14a70a7ae3d20852017d, type: 2}
   sfxSource: {fileID: 30483165}
   runSource: {fileID: 30483164}
-  backgroundMusic: {fileID: 0}
+  backgroundMusic: {fileID: 8300000, guid: 5505a06bb4419af448ba2fb1b43fb0e5, type: 3}
   runClip: {fileID: 0}
-  jumpClip: {fileID: 0}
+  jumpClip: {fileID: 8300000, guid: 138e19eaf43fb8546972260c65174521, type: 3}
   attackClip: {fileID: 8300000, guid: dbf5d7b9f8b8c4e86b65223d78f0c714, type: 3}
   hitClip: {fileID: 8300000, guid: cefd8d21110c9444aab691d7126bd350, type: 3}
   deathClip: {fileID: 0}
@@ -10280,6 +10280,8 @@ MonoBehaviour:
   - {fileID: 621020211993472696, guid: bcb26a5111028eb4ca5c8def30806c18, type: 3}
   - {fileID: 621020211993472696, guid: e3e0f91a86a9a6d408418e34f7dc5dda, type: 3}
   - {fileID: 621020211993472696, guid: 00f98b07155ea0b4cb146a3ff39df500, type: 3}
+  - {fileID: 621020211993472696, guid: 0b5d8c4998dbfee47a8ae4420542993d, type: 3}
+  - {fileID: 621020211993472696, guid: 3db6c75540af56e4794009c3af87cedc, type: 3}
   spawnOrigin: {fileID: 1393436571}
   chunkWidth: 19.9
   chunksOnScreen: 7
