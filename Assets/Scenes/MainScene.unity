@@ -4259,7 +4259,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 7.529412
+  orthographic size: 7.996254
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -9546,7 +9546,7 @@ MonoBehaviour:
     m_Bits: 128
   switchAngle: 68.5
   driftFactor: 0.75
-  maxForwardDist: 25
+  maxForwardDist: 18
   dashStrikeSurge: 4
   tiltStrength: 2
   stretchStrength: 0
@@ -10167,6 +10167,11 @@ MonoBehaviour:
   - {fileID: 621020211993472696, guid: 00f98b07155ea0b4cb146a3ff39df500, type: 3}
   - {fileID: 621020211993472696, guid: 0b5d8c4998dbfee47a8ae4420542993d, type: 3}
   - {fileID: 621020211993472696, guid: 3db6c75540af56e4794009c3af87cedc, type: 3}
+  - {fileID: 621020211993472696, guid: 3a558605d1c650b4eb36638dca66f4ef, type: 3}
+  - {fileID: 621020211993472696, guid: e3a633d0e8e6b064785c7f91bde13c34, type: 3}
+  - {fileID: 621020211993472696, guid: d9e7340f5de1ac44e845446b7a0743bc, type: 3}
+  - {fileID: 621020211993472696, guid: a61292fb2c04a7a4f9e9d01785c573dd, type: 3}
+  - {fileID: 621020211993472696, guid: a1ce38c3eb2b666499eaf6b0474ac9b5, type: 3}
   spawnOrigin: {fileID: 1393436571}
   chunkWidth: 19.9
   chunksOnScreen: 7
