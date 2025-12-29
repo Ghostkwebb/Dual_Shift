@@ -42,8 +42,12 @@ public class TutorialManager : MonoBehaviour
         IsTutorialActive = true;
         expectedAction = actionKey;
 
+        // Don't pause immediately if we want an entrance animation
+        // But for tutorial we usually want instant stop.
+        // Let's pause first, but UIAnimator uses unscaled time so it's fine.
         Time.timeScale = 0f;
-        tutorialOverlay.SetActive(true);
+        
+        SetPanelActive(tutorialOverlay, true);
         instructionText.text = text;
     }
 
@@ -83,7 +87,22 @@ public class TutorialManager : MonoBehaviour
     {
         IsTutorialActive = false;
         Time.timeScale = 1f;
-        tutorialOverlay.SetActive(false);
+        SetPanelActive(tutorialOverlay, false);
+    }
+
+    private void SetPanelActive(GameObject panel, bool active)
+    {
+        if (panel == null) return;
+        
+        if (panel.TryGetComponent<UIAnimator>(out var animator))
+        {
+            if (active) animator.Show();
+            else animator.Hide();
+        }
+        else
+        {
+            panel.SetActive(active);
+        }
     }
 
     public void FinishTutorialSequence()

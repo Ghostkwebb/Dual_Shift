@@ -93,10 +93,10 @@ public class GameManager : MonoBehaviour
         levelTime = 0f; 
 
         // UI State
-        mainMenuPanel.SetActive(true);
+        SetPanelActive(mainMenuPanel, true);
         gameHUD.SetActive(false);
-        gameOverPanel.SetActive(false);
-        pausePanel.SetActive(false);
+        SetPanelActive(gameOverPanel, false);
+        SetPanelActive(pausePanel, false);
 
         Time.timeScale = 1; 
     }
@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
         levelTime = 0f;
         worldSpeed = speedCurve.Evaluate(0f); 
 
-        mainMenuPanel.SetActive(false);
+        SetPanelActive(mainMenuPanel, false);
         gameHUD.SetActive(true);
     }
 
@@ -187,7 +187,7 @@ public class GameManager : MonoBehaviour
         }
 
         gameHUD.SetActive(false);
-        gameOverPanel.SetActive(true);
+        SetPanelActive(gameOverPanel, true);
 
         finalScoreText.text = $"SCORE: {(int)score}\n" +
                               $"BEST: {(int)bestScore}\n\n" +
@@ -206,7 +206,7 @@ public class GameManager : MonoBehaviour
         if (CurrentState != GameState.Playing) return;
 
         isPaused = !isPaused;
-        pausePanel.SetActive(isPaused);
+        SetPanelActive(pausePanel, isPaused);
         Time.timeScale = isPaused ? 0 : 1;
     }
 
@@ -214,6 +214,21 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         RestartGame(); 
+    }
+
+    private void SetPanelActive(GameObject panel, bool active)
+    {
+        if (panel == null) return;
+
+        if (panel.TryGetComponent<UIAnimator>(out var animator))
+        {
+            if (active) animator.Show();
+            else animator.Hide();
+        }
+        else
+        {
+            panel.SetActive(active);
+        }
     }
 
     private void UpdateUI()

@@ -123,8 +123,8 @@ public class SettingsManager : MonoBehaviour
     }
 
     private void OnApplicationQuit() => PlayerPrefs.Save();
-    public void OpenSettings() => settingsPanel.SetActive(true);
-    public void CloseSettings() => settingsPanel.SetActive(false);
+    public void OpenSettings() => SetPanelActive(settingsPanel, true);
+    public void CloseSettings() => SetPanelActive(settingsPanel, false);
 
     public void SetMusicVolume(float value)
     {
@@ -206,14 +206,29 @@ public class SettingsManager : MonoBehaviour
 
     public void OpenControls()
     {
-        settingsPanel.SetActive(false);
-        controlsOverlay.SetActive(true);
+        SetPanelActive(settingsPanel, false);
+        SetPanelActive(controlsOverlay, true);
     }
 
     public void CloseControls()
     {
-        controlsOverlay.SetActive(false);
-        settingsPanel.SetActive(true);
+        SetPanelActive(controlsOverlay, false);
+        SetPanelActive(settingsPanel, true);
+    }
+
+    private void SetPanelActive(GameObject panel, bool active)
+    {
+        if (panel == null) return;
+        
+        if (panel.TryGetComponent<UIAnimator>(out var animator))
+        {
+            if (active) animator.Show();
+            else animator.Hide();
+        }
+        else
+        {
+            panel.SetActive(active);
+        }
     }
     
     public bool IsHDRSupported() => isHDRSupported;
