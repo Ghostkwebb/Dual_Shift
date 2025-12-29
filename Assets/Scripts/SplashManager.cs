@@ -3,6 +3,7 @@ using UnityEngine.Video;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class SplashManager : MonoBehaviour
 {
@@ -46,7 +47,19 @@ public class SplashManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
+        bool inputReceived = false;
+
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            inputReceived = true;
+
+        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
+            inputReceived = true;
+
+
+        if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
+            inputReceived = true;
+
+        if (inputReceived)
         {
             Skip();
         }
