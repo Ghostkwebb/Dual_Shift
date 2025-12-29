@@ -38,6 +38,14 @@ public class LoadingScreenManager : MonoBehaviour
         ShowLoadingScreen("Loading...");
         StartCoroutine(WaitForStableFrameRate());
     }
+    
+    private void Update()
+    {
+        if (spinner != null && spinner.activeSelf)
+        {
+            spinner.transform.Rotate(0f, 0f, -360f * Time.unscaledDeltaTime);
+        }
+    }
 
     private void CreateDefaultLoadingScreen()
     {
