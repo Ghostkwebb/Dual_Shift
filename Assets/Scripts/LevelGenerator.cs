@@ -8,6 +8,11 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private Transform spawnOrigin;
     [SerializeField] private float chunkWidth = 20f;
     [SerializeField] private int chunksOnScreen = 3;
+    
+    [Header("Tutorial Chunks")]
+    [SerializeField] private LevelChunk tutorialSwitchPrefab;
+    [SerializeField] private LevelChunk tutorialAttackPrefab;
+    [SerializeField] private LevelChunk tutorialEndPrefab;
 
     private float currentSpawnX;
     private Dictionary<string, ObjectPool<LevelChunk>> pools;
@@ -38,18 +43,49 @@ public class LevelGenerator : MonoBehaviour
     private void Start()
     {
         currentSpawnX = spawnOrigin.position.x - chunkWidth;
+        bool isTutorialDone = PlayerPrefs.GetInt("TutorialDone", 0) == 1;
 
-        for (int i = 0; i < chunksOnScreen + 1; i++)
+        if (!isTutorialDone)
         {
-            if (i <= 1) 
+            SpawnSpecificChunk(chunkPrefabs[0]); 
+            SpawnSpecificChunk(chunkPrefabs[0]);
+            SpawnSpecificChunk(tutorialSwitchPrefab); 
+            SpawnSpecificChunk(tutorialAttackPrefab);
+            SpawnSpecificChunk(tutorialEndPrefab);
+            int chunksSpawned = 5;
+            int remaining = (chunksOnScreen + 1) - chunksSpawned;
+            
+            for (int i = 0; i < remaining; i++) SpawnChunk();
+        }
+        else
+        {
+            for (int i = 0; i < chunksOnScreen + 1; i++)
             {
-                SpawnChunk(0);
-            }
-            else 
-            {
-                SpawnChunk();
+                if (i <= 1) 
+                {
+                    SpawnChunk(0);
+                }
+                else 
+                {
+                    SpawnChunk();
+                }
             }
         }
+    }
+    
+    private void SpawnSpecificChunk(LevelChunk prefab)
+    {
+        LevelChunk chunk = Instantiate(prefab, transform);
+        if (activeChunks.Count > 0)
+        {
+            LevelChunk lastChunk = activeChunks.ToArray()[activeChunks.Count - 1];
+            chunk.transform.position = new Vector3(lastChunk.transform.position.x + chunkWidth, 0, 0);
+        }
+        else
+        {
+            chunk.transform.position = new Vector3(currentSpawnX, 0, 0);
+        }
+        activeChunks.Enqueue(chunk);
     }
 
     private void Update()
@@ -90,7 +126,14 @@ public class LevelGenerator : MonoBehaviour
     private void DespawnChunk()
     {
         LevelChunk chunk = activeChunks.Dequeue();
-        string key = chunk.name.Replace("(Clone)", ""); // Clean name for dictionary lookup
-        pools[key].Release(chunk);
+        string key = chunk.name.Replace("(Clone)", "");
+        if (pools.ContainsKey(key))
+        {
+            pools[key].Release(chunk);
+        }
+        else
+        {
+            Destroy(chunk.gameObject);
+        }
     }
 }

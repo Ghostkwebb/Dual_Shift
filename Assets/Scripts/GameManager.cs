@@ -10,20 +10,29 @@ public class GameManager : MonoBehaviour
     public GameState CurrentState { get; private set; }
 
     [Header("Settings")]
-    public float initialWorldSpeed = 10f;
-    public float worldSpeed; // Internal tracking
-    public float speedRamp = 0.1f;
-    public int scorePerKill = 50;
+    [Tooltip("The speed of the world over time. Draw a plateau for the 'Sweet Spot'.")]
+    public AnimationCurve speedCurve; 
+    [Tooltip("If the game lasts longer than the curve, add this much speed per second.")]
+    public float lateGameRamp = 0.5f;
+    public float worldSpeed; 
+    [Tooltip("Time in seconds before the combo multiplier resets.")]
     public float comboDuration = 2.0f;
 
     [Header("UI References")]
+    [Tooltip("UI Text for the running score.")]
     [SerializeField] private TMP_Text scoreText;
+    [Tooltip("UI Text for the current combo multiplier.")]
     [SerializeField] private TMP_Text comboText;
+    [Tooltip("The Panel object shown upon death.")]
     [SerializeField] private GameObject gameOverPanel;
+    [Tooltip("UI Text on the Game Over screen for final stats.")]
     [SerializeField] private TMP_Text finalScoreText;
+    [Tooltip("The Panel object shown when paused.")]
     [SerializeField] private GameObject pausePanel;
+    [Tooltip("The Panel object for the Main Menu.")]
     [SerializeField] private GameObject mainMenuPanel;
-    [SerializeField] private GameObject gameHUD; // Parent object for Score/Combo/PauseButton
+    [Tooltip("Parent object containing In-Game UI (Score, Pause Button).")]
+    [SerializeField] private GameObject gameHUD;
 
     private float score;
     private int kills;
@@ -31,6 +40,7 @@ public class GameManager : MonoBehaviour
     private int comboMultiplier;
     private float comboTimer;
     private bool isPaused = false;
+    private float levelTime = 0f;
 
     private void Awake()
     {
@@ -41,7 +51,34 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (!TryGetComponent<VisualsInstaller>(out var visualInstaller))
+        {
+            gameObject.AddComponent<VisualsInstaller>();
+        }
+        if (!TryGetComponent<MaterialUpgrader>(out var matUpgrader))
+        {
+            gameObject.AddComponent<MaterialUpgrader>();
+        }
+
+        StyleScoreText();
         ShowMainMenu();
+    }
+
+    private void StyleScoreText()
+    {
+        if (scoreText == null) return;
+
+        // Gradient: Cyan top to white bottom
+        scoreText.enableVertexGradient = true;
+        scoreText.colorGradient = new VertexGradient(
+            new Color(0.4f, 0.9f, 1f),    // Top left - cyan
+            new Color(0.4f, 0.9f, 1f),    // Top right - cyan
+            new Color(1f, 1f, 1f),        // Bottom left - white
+            new Color(0.8f, 0.9f, 1f)     // Bottom right - light blue
+        );
+
+        // Character spacing for cleaner look
+        scoreText.characterSpacing = 2f;
     }
 
     public void ShowMainMenu()
@@ -49,43 +86,60 @@ public class GameManager : MonoBehaviour
         CurrentState = GameState.Menu;
 
         // Reset Logic
-        worldSpeed = 0; // Stop the world
+        worldSpeed = 0; 
         score = 0;
         kills = 0;
         comboMultiplier = 0;
+        levelTime = 0f; 
 
         // UI State
-        mainMenuPanel.SetActive(true);
+        SetPanelActive(mainMenuPanel, true);
         gameHUD.SetActive(false);
-        gameOverPanel.SetActive(false);
-        pausePanel.SetActive(false);
+        SetPanelActive(gameOverPanel, false);
+        SetPanelActive(pausePanel, false);
 
-        Time.timeScale = 1; // Keep time running so Idle animations play
+        Time.timeScale = 1; 
     }
 
     public void StartGame()
     {
         CurrentState = GameState.Playing;
-        worldSpeed = initialWorldSpeed;
+        levelTime = 0f;
+        worldSpeed = speedCurve.Evaluate(0f); 
 
-        mainMenuPanel.SetActive(false);
+        SetPanelActive(mainMenuPanel, false);
         gameHUD.SetActive(true);
     }
 
     private void Update()
     {
         if (CurrentState != GameState.Playing) return;
+        levelTime += Time.deltaTime;
+        
+        if (speedCurve.length > 0)
+        {
+            float curveDuration = speedCurve.keys[speedCurve.length - 1].time;
+            if (levelTime <= curveDuration)
+            {
+                worldSpeed = speedCurve.Evaluate(levelTime);
+            }
+            else
+            {
+                float lastSpeed = speedCurve.Evaluate(curveDuration);
+                float timePassedSinceEnd = levelTime - curveDuration;
+                worldSpeed = lastSpeed + (timePassedSinceEnd * lateGameRamp);
+            }
+        }
 
-        // Score & Speed logic
-        score += worldSpeed * Time.deltaTime;
-        worldSpeed += speedRamp * Time.deltaTime;
-
+        float currentMultiplier = 1 + comboMultiplier; 
+        score += (worldSpeed * Time.deltaTime) * currentMultiplier;
+        
         if (comboTimer > 0)
         {
             comboTimer -= Time.deltaTime;
             if (comboTimer <= 0)
             {
-                comboMultiplier = 0;
+                comboMultiplier = 0; 
                 UpdateUI();
             }
         }
@@ -95,15 +149,14 @@ public class GameManager : MonoBehaviour
     public void AddKill()
     {
         kills++;
-        comboMultiplier++;
+        comboMultiplier++; 
         comboTimer = comboDuration;
-        score += scorePerKill * comboMultiplier;
         UpdateUI();
     }
 
     public void GameOver()
     {
-        if (CurrentState == GameState.GameOver) return; // Prevent double trigger
+        if (CurrentState == GameState.GameOver) return; 
 
         StartCoroutine(GameOverSequence());
     }
@@ -134,10 +187,8 @@ public class GameManager : MonoBehaviour
         }
 
         gameHUD.SetActive(false);
-        gameOverPanel.SetActive(true);
+        SetPanelActive(gameOverPanel, true);
 
-        // --- UPDATE FINAL TEXT ---
-        // Showing 4 stats: Score, Best, Kills, Max Kills
         finalScoreText.text = $"SCORE: {(int)score}\n" +
                               $"BEST: {(int)bestScore}\n\n" +
                               $"KILLS: {kills}\n" +
@@ -155,20 +206,36 @@ public class GameManager : MonoBehaviour
         if (CurrentState != GameState.Playing) return;
 
         isPaused = !isPaused;
-        pausePanel.SetActive(isPaused);
+        SetPanelActive(pausePanel, isPaused);
         Time.timeScale = isPaused ? 0 : 1;
     }
 
     public void QuitToMenu()
     {
         Time.timeScale = 1;
-        RestartGame(); // Simpler for now, reloads scene to Menu
+        RestartGame(); 
+    }
+
+    private void SetPanelActive(GameObject panel, bool active)
+    {
+        if (panel == null) return;
+
+        if (panel.TryGetComponent<UIAnimator>(out var animator))
+        {
+            if (active) animator.Show();
+            else animator.Hide();
+        }
+        else
+        {
+            panel.SetActive(active);
+        }
     }
 
     private void UpdateUI()
     {
-        scoreText.text = ((int)score).ToString("D5");
-        comboText.gameObject.SetActive(comboMultiplier > 1);
-        if (comboMultiplier > 1) comboText.text = $"x{comboMultiplier}";
+        scoreText.text = $"SCORE\n<size=150%>{((int)score).ToString("N0")}</size>";
+        int displayMult = 1 + comboMultiplier;
+        comboText.text = $"x{displayMult}";
+        comboText.gameObject.SetActive(displayMult > 1);
     }
 }
