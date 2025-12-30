@@ -176,6 +176,10 @@ public class GameManager : MonoBehaviour
         {
             bestScore = score;
             PlayerPrefs.SetFloat("BestScore", score);
+            if (LeaderboardManager.Instance != null)
+            {
+                LeaderboardManager.Instance.SubmitScore((long)score);
+            }
         }
 
         // --- SAVE MAX KILLS ---
@@ -184,6 +188,10 @@ public class GameManager : MonoBehaviour
         {
             maxKills = kills;
             PlayerPrefs.SetInt("MaxKills", kills);
+            if (LeaderboardManager.Instance != null)
+            {
+                LeaderboardManager.Instance.SubmitKills((long)kills);
+            }
         }
 
         gameHUD.SetActive(false);

@@ -31,6 +31,13 @@ public class SettingsManager : MonoBehaviour
     private const string MIXER_MUSIC = "MusicVol";
     private const string MIXER_SFX = "SFXVol";
     private bool isHDRSupported = false;
+    
+    [Header("Google Play Games UI")]
+    [SerializeField] private Button gpgsButton;
+    [SerializeField] private TMP_Text gpgsButtonText;
+    [SerializeField] private Image gpgsIcon;
+    [SerializeField] private Sprite connectedSprite;   
+    [SerializeField] private Sprite disconnectedSprite; 
 
     private void Start()
     {
@@ -47,6 +54,45 @@ public class SettingsManager : MonoBehaviour
         fpsDropdown.onValueChanged.AddListener(SetFPS);
         if (hdrToggle != null) hdrToggle.onValueChanged.AddListener(SetHDR);
         if (fpsDisplayToggle != null) fpsDisplayToggle.onValueChanged.AddListener(SetFPSDisplay);
+    }
+    
+    private void Update()
+    {
+        // Only run this check if the Settings Panel is visible to save performance
+        if (settingsPanel.activeSelf)
+        {
+            UpdateGPGSButton();
+        }
+    }
+    
+    private void UpdateGPGSButton()
+    {
+        // Reset color to white so the sprite art shows clearly (no tint)
+        gpgsIcon.color = Color.white;
+
+        if (GooglePlayGames.PlayGamesPlatform.Instance.IsAuthenticated())
+        {
+            // STATE: CONNECTED
+            gpgsButtonText.text = "CONNECTED: " + Social.localUser.userName;
+            gpgsIcon.sprite = connectedSprite; // Swap to Colored Icon
+            gpgsButton.interactable = false; 
+        }
+        else
+        {
+            // STATE: DISCONNECTED
+            gpgsButtonText.text = "CONNECT ACCOUNT";
+            gpgsIcon.sprite = disconnectedSprite; // Swap to Grey Icon
+            gpgsButton.interactable = true; 
+        }
+    }
+
+    // Link this to the Button's OnClick
+    public void OnGPGSButtonClick()
+    {
+        if (LeaderboardManager.Instance != null)
+        {
+            LeaderboardManager.Instance.SignIn();
+        }
     }
 
     private void CheckHDRSupport()
