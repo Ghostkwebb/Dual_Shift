@@ -128,11 +128,11 @@ public class LeaderboardManager : MonoBehaviour
     private void RefreshBoard(string leaderboardId)
     {
         Debug.Log($"Requesting data for: {leaderboardId}...");
-
+        
         // 1. Clear old rows
         foreach (Transform child in rowContainer) Destroy(child.gameObject);
 
-        // 2. Request Data
+        // 2. Request Scores
         PlayGamesPlatform.Instance.LoadScores(
             leaderboardId,
             LeaderboardStart.TopScores,
@@ -141,34 +141,63 @@ public class LeaderboardManager : MonoBehaviour
             LeaderboardTimeSpan.AllTime,
             (data) =>
             {
-                // LOG 2: Did we get a response?
-                Debug.Log($"Response received. Valid? {data.Valid}");
-
                 if (data.Valid)
                 {
-                    Debug.Log($"Found {data.Scores.Length} scores."); // LOG 3
+                    Debug.Log($"Found {data.Scores.Length} scores. Fetching names...");
                     
+                    // 3. Collect IDs to ask Google for Names
+                    List<string> userIds = new List<string>();
                     foreach (var score in data.Scores)
                     {
-                        GameObject rowObj = Instantiate(rowPrefab, rowContainer);
-                        LeaderboardRowUI rowScript = rowObj.GetComponent<LeaderboardRowUI>();
+                        userIds.Add(score.userID);
+                    }
+
+                    // 4. Request User Profiles (To get Gamertags)
+                    Social.LoadUsers(userIds.ToArray(), (users) =>
+                    {
+                        // Create a lookup table: ID -> Username
+                        Dictionary<string, string> names = new Dictionary<string, string>();
                         
-                        string nameDisplay = score.userID;
-                        if (score.userID == Social.localUser.id)
+                        // Add found users to dictionary
+                        if (users != null)
                         {
-                            nameDisplay = $"YOU ({Social.localUser.userName})";
+                            foreach (var user in users)
+                            {
+                                names[user.id] = user.userName;
+                            }
                         }
 
-                        rowScript.SetData(
-                            score.rank.ToString(), 
-                            nameDisplay, 
-                            score.value.ToString()
-                        );
-                    }
+                        // 5. Spawn Rows
+                        foreach (var score in data.Scores)
+                        {
+                            GameObject rowObj = Instantiate(rowPrefab, rowContainer);
+                            LeaderboardRowUI rowScript = rowObj.GetComponent<LeaderboardRowUI>();
+
+                            string displayName = score.userID; // Fallback to ID
+
+                            // If we found the name in the lookup, use it
+                            if (names.ContainsKey(score.userID))
+                            {
+                                displayName = names[score.userID];
+                            }
+                            
+                            // Special check for Self
+                            if (score.userID == Social.localUser.id)
+                            {
+                                displayName = $"YOU ({Social.localUser.userName})";
+                            }
+
+                            rowScript.SetData(
+                                score.rank.ToString(), 
+                                displayName, 
+                                score.value.ToString()
+                            );
+                        }
+                    });
                 }
                 else
                 {
-                    Debug.Log("Error loading data. Check Logcat for GPGS details.");
+                    Debug.Log("Error loading leaderboard data.");
                 }
             }
         );
