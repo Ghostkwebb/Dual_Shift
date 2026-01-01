@@ -3,22 +3,25 @@ using TMPro;
 
 public class FPSCounter : MonoBehaviour
 {
+    [Tooltip("The text component displaying FPS")]
     [SerializeField] private TextMeshProUGUI fpsText;
-    [SerializeField] private float refreshRate = 0.5f; // Update text every 0.5s
+    [Tooltip("How often to update the FPS display")]
+    [SerializeField] private float refreshRate = 0.5f;
 
     private float timer;
+    private int lastFPS = -1; // Cache to avoid updating when unchanged
 
     private void Update()
     {
-        // 1. Calculate FPS (1 / time between frames)
-        // We use unscaledDeltaTime so it works even when the game is paused
-        float fps = 1f / Time.unscaledDeltaTime;
-
-        // 2. Refresh the Text periodically (not every frame, or it's unreadable)
         if (Time.unscaledTime > timer)
         {
-            // Display as integer (e.g., "60 FPS")
-            fpsText.text = Mathf.RoundToInt(fps) + " FPS";
+            int fps = Mathf.RoundToInt(1f / Time.unscaledDeltaTime);
+            
+            if (fps != lastFPS)
+            {
+                fpsText.SetText("{0} FPS", fps);
+                lastFPS = fps;
+            }
             timer = Time.unscaledTime + refreshRate;
         }
     }

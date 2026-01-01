@@ -7,8 +7,11 @@ using UnityEngine.InputSystem;
 
 public class SplashManager : MonoBehaviour
 {
+    [Tooltip("Name of the scene to load next")]
     [SerializeField] private string nextSceneName = "MainScene";
+    [Tooltip("CanvasGroup for fade effect")]
     [SerializeField] private CanvasGroup fadeOverlay;
+    [Tooltip("Duration of the fade transition")]
     [SerializeField] private float fadeDuration = 0.5f;
 
     private VideoPlayer videoPlayer;

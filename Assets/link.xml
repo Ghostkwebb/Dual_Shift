@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+    <!-- Preserve entire Assembly-CSharp (your game code) -->
+    <assembly fullname="Assembly-CSharp" preserve="all"/>
+    
+    <!-- Preserve Google Play Games SDK - CRITICAL for Release builds -->
+    <assembly fullname="GooglePlayGames" preserve="all"/>
+    <assembly fullname="GooglePlayGames.BasicApi" preserve="all"/>
+    <assembly fullname="Google.Play.Common" preserve="all"/>
+    <assembly fullname="Google.Play.Core" preserve="all"/>
+    
+    <!-- Preserve Unity UI and TMP -->
+    <assembly fullname="Unity.TextMeshPro" preserve="all"/>
+    <assembly fullname="UnityEngine.UI" preserve="all"/>
+    <assembly fullname="UnityEngine.UIModule" preserve="all"/>
+    
+    <!-- Preserve URP Runtime -->
+    <assembly fullname="Unity.RenderPipelines.Universal.Runtime" preserve="all"/>
+    <assembly fullname="Unity.RenderPipelines.Core.Runtime" preserve="all"/>
+    
+    <!-- Preserve coroutine and callback-related types -->
+    <assembly fullname="mscorlib">
+        <type fullname="System.Collections.IEnumerator" preserve="all"/>
+        <type fullname="System.Action" preserve="all"/>
+        <type fullname="System.Action`1" preserve="all"/>
+        <type fullname="System.Func`1" preserve="all"/>
+        <type fullname="System.Func`2" preserve="all"/>
+    </assembly>
+    
+    <!-- Preserve System.Core for LINQ and lambdas -->
+    <assembly fullname="System.Core" preserve="all"/>
+    
+    <!-- Preserve Newtonsoft.Json if used -->
+    <assembly fullname="Newtonsoft.Json" preserve="all"/>
+</linker>

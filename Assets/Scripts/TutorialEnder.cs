@@ -9,7 +9,6 @@ public class TutorialEnder : MonoBehaviour
             if (TutorialManager.Instance != null)
             {
                 TutorialManager.Instance.FinishTutorialSequence();
-                Debug.Log("Tutorial Completed & Saved! (Player reached end)");
             }
         }
     }

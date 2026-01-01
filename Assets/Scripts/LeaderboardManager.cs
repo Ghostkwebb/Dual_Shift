@@ -7,9 +7,14 @@ using GooglePlayGames.BasicApi;
 public class LeaderboardManager : MonoBehaviour
 {
     [Header("Custom UI")]
+    [Tooltip("The panel containing the custom leaderboard UI")]
     [SerializeField] private GameObject customLeaderboardPanel;
+    [Tooltip("Container for leaderboard rows")]
     [SerializeField] private Transform rowContainer; 
-    [SerializeField] private GameObject rowPrefab;  
+    [Tooltip("Prefab for leaderboard row")]
+    [SerializeField] private GameObject rowPrefab;   
+    [Tooltip("The row displaying the player's own score")]
+    [SerializeField] private LeaderboardRowUI myScoreRow; 
     
     public static LeaderboardManager Instance;
 
@@ -22,14 +27,24 @@ public class LeaderboardManager : MonoBehaviour
     private void Start()
     {
 #if UNITY_ANDROID
-        // 1. Enable Debug Logs to see exactly why it fails in Logcat
-        PlayGamesPlatform.DebugLogEnabled = true;
+        try
+        {
+            PlayGamesPlatform.DebugLogEnabled = true;
+            PlayGamesPlatform.Activate();
 
-        // 2. Activate the Platform (v2 style)
-        PlayGamesPlatform.Activate();
-
-        // 3. Try Silent Login first
-        PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
+            if (PlayGamesPlatform.Instance != null)
+            {
+                PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
+            }
+            else
+            {
+                Debug.LogError("[GPGS] PlayGamesPlatform.Instance is null after Activate!");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("[GPGS] Failed to initialize: " + e.Message);
+        }
 #endif
     }
 
@@ -37,74 +52,75 @@ public class LeaderboardManager : MonoBehaviour
     {
         if (status == SignInStatus.Success)
         {
-            Debug.Log("GPGS Login Successful!");
-        }
-        else
-        {
-            Debug.Log("GPGS Silent Login Failed: " + status);
-            
-            // FIX: If silent login fails (NEED_REMOTE_CONSENT), 
-            // we must trigger the manual popup so the user can click "Allow".
-            // We check if we haven't tried manually yet to avoid infinite loops.
-            
-            // Note: In v2, ManuallyAuthenticate handles the UI resolution automatically.
             PlayGamesPlatform.Instance.ManuallyAuthenticate((manualStatus) => {
-                if (manualStatus == SignInStatus.Success)
-                {
-                    Debug.Log("Manual Login Successful!");
-                }
-                else
-                {
-                    Debug.Log("Manual Login Failed: " + manualStatus);
-                }
             });
         }
     }
 
-    // --- SUBMIT SCORE ---
     public void SubmitScore(long score)
     {
-        if (PlayGamesPlatform.Instance.IsAuthenticated())
+        try
         {
-            // "GPGSIds.leaderboard_high_scores" comes from the generated file
-            Social.ReportScore(score, GPGSIds.leaderboard_high_scores, (bool success) => {
-                if (success) Debug.Log("Score Posted!");
-                else Debug.Log("Score Failed");
-            });
+            if (PlayGamesPlatform.Instance != null && PlayGamesPlatform.Instance.IsAuthenticated())
+            {
+                Social.ReportScore(score, GPGSIds.leaderboard_high_scores, (bool success) => {});
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("[GPGS] SubmitScore error: " + e.Message);
         }
     }
     
-    // --- SUBMIT KILLS ---
     public void SubmitKills(long kills)
     {
-        if (PlayGamesPlatform.Instance.IsAuthenticated())
+        try
         {
-            // Note: The ID name "leaderboard_max_kills" depends on what you named it in the Console
-            // Check GPGSIds.cs to confirm the exact variable name.
-            Social.ReportScore(kills, GPGSIds.leaderboard_max_kills, (bool success) => {
-                if (success) Debug.Log("Kills Posted!");
-            });
+            if (PlayGamesPlatform.Instance != null && PlayGamesPlatform.Instance.IsAuthenticated())
+            {
+                Social.ReportScore(kills, GPGSIds.leaderboard_max_kills, (bool success) => {});
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("[GPGS] SubmitKills error: " + e.Message);
         }
     }
 
-    // --- SHOW LEADERBOARD UI ---
     public void ShowLeaderboard()
     {
-        if (!PlayGamesPlatform.Instance.IsAuthenticated())
+#if UNITY_ANDROID
+        try
         {
-            Debug.Log("Not logged in!");
-            PlayGamesPlatform.Instance.ManuallyAuthenticate(ProcessAuthentication);
-            return;
-        }
+            if (PlayGamesPlatform.Instance == null)
+            {
+                Debug.LogWarning("[GPGS] PlayGamesPlatform.Instance is null!");
+                return;
+            }
+            
+            if (!PlayGamesPlatform.Instance.IsAuthenticated())
+            {
+                PlayGamesPlatform.Instance.ManuallyAuthenticate(ProcessAuthentication);
+                return;
+            }
 
-        // Open Custom Panel and load High Scores by default
-        customLeaderboardPanel.SetActive(true);
-        OpenHighScoreTab(); 
+            if (customLeaderboardPanel != null)
+            {
+                customLeaderboardPanel.SetActive(true);
+                OpenHighScoreTab();
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("[GPGS] ShowLeaderboard error: " + e.Message);
+        }
+#endif
     }
     
     public void CloseLeaderboard()
     {
-        customLeaderboardPanel.SetActive(false);
+        if (customLeaderboardPanel != null)
+            customLeaderboardPanel.SetActive(false);
     }
     
     public void OpenHighScoreTab()
@@ -119,20 +135,34 @@ public class LeaderboardManager : MonoBehaviour
     
     public void SignIn()
     {
-        if (!PlayGamesPlatform.Instance.IsAuthenticated())
+#if UNITY_ANDROID
+        try
         {
-            PlayGamesPlatform.Instance.ManuallyAuthenticate(ProcessAuthentication);
+            if (PlayGamesPlatform.Instance != null && !PlayGamesPlatform.Instance.IsAuthenticated())
+            {
+                PlayGamesPlatform.Instance.ManuallyAuthenticate(ProcessAuthentication);
+            }
         }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("[GPGS] SignIn error: " + e.Message);
+        }
+#endif
     }
     
     private void RefreshBoard(string leaderboardId)
     {
-        Debug.Log($"Requesting data for: {leaderboardId}...");
+        if (PlayGamesPlatform.Instance == null)
+        {
+            Debug.LogWarning("[GPGS] PlayGamesPlatform.Instance is null in RefreshBoard!");
+            return;
+        }
         
-        // 1. Clear old rows
-        foreach (Transform child in rowContainer) Destroy(child.gameObject);
+        if (rowContainer != null)
+        {
+            foreach (Transform child in rowContainer) Destroy(child.gameObject);
+        }
 
-        // 2. Request Scores
         PlayGamesPlatform.Instance.LoadScores(
             leaderboardId,
             LeaderboardStart.TopScores,
@@ -143,22 +173,16 @@ public class LeaderboardManager : MonoBehaviour
             {
                 if (data.Valid)
                 {
-                    Debug.Log($"Found {data.Scores.Length} scores. Fetching names...");
-                    
-                    // 3. Collect IDs to ask Google for Names
                     List<string> userIds = new List<string>();
                     foreach (var score in data.Scores)
                     {
                         userIds.Add(score.userID);
                     }
 
-                    // 4. Request User Profiles (To get Gamertags)
                     Social.LoadUsers(userIds.ToArray(), (users) =>
                     {
-                        // Create a lookup table: ID -> Username
                         Dictionary<string, string> names = new Dictionary<string, string>();
                         
-                        // Add found users to dictionary
                         if (users != null)
                         {
                             foreach (var user in users)
@@ -167,21 +191,18 @@ public class LeaderboardManager : MonoBehaviour
                             }
                         }
 
-                        // 5. Spawn Rows
                         foreach (var score in data.Scores)
                         {
                             GameObject rowObj = Instantiate(rowPrefab, rowContainer);
                             LeaderboardRowUI rowScript = rowObj.GetComponent<LeaderboardRowUI>();
 
-                            string displayName = score.userID; // Fallback to ID
+                            string displayName = score.userID; 
 
-                            // If we found the name in the lookup, use it
                             if (names.ContainsKey(score.userID))
                             {
                                 displayName = names[score.userID];
                             }
                             
-                            // Special check for Self
                             if (score.userID == Social.localUser.id)
                             {
                                 displayName = $"YOU ({Social.localUser.userName})";
@@ -194,10 +215,24 @@ public class LeaderboardManager : MonoBehaviour
                             );
                         }
                     });
+                    
+                    if (data.PlayerScore != null)
+                    {
+                        myScoreRow.gameObject.SetActive(true);
+                        myScoreRow.SetData(
+                            data.PlayerScore.rank.ToString(),
+                            $"YOU ({Social.localUser.userName})", 
+                            data.PlayerScore.value.ToString()
+                        );
+                    }
+                    else
+                    {
+                        myScoreRow.gameObject.SetActive(false);
+                    }
                 }
                 else
                 {
-                    Debug.Log("Error loading leaderboard data.");
+                    Debug.LogWarning("Error loading leaderboard data.");
                 }
             }
         );
@@ -207,15 +242,12 @@ public class LeaderboardManager : MonoBehaviour
     {
         if (!PlayGamesPlatform.Instance.IsAuthenticated())
         {
-            Debug.Log("Not logged in!");
             return;
         }
 
-        // Show Panel / Clear old rows
         customLeaderboardPanel.SetActive(true);
         foreach (Transform child in rowContainer) Destroy(child.gameObject);
 
-        // Request Data: Top 10, Public, All Time
         PlayGamesPlatform.Instance.LoadScores(
             GPGSIds.leaderboard_high_scores,
             LeaderboardStart.TopScores,
@@ -226,25 +258,21 @@ public class LeaderboardManager : MonoBehaviour
             {
                 if (data.Valid)
                 {
-                    Debug.Log("Found " + data.Scores.Length + " scores.");
-                    
                     foreach (var score in data.Scores)
                     {
-                        // Spawn Row
                         GameObject rowObj = Instantiate(rowPrefab, rowContainer);
                         LeaderboardRowUI rowScript = rowObj.GetComponent<LeaderboardRowUI>();
                         
-                        // Fill Data
                         rowScript.SetData(
                             score.rank.ToString(), 
-                            score.userID, // Note: Google hides real names often, returns ID or "Player"
+                            score.userID, 
                             score.value.ToString()
                         );
                     }
                 }
                 else
                 {
-                    Debug.Log("Error loading leaderboard data.");
+                    Debug.LogWarning("Error loading leaderboard data.");
                 }
             }
         );

@@ -5,11 +5,11 @@ public class ProjectileBehavior : MonoBehaviour
 {
     [Tooltip("Trail effect (optional)")]
     [SerializeField] private TrailRenderer trail;
-    [Tooltip("VFX spawned when destroyed by player")]
-    [SerializeField] private GameObject deathVFXPrefab;
     
     private float speed;
     private const float DESPAWN_X = -20f;
+    
+    private static readonly WaitForEndOfFrame waitEndOfFrame = new WaitForEndOfFrame();
 
     public void Initialize(float worldSpeed)
     {
@@ -50,17 +50,14 @@ public class ProjectileBehavior : MonoBehaviour
     {
         if (other.CompareTag("Obstacle") || other.CompareTag("Platform"))
         {
-            // Spawn death VFX when hitting obstacle
-            if (deathVFXPrefab != null)
-                Instantiate(deathVFXPrefab, transform.position, Quaternion.identity);
+            ObjectPooler.Instance.GetVFX(transform.position);
             ObjectPooler.Instance.ReturnProjectile(gameObject);
         }
     }
     
     public void HitByPlayer()
     {
-        if (deathVFXPrefab != null)
-            Instantiate(deathVFXPrefab, transform.position, Quaternion.identity);
+        ObjectPooler.Instance.GetVFX(transform.position);
         ObjectPooler.Instance.ReturnProjectile(gameObject);
     }
 }

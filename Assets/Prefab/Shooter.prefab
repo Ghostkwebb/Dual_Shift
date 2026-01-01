@@ -195,7 +195,6 @@ MonoBehaviour:
   startDelay: 0.3
   fireRate: 4
   muzzleOffset: {x: 1.55, y: -0.18, z: 0}
-  render: {fileID: 4833257583666382191}
   animator: {fileID: 702121612286415915}
 --- !u!95 &702121612286415915
 Animator:
@@ -208,7 +207,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 4c951639f035e4f8094e3406be5c3515, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 2
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0

@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     [Range(0.05f, 0.5f)] [SerializeField] private float screenPercentX = 0.15f;
     [Tooltip("Height offset to stand ON the platform instead of IN it.")]
     [SerializeField] private float platformLandOffset = 0.6f; 
+    [Tooltip("Layer mask checks for platforms")]
     [SerializeField] private LayerMask platformLayer;
 
     [Header("Surge & Drift")]
@@ -53,11 +54,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject visualSlash;
     [Tooltip("Duration the slash visual remains active.")]
     [SerializeField] private float slashDuration = 0.1f;
-    [Tooltip("Prefab spawned when an enemy is destroyed.")]
-    [SerializeField] private GameObject deathVFXPrefab;
     
     [Header("Animation")]
+    [Tooltip("The main animator component")]
     [SerializeField] private Animator animator;
+    [Tooltip("The main sprite renderer")]
     [SerializeField] private SpriteRenderer spriteRenderer;
 
     private PlayerInputActions playerInputActions;
@@ -76,7 +77,8 @@ public class PlayerController : MonoBehaviour
     private float rigidPlatformY; 
     
     private Vector3 originalScale;
-    private HashSet<int> hitObjectsDuringDash = new HashSet<int>(); // Track already-hit objects
+    private HashSet<int> hitObjectsDuringDash = new HashSet<int>(); 
+    private GameManager gm;
 
     private void Awake()
     {
@@ -87,6 +89,7 @@ public class PlayerController : MonoBehaviour
     
     private void Start()
     {
+        gm = GameManager.Instance;
         Vector3 startPos = transform.position;
         startPos.y = bottomLaneY;
         transform.position = startPos;
@@ -114,7 +117,7 @@ public class PlayerController : MonoBehaviour
     {
         CheckPlatformCollision();
 
-        bool isPlaying = GameManager.Instance.CurrentState == GameManager.GameState.Playing;
+        bool isPlaying = gm != null && gm.CurrentState == GameManager.GameState.Playing;
 
         HandleLaneSwitch();
         HandleSurgeAndDrift();
@@ -147,7 +150,8 @@ public class PlayerController : MonoBehaviour
 
         transform.position = new Vector3(newX, newY, transform.position.z);
 
-        // --- VISUALS ---
+        transform.position = new Vector3(newX, newY, transform.position.z);
+
         float verticalSpeed = onPlatform ? 0f : velocityY; 
 
         float tiltAngle = verticalSpeed * tiltStrength;
@@ -162,7 +166,8 @@ public class PlayerController : MonoBehaviour
         UpdateEffects(isPlaying);
         UpdateAnimations();
         
-        // Continuous hitbox check during dash strike to prevent tunneling
+        UpdateAnimations();
+        
         if (isDashStriking && isLethalDash)
         {
             Collider2D[] hits = Physics2D.OverlapBoxAll(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
@@ -305,7 +310,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Instantiate(deathVFXPrefab, enemy.transform.position, Quaternion.identity);
+            ObjectPooler.Instance.GetVFX(enemy.transform.position);
             Destroy(enemy);
         }
     }
@@ -466,31 +471,51 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+
+    private bool lastIsRunning = false;
+    private bool lastIsGrounded = false;
+    private float lastAnimSpeed = 1f;
     
     private void UpdateAnimations()
     {
-        bool isPlaying = GameManager.Instance.CurrentState == GameManager.GameState.Playing;
-        animator.SetBool("IsRunning", isPlaying);
+        // Use cached gm reference instead of property access
+        bool isPlaying = gm != null && gm.CurrentState == GameManager.GameState.Playing;
+        
+        // Only update animator if value changed
+        if (isPlaying != lastIsRunning)
+        {
+            animator.SetBool("IsRunning", isPlaying);
+            lastIsRunning = isPlaying;
+        }
+        
         bool isGrounded = onPlatform || Mathf.Abs(velocityY) < 0.1f;
-        animator.SetBool("IsGrounded", isGrounded);
-        
-        if (targetPosition.y > 0)
+        if (isGrounded != lastIsGrounded)
         {
-            spriteRenderer.flipY = true;
-        }
-        else
-        {
-            spriteRenderer.flipY = false;
+            animator.SetBool("IsGrounded", isGrounded);
+            lastIsGrounded = isGrounded;
         }
         
-        if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
+        // Flip sprite based on lane
+        spriteRenderer.flipY = targetPosition.y > 0;
+        
+        // Only update animation speed when playing and when it changes
+        if (isPlaying && gm != null)
         {
-            float normalizedSpeed = GameManager.Instance.worldSpeed / 10f; 
-            animator.speed = Mathf.Max(normalizedSpeed, 0.8f);
+            float normalizedSpeed = gm.worldSpeed / 10f; 
+            float newSpeed = Mathf.Max(normalizedSpeed, 0.8f);
+            
+            // Only set if changed significantly (avoid float comparison issues)
+            if (Mathf.Abs(newSpeed - lastAnimSpeed) > 0.05f)
+            {
+                animator.speed = newSpeed;
+                lastAnimSpeed = newSpeed;
+            }
         }
-        else
+        else if (lastAnimSpeed != 1f)
         {
             animator.speed = 1f;
+            lastAnimSpeed = 1f;
         }
     }
 }

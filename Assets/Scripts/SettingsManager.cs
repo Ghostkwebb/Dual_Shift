@@ -8,24 +8,35 @@ using System.Collections.Generic;
 public class SettingsManager : MonoBehaviour
 {
     [Header("Audio")]
+    [Tooltip("Main mixer")]
     [SerializeField] private AudioMixer mainMixer;
+    [Tooltip("Slider for music volume")]
     [SerializeField] private Slider musicSlider;
+    [Tooltip("Slider for SFX volume")]
     [SerializeField] private Slider sfxSlider;
 
     [Header("Video")]
+    [Tooltip("Dropdown for graphics quality")]
     [SerializeField] private TMP_Dropdown graphicsDropdown;
+    [Tooltip("Dropdown for FPS target")]
     [SerializeField] private TMP_Dropdown fpsDropdown;
+    [Tooltip("Panel for settings UI")]
     [SerializeField] private GameObject settingsPanel;
     
     [Header("HDR")]
+    [Tooltip("Toggle for HDR")]
     [SerializeField] private Toggle hdrToggle;
+    [Tooltip("Text status for HDR")]
     [SerializeField] private TMP_Text hdrStatusText;
 
     [Header("FPS Display")]
+    [Tooltip("Toggle for FPS display")]
     [SerializeField] private Toggle fpsDisplayToggle;
+    [Tooltip("FPS display object")]
     [SerializeField] private GameObject fpsDisplayObject;
 
     [Header("Panels")]
+    [Tooltip("Overlay for controls")]
     [SerializeField] private GameObject controlsOverlay;
 
     private const string MIXER_MUSIC = "MusicVol";
@@ -33,10 +44,15 @@ public class SettingsManager : MonoBehaviour
     private bool isHDRSupported = false;
     
     [Header("Google Play Games UI")]
+    [Tooltip("Button for GPGS login")]
     [SerializeField] private Button gpgsButton;
+    [Tooltip("Text on GPGS button")]
     [SerializeField] private TMP_Text gpgsButtonText;
+    [Tooltip("Icon for GPGS status")]
     [SerializeField] private Image gpgsIcon;
+    [Tooltip("Sprite for connected state")]
     [SerializeField] private Sprite connectedSprite;   
+    [Tooltip("Sprite for disconnected state")]
     [SerializeField] private Sprite disconnectedSprite; 
 
     private void Start()
@@ -58,35 +74,58 @@ public class SettingsManager : MonoBehaviour
     
     private void Update()
     {
-        // Only run this check if the Settings Panel is visible to save performance
-        if (settingsPanel.activeSelf)
-        {
+
             UpdateGPGSButton();
         }
-    }
+
     
     private void UpdateGPGSButton()
     {
-        // Reset color to white so the sprite art shows clearly (no tint)
+        if (gpgsIcon == null || gpgsButtonText == null || gpgsButton == null) return;
+        
         gpgsIcon.color = Color.white;
 
-        if (GooglePlayGames.PlayGamesPlatform.Instance.IsAuthenticated())
+#if UNITY_ANDROID && !UNITY_EDITOR
+        bool isAuthenticated = false;
+        try
+        {
+            var platform = GooglePlayGames.PlayGamesPlatform.Instance;
+            if (platform != null)
+            {
+                isAuthenticated = platform.IsAuthenticated();
+            }
+        }
+        catch (System.Exception)
+        {
+            isAuthenticated = false;
+        }
+
+        if (isAuthenticated)
         {
             // STATE: CONNECTED
-            gpgsButtonText.text = "CONNECTED: " + Social.localUser.userName;
-            gpgsIcon.sprite = connectedSprite; // Swap to Colored Icon
+            string userName = "Player";
+            try { userName = Social.localUser.userName; } catch { }
+            if (string.IsNullOrEmpty(userName)) userName = "Player";
+            gpgsButtonText.text = "CONNECTED: " + userName;
+            if (connectedSprite != null) gpgsIcon.sprite = connectedSprite;
             gpgsButton.interactable = false; 
         }
         else
         {
             // STATE: DISCONNECTED
             gpgsButtonText.text = "CONNECT ACCOUNT";
-            gpgsIcon.sprite = disconnectedSprite; // Swap to Grey Icon
+            if (disconnectedSprite != null) gpgsIcon.sprite = disconnectedSprite;
             gpgsButton.interactable = true; 
         }
+#else
+        // In Editor, just show a placeholder
+        gpgsButtonText.text = "GPGS (Editor)";
+        gpgsButton.interactable = false;
+#endif
     }
 
-    // Link this to the Button's OnClick
+
+
     public void OnGPGSButtonClick()
     {
         if (LeaderboardManager.Instance != null)
@@ -235,7 +274,8 @@ public class SettingsManager : MonoBehaviour
             SetHDR(hdrEnabled);
         }
 
-        // FPS Display - disabled by default
+
+
         if (fpsDisplayToggle != null)
         {
             bool fpsDisplayEnabled = PlayerPrefs.GetInt("FPSDisplay", 0) == 1;

@@ -30,8 +30,8 @@ public class CameraShake : MonoBehaviour
             float y = Random.Range(-1f, 1f) * magnitude;
 
             transform.localPosition = new Vector3(originalPos.x + x, originalPos.y + y, originalPos.z);
-
-            elapsed += Time.unscaledDeltaTime; // Use unscaled so it shakes even during Hit Stop
+            
+            elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
 

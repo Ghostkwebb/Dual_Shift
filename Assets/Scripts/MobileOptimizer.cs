@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class MobileOptimizer : MonoBehaviour
 {
@@ -15,16 +16,53 @@ public class MobileOptimizer : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
         
+        // CRITICAL: Disable URP DebugManager to prevent GC allocations every frame
+        DisableDebugManager();
+        
         ApplyPerformanceSettings();
         RequestHighRefreshRate();
+    }
+    
+    private void DisableDebugManager()
+    {
+        // URP's DebugManager causes per-frame GC allocations if enabled
+        // This is a known Unity issue - disabling it eliminates those allocations
+        if (DebugManager.instance != null)
+        {
+            DebugManager.instance.enableRuntimeUI = false;
+        }
     }
 
     private void ApplyPerformanceSettings()
     {
         QualitySettings.vSyncCount = 0;
+        
         int savedFPSIndex = PlayerPrefs.GetInt("FPS", 1);
         savedFPSIndex = Mathf.Clamp(savedFPSIndex, 0, FPS_TARGETS.Length - 1);
-        Application.targetFrameRate = FPS_TARGETS[savedFPSIndex];
+        
+        bool isLowQuality = QualitySettings.GetQualityLevel() == 0;
+        
+        if (isLowQuality)
+        {
+            // Set realistic FPS target for low-end devices (45 FPS = GPU limit on Mali)
+            Application.targetFrameRate = 45;
+            
+            Time.fixedDeltaTime = 0.033f;
+            
+            Time.maximumDeltaTime = 0.1f;
+            
+            QualitySettings.lodBias = 0.5f;
+            
+            QualitySettings.skinWeights = SkinWeights.TwoBones;
+            
+            QualitySettings.shadowDistance = 0f;
+        }
+        else
+        {
+            Application.targetFrameRate = FPS_TARGETS[savedFPSIndex];
+            Time.fixedDeltaTime = 0.02f; // Normal physics rate
+        }
+
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
     }
 
@@ -42,16 +80,32 @@ public class MobileOptimizer : MonoBehaviour
                 AndroidJavaObject display = windowManager.Call<AndroidJavaObject>("getDefaultDisplay");
                 AndroidJavaObject[] modes = display.Call<AndroidJavaObject[]>("getSupportedModes");
                 
-                float highestRefreshRate = 60f;
+                bool isLowQuality = QualitySettings.GetQualityLevel() == 0;
+                float targetRefreshRate = isLowQuality ? 60f : 120f; // Force 60Hz on Low quality
+                float bestRefreshRate = 60f;
                 int bestModeId = -1;
                 
                 foreach (var mode in modes)
                 {
                     float refreshRate = mode.Call<float>("getRefreshRate");
-                    if (refreshRate > highestRefreshRate)
+                    
+                    if (isLowQuality)
                     {
-                        highestRefreshRate = refreshRate;
-                        bestModeId = mode.Call<int>("getModeId");
+                        // On Low quality, prefer exactly 60Hz to avoid 90÷2=45 FPS issue
+                        if (Mathf.Abs(refreshRate - 60f) < Mathf.Abs(bestRefreshRate - 60f))
+                        {
+                            bestRefreshRate = refreshRate;
+                            bestModeId = mode.Call<int>("getModeId");
+                        }
+                    }
+                    else
+                    {
+                        // On higher quality, get highest refresh rate
+                        if (refreshRate > bestRefreshRate)
+                        {
+                            bestRefreshRate = refreshRate;
+                            bestModeId = mode.Call<int>("getModeId");
+                        }
                     }
                 }
                 
@@ -62,11 +116,14 @@ public class MobileOptimizer : MonoBehaviour
                     {
                         window.Call("setAttributes", layoutParams);
                     }));
-                    Application.targetFrameRate = Mathf.RoundToInt(highestRefreshRate) + 1;
+                    Application.targetFrameRate = Mathf.RoundToInt(bestRefreshRate) + 1;
                 }
             }
         }
-        catch (System.Exception) { }
+        catch (System.Exception e) 
+        { 
+            Debug.LogWarning($"[MobileOptimizer] Failed to set refresh rate: {e.Message}");
+        }
 #endif
     }
 

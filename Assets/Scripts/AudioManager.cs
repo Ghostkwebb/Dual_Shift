@@ -20,11 +20,17 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip backgroundMusic;
 
     [Header("SFX Clips")]
+    [Tooltip("Clip played when running")]
     [SerializeField] private AudioClip runClip;
+    [Tooltip("Clip played when jumping")]
     [SerializeField] private AudioClip jumpClip;
+    [Tooltip("Clip played when attacking")]
     [SerializeField] private AudioClip attackClip;
+    [Tooltip("Clip played when hit")]
     [SerializeField] private AudioClip hitClip;
+    [Tooltip("Clip played on death")]
     [SerializeField] private AudioClip deathClip;
+    [Tooltip("Clip played on UI click")]
     [SerializeField] private AudioClip uiClickClip;
 
     private AudioSource musicSource;
@@ -48,14 +54,12 @@ public class AudioManager : MonoBehaviour
         musicSource.loop = true;
         musicSource.playOnAwake = false;
         
-        // Route to Music mixer group for volume control
         if (mainMixer != null)
         {
             var groups = mainMixer.FindMatchingGroups("Music");
             if (groups.Length > 0) musicSource.outputAudioMixerGroup = groups[0];
         }
         
-        // Add low-pass filter ONLY to the music player (not SFX!)
         musicFilter = musicObj.AddComponent<AudioLowPassFilter>();
         musicFilter.cutoffFrequency = 22000f;
     }
@@ -64,14 +68,12 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
-        // Dynamic music filtering (menu = muffled, playing = full)
         if (musicFilter != null && musicSource != null && musicSource.isPlaying)
         {
             float targetFreq = (GameManager.Instance.CurrentState == GameManager.GameState.Playing) ? 22000f : 800f;
             musicFilter.cutoffFrequency = Mathf.Lerp(musicFilter.cutoffFrequency, targetFreq, Time.unscaledDeltaTime * 3f);
         }
         
-        // Running sound
         if (runSource != null && runClip != null)
         {
             bool shouldRun = GameManager.Instance.CurrentState == GameManager.GameState.Playing && Time.timeScale > 0;

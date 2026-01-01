@@ -12,8 +12,16 @@ public class ParallaxLayer : MonoBehaviour
     // Expose for MaterialUpgrader
     public SpriteRenderer CloneRenderer { get; private set; }
 
+    private GameManager gm;
+    
+    // Cache to avoid GC allocations in Update
+    private Vector3 wrapOffset;
+    private Transform cloneTransform;
+
     private void Start()
     {
+        gm = GameManager.Instance;
+        
         // 1. Calculate width of the sprite
         Renderer rend = GetComponent<Renderer>();
         if (rend != null)
@@ -21,42 +29,41 @@ public class ParallaxLayer : MonoBehaviour
             length = rend.bounds.size.x;
         }
         startPos = transform.position;
+        
+        // Cache wrap offset vector
+        wrapOffset = new Vector3(length * 2, 0, 0);
 
-        // 2. Create a clone for infinite scrolling
         clone = Instantiate(gameObject, transform.parent);
+        cloneTransform = clone.transform;
         CloneRenderer = clone.GetComponent<SpriteRenderer>();
         
         // Remove the script from the clone so it doesn't run this logic too
         Destroy(clone.GetComponent<ParallaxLayer>());
         
         // Position clone exactly to the right
-        clone.transform.position = transform.position + new Vector3(length, 0, 0);
-        clone.transform.localScale = transform.localScale;
-        clone.transform.rotation = transform.rotation;
+        cloneTransform.position = transform.position + new Vector3(length, 0, 0);
+        cloneTransform.localScale = transform.localScale;
+        cloneTransform.rotation = transform.rotation;
     }
 
     private void Update()
     {
-        // 1. Calculate movement
-        // We move relative to the camera OR just based on WorldSpeed?
-        // Original code was: offset += speed * Time.deltaTime.
-        // Let's move the object left based on WorldSpeed * Factor
+        if (gm == null) return;
         
-        float dist = (GameManager.Instance.worldSpeed * parallaxFactor) * Time.deltaTime;
+        // 1. Calculate movement (Vector3.left is cached by Unity)
+        float dist = (gm.worldSpeed * parallaxFactor) * Time.deltaTime;
         transform.Translate(Vector3.left * dist);
-        clone.transform.Translate(Vector3.left * dist);
+        cloneTransform.Translate(Vector3.left * dist);
 
-        // 2. Wrap around
-        // If main object is too far left
+        // 2. Wrap around using cached offset
         if (transform.position.x < startPos.x - length)
         {
-            transform.position += new Vector3(length * 2, 0, 0);
+            transform.position += wrapOffset;
         }
         
-        // If clone is too far left
-        if (clone.transform.position.x < startPos.x - length)
+        if (cloneTransform.position.x < startPos.x - length)
         {
-            clone.transform.position += new Vector3(length * 2, 0, 0);
+            cloneTransform.position += wrapOffset;
         }
     }
 }

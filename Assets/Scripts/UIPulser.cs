@@ -4,8 +4,11 @@ using TMPro;
 public class UIPulser : MonoBehaviour
 {
     [Header("Pulse Settings")]
+    [Tooltip("Speed of the pulse effect")]
     [SerializeField] private float speed = 1f;
+    [Tooltip("Minimum alpha value")]
     [SerializeField] private float minAlpha = 0.2f;
+    [Tooltip("Maximum alpha value")]
     [SerializeField] private float maxAlpha = 1f;
 
     private CanvasGroup canvasGroup;
@@ -19,8 +22,6 @@ public class UIPulser : MonoBehaviour
 
     private void Update()
     {
-        // Calculate pulsed alpha using a sine wave for smoother ease-in/out feeling compared to linear PingPong
-        // Sin goes from -1 to 1. We map it to 0 to 1.
         float t = (Mathf.Sin(Time.unscaledTime * speed * Mathf.PI * 2) + 1f) / 2f;
         float alpha = Mathf.Lerp(minAlpha, maxAlpha, t);
 

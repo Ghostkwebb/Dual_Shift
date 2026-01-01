@@ -75,6 +75,10 @@ public class MaterialUpgrader : MonoBehaviour
         };
     }
 
+    // Cached values to avoid setting shader globals every frame
+    private float cachedIntensity = -1f;
+    private Color cachedColor = Color.clear;
+
     private void UpdateGlobalLighting()
     {
         if (cachedGlobalLight == null) CacheGlobalLight();
@@ -89,8 +93,18 @@ public class MaterialUpgrader : MonoBehaviour
             finalColor = cachedGlobalLight.color * intensity * backgroundTint;
         }
 
-        Shader.SetGlobalFloat("_CustomGlobalLight", finalIntensity);
-        Shader.SetGlobalColor("_CustomGlobalLightColor", finalColor);
+        // Only update shader globals if values changed (avoids per-frame GPU overhead)
+        if (!Mathf.Approximately(cachedIntensity, finalIntensity))
+        {
+            Shader.SetGlobalFloat("_CustomGlobalLight", finalIntensity);
+            cachedIntensity = finalIntensity;
+        }
+        
+        if (cachedColor != finalColor)
+        {
+            Shader.SetGlobalColor("_CustomGlobalLightColor", finalColor);
+            cachedColor = finalColor;
+        }
     }
 
     private void CacheGlobalLight()

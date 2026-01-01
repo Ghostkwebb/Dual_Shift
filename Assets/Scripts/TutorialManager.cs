@@ -26,7 +26,6 @@ public class TutorialManager : MonoBehaviour
 
     private void Start()
     {
-        // If Tutorial NOT done, Lock Inputs immediately
         if (PlayerPrefs.GetInt("TutorialDone", 0) == 0)
         {
             InputsLocked = true;
@@ -55,9 +54,11 @@ public class TutorialManager : MonoBehaviour
     {
         if (!IsTutorialActive) return;
         bool inputReceived = false;
-        if (Keyboard.current.spaceKey.wasPressedThisFrame || 
+        
+        // Null-check all input devices to prevent errors on devices without keyboard/mouse
+        if ((Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) || 
             (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame) ||
-            Mouse.current.leftButton.wasPressedThisFrame)
+            (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame))
         {
             inputReceived = true;
         }

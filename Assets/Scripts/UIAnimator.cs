@@ -15,20 +15,25 @@ public class UIAnimator : MonoBehaviour
     }
 
     [Header("Animation Settings")]
+    [Tooltip("Type of animation to play")]
     [SerializeField] private AnimationType animationType = AnimationType.FadeAndScale;
+    [Tooltip("Duration of the animation")]
     [SerializeField] private float duration = 0.3f;
+    [Tooltip("Easing curve for the animation")]
     [SerializeField] private AnimationCurve easeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     
     [Header("Scale Settings")]
+    [Tooltip("Starting scale for scale animations")]
     [SerializeField] private Vector3 startScale = new Vector3(0.8f, 0.8f, 1f);
     
     [Header("Slide Settings")]
+    [Tooltip("Offset for slide animations")]
     [SerializeField] private Vector2 slideOffset = new Vector2(0, -100);
 
     private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
-    private Vector3 originalScale; // Now tracked but used safely
-    private Vector2 originalPosition; // Now tracked but used safely
+    private Vector3 originalScale;
+    private Vector2 originalPosition;
     private Coroutine currentCoroutine;
 
     private void Awake()
@@ -36,7 +41,6 @@ public class UIAnimator : MonoBehaviour
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
         
-        // Capture original state immediately
         if (rectTransform != null)
         {
             originalScale = rectTransform.localScale;
@@ -49,7 +53,6 @@ public class UIAnimator : MonoBehaviour
         if (!gameObject.activeSelf) 
         {
             gameObject.SetActive(true);
-            // Ensure we are in "hidden" state before starting animation
             ResetToHiddenState();
         }
 
@@ -69,7 +72,6 @@ public class UIAnimator : MonoBehaviour
         }));
     }
 
-    // Immediate state set without animation
     public void HideImmediately()
     {
         ResetToHiddenState();
@@ -111,19 +113,16 @@ public class UIAnimator : MonoBehaviour
             float t = Mathf.Clamp01(timer / duration);
             float curveValue = easeCurve.Evaluate(t);
 
-            // Handle Alpha
             if (canvasGroup != null)
             {
                 canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, curveValue);
             }
 
-            // Handle Scale
             if (rectTransform != null && (animationType == AnimationType.Scale || animationType == AnimationType.FadeAndScale))
             {
                 rectTransform.localScale = Vector3.Lerp(currentScale, targetScale, curveValue);
             }
 
-            // Handle Slide
             if (rectTransform != null && animationType == AnimationType.Slide)
             {
                rectTransform.anchoredPosition = Vector2.Lerp(currentPos, targetPos, curveValue);
@@ -134,7 +133,6 @@ public class UIAnimator : MonoBehaviour
 
         if (this == null || gameObject == null) yield break;
 
-        // Final values ensure precision
         if (canvasGroup != null) canvasGroup.alpha = targetAlpha;
         if (rectTransform != null)
         {

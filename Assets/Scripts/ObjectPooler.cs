@@ -5,10 +5,16 @@ public class ObjectPooler : MonoBehaviour
 {
     public static ObjectPooler Instance { get; private set; }
 
+    [Header("Projectile Pool")]
     [Tooltip("Prefab used to spawn pooled projectiles")]
     [SerializeField] private GameObject projectilePrefab;
     
+    [Header("VFX Pool")]
+    [Tooltip("Prefab used for death VFX (must have PooledVFX component)")]
+    [SerializeField] private PooledVFX deathVFXPrefab;
+    
     private ObjectPool<GameObject> projectilePool;
+    private ObjectPool<PooledVFX> vfxPool;
 
     private void Awake()
     {
@@ -23,8 +29,21 @@ public class ObjectPooler : MonoBehaviour
             defaultCapacity: 10,
             maxSize: 50
         );
+        
+        if (deathVFXPrefab != null)
+        {
+            vfxPool = new ObjectPool<PooledVFX>(
+                createFunc: () => Instantiate(deathVFXPrefab),
+                actionOnGet: vfx => vfx?.gameObject.SetActive(true),
+                actionOnRelease: vfx => vfx?.gameObject.SetActive(false),
+                actionOnDestroy: vfx => { if (vfx != null) Destroy(vfx.gameObject); },
+                defaultCapacity: 10,
+                maxSize: 30
+            );
+        }
     }
 
+    
     public GameObject GetProjectile(Vector3 position, Quaternion rotation)
     {
         GameObject proj = null;
@@ -48,4 +67,28 @@ public class ObjectPooler : MonoBehaviour
     }
 
     public void ReturnProjectile(GameObject proj) => projectilePool.Release(proj);
+
+
+    public PooledVFX GetVFX(Vector3 position)
+    {
+        if (vfxPool == null)
+        {
+            Debug.LogWarning("VFX Pool is missing! Did you assign the DeathVFX Prefab in ObjectPooler inspector?");
+            return null;
+        }
+        
+        var vfx = vfxPool.Get();
+        if (vfx != null)
+        {
+            vfx.Play(position);
+        }
+        return vfx;
+    }
+
+    public void ReturnVFX(PooledVFX vfx)
+    {
+        if (vfxPool != null && vfx != null)
+            vfxPool.Release(vfx);
+    }
+
 }

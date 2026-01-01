@@ -6,14 +6,21 @@ using System.Collections;
 public class LoadingScreenManager : MonoBehaviour
 {
     [Header("Loading Screen UI")]
+    [Tooltip("Panel for loading screen")]
     [SerializeField] private GameObject loadingScreenPanel;
+    [Tooltip("Text for loading status")]
     [SerializeField] private TMP_Text loadingText;
+    [Tooltip("Loading spinner object")]
     [SerializeField] private GameObject spinner;
 
     [Header("FPS Stability Settings")]
+    [Tooltip("Minimum FPS to consider stable")]
     [SerializeField] private float minStableFPS = 50f;
+    [Tooltip("Number of frames to wait for stability")]
     [SerializeField] private int stableFrameCount = 30;
+    [Tooltip("Maximum wait time for loading")]
     [SerializeField] private float maxWaitTime = 5f;
+    [Tooltip("Minimum wait time for loading")]
     [SerializeField] private float minWaitTime = 0.5f;
 
     private int consecutiveStableFrames = 0;

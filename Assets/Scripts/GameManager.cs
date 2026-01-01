@@ -68,7 +68,6 @@ public class GameManager : MonoBehaviour
     {
         if (scoreText == null) return;
 
-        // Gradient: Cyan top to white bottom
         scoreText.enableVertexGradient = true;
         scoreText.colorGradient = new VertexGradient(
             new Color(0.4f, 0.9f, 1f),    // Top left - cyan
@@ -77,7 +76,8 @@ public class GameManager : MonoBehaviour
             new Color(0.8f, 0.9f, 1f)     // Bottom right - light blue
         );
 
-        // Character spacing for cleaner look
+
+
         scoreText.characterSpacing = 2f;
     }
 
@@ -85,19 +85,19 @@ public class GameManager : MonoBehaviour
     {
         CurrentState = GameState.Menu;
 
-        // Reset Logic
-        worldSpeed = 0; 
+ 
         score = 0;
         kills = 0;
         comboMultiplier = 0;
         levelTime = 0f; 
 
-        // UI State
+
+
         SetPanelActive(mainMenuPanel, true);
         gameHUD.SetActive(false);
-        SetPanelActive(gameOverPanel, false);
         SetPanelActive(pausePanel, false);
 
+        worldSpeed = 0f;
         Time.timeScale = 1; 
     }
 
@@ -170,7 +170,8 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(1.0f);
         Time.timeScale = 0;
 
-        // --- SAVE BEST SCORE ---
+
+
         float bestScore = PlayerPrefs.GetFloat("BestScore", 0);
         if (score > bestScore)
         {
@@ -182,7 +183,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // --- SAVE MAX KILLS ---
+
+
         int maxKills = PlayerPrefs.GetInt("MaxKills", 0);
         if (kills > maxKills)
         {

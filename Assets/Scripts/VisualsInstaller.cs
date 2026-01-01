@@ -4,15 +4,21 @@ using UnityEngine.Rendering.Universal;
 public class VisualsInstaller : MonoBehaviour
 {
     [Header("Global Light")]
+    [Tooltip("Color of the global light")]
     [SerializeField] private Color globalLightColor = new Color(0.22f, 0.19f, 0.28f);
+    [Tooltip("Intensity of the global light")]
     [SerializeField] private float globalLightIntensity = 1.1f;
 
     [Header("Player Light")]
+    [Tooltip("Color of the player's light")]
     [SerializeField] private Color playerLightColor = Color.cyan;
+    [Tooltip("Intensity of the player's light")]
     [SerializeField] private float playerLightIntensity = 1.5f;
+    [Tooltip("Radius of the player's light")]
     [SerializeField] private float playerLightRadius = 8.0f;
 
     [Header("Enemy Light")]
+    [Tooltip("Color of the enemy lights")]
     [SerializeField] private Color enemyLightColor = new Color(1f, 0f, 0.2f);
 
     private ParticleSystem dustPS;
@@ -22,7 +28,7 @@ public class VisualsInstaller : MonoBehaviour
         if (Application.isPlaying)
         {
             SetupGlobalLight();
-            SetupPlayerLight();
+            SetupPlayerLight(); 
             SetupDustParticles();
         }
     }
@@ -93,6 +99,8 @@ public class VisualsInstaller : MonoBehaviour
 
     public static void AttachEnemyLight(GameObject enemyObj, Color color, float intensity, float radius)
     {
+        if (enemyObj.GetComponentInChildren<Light2D>() != null) return;
+
         GameObject lightObj = new GameObject("Enemy Light 2D");
         lightObj.transform.SetParent(enemyObj.transform);
         lightObj.transform.localPosition = Vector3.zero;
@@ -104,10 +112,21 @@ public class VisualsInstaller : MonoBehaviour
         light.pointLightOuterRadius = radius;
         light.pointLightInnerRadius = 1.0f;
         light.falloffIntensity = 0.6f;
+        
+        if (HDREffectsManager.Instance != null)
+            HDREffectsManager.Instance.RegisterLight(light);
     }
 
     public static void AttachProjectileLight(GameObject projectileObj, Color color, float intensity, float radius)
     {
+        Light2D existingLight = projectileObj.GetComponentInChildren<Light2D>();
+        if (existingLight != null)
+        {
+            if (HDREffectsManager.Instance != null)
+                HDREffectsManager.Instance.RegisterLight(existingLight);
+            return;
+        }
+
         GameObject lightObj = new GameObject("Projectile Light 2D");
         lightObj.transform.SetParent(projectileObj.transform);
         lightObj.transform.localPosition = Vector3.zero;
@@ -118,6 +137,9 @@ public class VisualsInstaller : MonoBehaviour
         light.intensity = intensity;
         light.pointLightOuterRadius = radius;
         light.falloffIntensity = 0.5f;
+        
+        if (HDREffectsManager.Instance != null)
+            HDREffectsManager.Instance.RegisterLight(light);
     }
 
     public static void AttachObstacleLight(GameObject obstacleObj, Color color, float intensity, float radius)
@@ -142,6 +164,9 @@ public class VisualsInstaller : MonoBehaviour
         light.pointLightOuterRadius = Mathf.Max(radius, height * 1.5f);
         light.pointLightInnerRadius = 0.5f;
         light.falloffIntensity = 0.3f;
+        
+        if (HDREffectsManager.Instance != null)
+            HDREffectsManager.Instance.RegisterLight(light);
     }
 
     private void SetupDustParticles()
@@ -197,7 +222,6 @@ public class VisualsInstaller : MonoBehaviour
 
         var renderer = dustObj.GetComponent<ParticleSystemRenderer>();
         
-        // Load material from Resources (ensures URP Particles shader is included in build)
         Material mat = Resources.Load<Material>("ParticleGlow");
         if (mat != null)
         {

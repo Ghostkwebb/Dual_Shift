@@ -2,25 +2,19 @@ using UnityEngine;
 
 public class TutorialTrigger : MonoBehaviour
 {
+    [Tooltip("Text to display in the tutorial prompt")]
     [TextArea] public string textToDisplay = "Tap to Switch!";
-    public string actionType = "Switch"; // "Switch" or "Attack"
+    [Tooltip("Type of action required (Switch/Attack)")]
+    public string actionType = "Switch";
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"Tutorial Trigger hit by: {other.gameObject.name}");
 
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Tag matched! Checking PlayerPrefs...");
-            
             if (PlayerPrefs.GetInt("TutorialDone", 0) == 0)
             {
-                Debug.Log("Tutorial Triggering NOW.");
                 TutorialManager.Instance.TriggerTutorial(textToDisplay, actionType);
-            }
-            else
-            {
-                Debug.Log("Tutorial skipped (TutorialDone is 1).");
             }
             
             Destroy(gameObject);

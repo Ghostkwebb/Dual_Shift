@@ -1,15 +1,23 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class HDREffectsManager : MonoBehaviour
 {
-    [SerializeField] private float hdrBloomMultiplier = 1.8f;
-    [SerializeField] private float hdrLightMultiplier = 1.5f;
+    [Tooltip("Multiplier for HDR bloom intensity")]
+    [SerializeField] private float hdrBloomMultiplier = 1.4f;
+    [Tooltip("Whether to disable lights when HDR is off")]
+    [SerializeField] private bool disableLightsWhenNoHDR = true;
     
     private Volume postProcessVolume;
     private Bloom bloom;
     private float baseBloomIntensity = 1f;
+    
+    
+    private List<Light2D> cachedPointLights = new List<Light2D>();
+    private bool lightsNeedRefresh = true;
     
     private static HDREffectsManager instance;
     public static HDREffectsManager Instance => instance;
@@ -23,6 +31,21 @@ public class HDREffectsManager : MonoBehaviour
         }
         instance = this;
         DontDestroyOnLoad(gameObject);
+        FindPostProcessVolume();
+        
+        FindPostProcessVolume();
+        
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        lightsNeedRefresh = true;
         FindPostProcessVolume();
     }
 
@@ -46,39 +69,60 @@ public class HDREffectsManager : MonoBehaviour
             }
         }
     }
+    
+
+    
+    public void RegisterLight(Light2D light)
+    {
+        if (light != null && light.lightType == Light2D.LightType.Point && !cachedPointLights.Contains(light))
+        {
+            cachedPointLights.Add(light);
+        }
+    }
+    
+
+    
+    private void CleanupDestroyedLights()
+    {
+        cachedPointLights.RemoveAll(l => l == null);
+    }
 
     public void SetHDRMode(bool enabled)
     {
         if (postProcessVolume == null) FindPostProcessVolume();
+
+
+        
+        if (QualitySettings.GetQualityLevel() == 0)
+        {
+            if (postProcessVolume != null) postProcessVolume.enabled = false;
+            return;
+        }
+        
+        if (postProcessVolume != null) postProcessVolume.enabled = true;
+        
+
         
         if (bloom != null)
         {
+            bloom.active = true;
             bloom.intensity.value = enabled ? baseBloomIntensity * hdrBloomMultiplier : baseBloomIntensity;
-            bloom.threshold.value = enabled ? 0.7f : 0.9f;
-            bloom.scatter.value = enabled ? 0.8f : 0.7f;
+            bloom.threshold.value = enabled ? 0.8f : 0.9f;
+            bloom.scatter.value = enabled ? 0.75f : 0.7f;
         }
-        Boost2DLights(enabled);
-    }
+        
 
-    private void Boost2DLights(bool hdrEnabled)
-    {
-        var lights = FindObjectsByType<Light2D>(FindObjectsSortMode.None);
-        foreach (var light in lights)
+        
+        if (disableLightsWhenNoHDR)
         {
-            if (light.lightType != Light2D.LightType.Point) continue;
-            
-            if (!light.name.Contains("_base"))
-                light.name += $"_base{light.intensity:F2}";
-            
-            float baseIntensity = light.intensity;
-            int idx = light.name.IndexOf("_base");
-            if (idx >= 0)
+            CleanupDestroyedLights();
+            foreach (var light in cachedPointLights)
             {
-                string baseStr = light.name.Substring(idx + 5);
-                float.TryParse(baseStr, out baseIntensity);
+                if (light != null)
+                {
+                    light.enabled = enabled;
+                }
             }
-            
-            light.intensity = hdrEnabled ? baseIntensity * hdrLightMultiplier : baseIntensity;
         }
     }
 }
