@@ -10,28 +10,18 @@ public class GameManager : MonoBehaviour
     public GameState CurrentState { get; private set; }
 
     [Header("Settings")]
-    [Tooltip("The speed of the world over time. Draw a plateau for the 'Sweet Spot'.")]
     public AnimationCurve speedCurve; 
-    [Tooltip("If the game lasts longer than the curve, add this much speed per second.")]
     public float lateGameRamp = 0.5f;
     public float worldSpeed; 
-    [Tooltip("Time in seconds before the combo multiplier resets.")]
     public float comboDuration = 2.0f;
 
     [Header("UI References")]
-    [Tooltip("UI Text for the running score.")]
     [SerializeField] private TMP_Text scoreText;
-    [Tooltip("UI Text for the current combo multiplier.")]
     [SerializeField] private TMP_Text comboText;
-    [Tooltip("The Panel object shown upon death.")]
     [SerializeField] private GameObject gameOverPanel;
-    [Tooltip("UI Text on the Game Over screen for final stats.")]
     [SerializeField] private TMP_Text finalScoreText;
-    [Tooltip("The Panel object shown when paused.")]
     [SerializeField] private GameObject pausePanel;
-    [Tooltip("The Panel object for the Main Menu.")]
     [SerializeField] private GameObject mainMenuPanel;
-    [Tooltip("Parent object containing In-Game UI (Score, Pause Button).")]
     [SerializeField] private GameObject gameHUD;
 
     private float score;
@@ -70,13 +60,11 @@ public class GameManager : MonoBehaviour
 
         scoreText.enableVertexGradient = true;
         scoreText.colorGradient = new VertexGradient(
-            new Color(0.4f, 0.9f, 1f),    // Top left - cyan
-            new Color(0.4f, 0.9f, 1f),    // Top right - cyan
-            new Color(1f, 1f, 1f),        // Bottom left - white
-            new Color(0.8f, 0.9f, 1f)     // Bottom right - light blue
+            new Color(0.4f, 0.9f, 1f),
+            new Color(0.4f, 0.9f, 1f),
+            new Color(1f, 1f, 1f),
+            new Color(0.8f, 0.9f, 1f)
         );
-
-
 
         scoreText.characterSpacing = 2f;
     }
@@ -85,13 +73,10 @@ public class GameManager : MonoBehaviour
     {
         CurrentState = GameState.Menu;
 
- 
         score = 0;
         kills = 0;
         comboMultiplier = 0;
         levelTime = 0f; 
-
-
 
         SetPanelActive(mainMenuPanel, true);
         gameHUD.SetActive(false);
@@ -170,8 +155,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(1.0f);
         Time.timeScale = 0;
 
-
-
         float bestScore = PlayerPrefs.GetFloat("BestScore", 0);
         if (score > bestScore)
         {
@@ -182,8 +165,6 @@ public class GameManager : MonoBehaviour
                 LeaderboardManager.Instance.SubmitScore((long)score);
             }
         }
-
-
 
         int maxKills = PlayerPrefs.GetInt("MaxKills", 0);
         if (kills > maxKills)

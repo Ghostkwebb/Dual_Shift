@@ -6,79 +6,64 @@ using System.Collections.Generic;
 public class PlayerController : MonoBehaviour
 {
     [Header("Lane Settings")]
-    [Tooltip("Y position for the top lane.")]
     [SerializeField] private float topLaneY = 3.3f;
-    [Tooltip("Y position for the bottom lane.")]
     [SerializeField] private float bottomLaneY = -3.3f;
-    [Tooltip("Time (seconds) to smooth damp the movement. Lower is snappier.")]
     [SerializeField] private float movementSmoothTime = 0.1f;
-    [Tooltip("0.1 = 10% from left edge. 0.5 = Center.")]
     [Range(0.05f, 0.5f)] [SerializeField] private float screenPercentX = 0.15f;
-    [Tooltip("Height offset to stand ON the platform instead of IN it.")]
-    [SerializeField] private float platformLandOffset = 0.6f; 
-    [Tooltip("Layer mask checks for platforms")]
+    [SerializeField] private float platformLandOffset = 0.6f;
     [SerializeField] private LayerMask platformLayer;
 
     [Header("Surge & Drift")]
-    [Tooltip("The angle of movement when switching lanes (90 = Vertical, 45 = Diagonal).")]
     [Range(1f, 89f)] [SerializeField] private float switchAngle = 75f;
-    [Tooltip("Multiplies world speed to calculate drift back speed. 0.5 = half world speed.")]
     [SerializeField] private float driftFactor = 0.5f;
-    [Tooltip("Maximum X distance forward from the anchor point.")]
     [SerializeField] private float maxForwardDist = 5.0f;
 
     [Header("Dash Strike (Dev Toggle)")]
-    [Tooltip("Distance the player surges forward during a dash attack.")]
     [SerializeField] private float dashStrikeSurge = 4.0f;
 
     [Header("Game Feel")]
-    [Tooltip("Amount of rotation tilt when moving vertically.")]
     [SerializeField] private float tiltStrength = 2.0f;
-    [Tooltip("Amount of squash/stretch based on vertical speed.")]
     [SerializeField] private float stretchStrength = 0.005f;
-    [Tooltip("Particle system for speed lines/exhaust.")]
     [SerializeField] private ParticleSystem speedEffect;
-    [Tooltip("Trail renderer for visual movement path.")]
     [SerializeField] private TrailRenderer trail;
 
     [Header("Melee Attack")]
-    [Tooltip("Transform representing the center of the attack.")]
     [SerializeField] private Transform meleeHitboxTransform;
-    [Tooltip("Size (Width, Height) of the attack hitbox.")]
     [SerializeField] private Vector2 hitboxSize = new Vector2(1, 1);
-    [Tooltip("Time (seconds) required between attacks.")]
     [SerializeField] private float attackCooldown = 0.2f;
-    [Tooltip("Layer mask to detect enemies and destroyables.")]
     [SerializeField] private LayerMask enemyLayer;
-    [Tooltip("Visual sprite object for the slash effect.")]
     [SerializeField] private GameObject visualSlash;
-    [Tooltip("Duration the slash visual remains active.")]
     [SerializeField] private float slashDuration = 0.1f;
     
     [Header("Animation")]
-    [Tooltip("The main animator component")]
     [SerializeField] private Animator animator;
-    [Tooltip("The main sprite renderer")]
     [SerializeField] private SpriteRenderer spriteRenderer;
 
     private PlayerInputActions playerInputActions;
-    private bool isTopLane = false; 
+    private bool isTopLane = false;
     private Vector3 targetPosition;
     private float velocityX = 0f;
     private float velocityY = 0f;
-    private float anchorX; 
+    private float anchorX;
     private float lastAttackTime;
     private bool laneSwitchTriggered = false;
     private bool isKeyboardInput = false;
     private bool isSurging = false;
     private bool isDashStriking = false;
-    private bool isLethalDash = false; 
+    private bool isLethalDash = false;
     private bool onPlatform = false;
-    private float rigidPlatformY; 
+    private float rigidPlatformY;
     
     private Vector3 originalScale;
-    private HashSet<int> hitObjectsDuringDash = new HashSet<int>(); 
+    private HashSet<int> hitObjectsDuringDash = new HashSet<int>();
     private GameManager gm;
+
+    private static readonly int IsRunningHash = Animator.StringToHash("IsRunning");
+    private static readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
+    private static readonly int AttackHash = Animator.StringToHash("Attack");
+    private static readonly int DieHash = Animator.StringToHash("Die");
+
+    private Collider2D[] hitResults = new Collider2D[10];
 
     private void Awake()
     {
@@ -130,11 +115,11 @@ public class PlayerController : MonoBehaviour
             float platformCenter = rigidPlatformY;
             float targetSurfaceY;
 
-            if (transform.position.y < platformCenter) 
+            if (transform.position.y < platformCenter)
             {
                 targetSurfaceY = platformCenter - platformLandOffset;
             }
-            else 
+            else
             {
                 targetSurfaceY = platformCenter + platformLandOffset;
             }
@@ -150,9 +135,7 @@ public class PlayerController : MonoBehaviour
 
         transform.position = new Vector3(newX, newY, transform.position.z);
 
-        transform.position = new Vector3(newX, newY, transform.position.z);
-
-        float verticalSpeed = onPlatform ? 0f : velocityY; 
+        float verticalSpeed = onPlatform ? 0f : velocityY;
 
         float tiltAngle = verticalSpeed * tiltStrength;
         if (!float.IsNaN(tiltAngle)) transform.rotation = Quaternion.Euler(0, 0, tiltAngle);
@@ -166,15 +149,15 @@ public class PlayerController : MonoBehaviour
         UpdateEffects(isPlaying);
         UpdateAnimations();
         
-        UpdateAnimations();
-        
         if (isDashStriking && isLethalDash)
         {
-            Collider2D[] hits = Physics2D.OverlapBoxAll(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
-            foreach (var hitObject in hits)
+            int hitCount = Physics2D.OverlapBoxNonAlloc(meleeHitboxTransform.position, hitboxSize, 0, hitResults, enemyLayer);
+            
+            for (int i = 0; i < hitCount; i++)
             {
+                var hitObject = hitResults[i];
                 int id = hitObject.gameObject.GetInstanceID();
-                if (hitObjectsDuringDash.Contains(id)) continue; // Already hit this frame/dash
+                if (hitObjectsDuringDash.Contains(id)) continue;
                 hitObjectsDuringDash.Add(id);
                 
                 if (hitObject.TryGetComponent(out ProjectileBehavior projectile))
@@ -199,7 +182,7 @@ public class PlayerController : MonoBehaviour
             {
                 isSurging = false;
             }
-            return; 
+            return;
         }
         
         targetPosition.x = Mathf.Lerp(targetPosition.x, anchorX, Time.deltaTime * driftFactor);
@@ -219,7 +202,7 @@ public class PlayerController : MonoBehaviour
 
         if (isKeyboardInput || !EventSystem.current.IsPointerOverGameObject())
         {
-            ExecuteLaneSwitch(); 
+            ExecuteLaneSwitch();
         }
         laneSwitchTriggered = false;
     }
@@ -228,15 +211,15 @@ public class PlayerController : MonoBehaviour
     {
         lastAttackTime = Time.time;
 
-        isDashStriking = true; 
-        isLethalDash = true;   
+        isDashStriking = true;
+        isLethalDash = true;
         float surgeTarget = transform.position.x + dashStrikeSurge;
         targetPosition.x = Mathf.Clamp(surgeTarget, anchorX, anchorX + maxForwardDist);
         Invoke(nameof(EndDashStrike), 0.2f);
 
         visualSlash.SetActive(true);
         Invoke(nameof(DisableSlash), slashDuration);
-        animator.SetTrigger("Attack"); 
+        animator.SetTrigger(AttackHash);
         AudioManager.Instance.PlayAttack();
         
         Collider2D hitObject = Physics2D.OverlapBox(meleeHitboxTransform.position, hitboxSize, 0, enemyLayer);
@@ -283,9 +266,9 @@ public class PlayerController : MonoBehaviour
     
     private void EndDashStrike()
     {
-        isDashStriking = false; 
+        isDashStriking = false;
         isLethalDash = false;
-        hitObjectsDuringDash.Clear(); // Reset for next dash
+        hitObjectsDuringDash.Clear();
     }
 
     private void EndLethalDash()
@@ -325,47 +308,43 @@ public class PlayerController : MonoBehaviour
         
         if (other.CompareTag("Obstacle"))
         {
-            animator.SetTrigger("Die");
+            animator.SetTrigger(DieHash);
             GameManager.Instance.GameOver();
             Time.timeScale = 0;
-            return; 
+            return;
         }
         
         if (other.CompareTag("Enemy"))
         {
-            // Check if enemy is already dead (prevents race condition)
             bool enemyAlreadyDead = false;
             if (other.TryGetComponent(out GruntAI grunt)) enemyAlreadyDead = grunt.IsDead;
             else if (other.TryGetComponent(out ShooterAI shooter)) enemyAlreadyDead = shooter.IsDead;
             
-            if (enemyAlreadyDead) return; // Skip collision with dead enemies
-            
+            if (enemyAlreadyDead) return;
+
             if (isLethalDash)
             {
                 KillEnemy(other.gameObject);
             }
             else
             {
-                animator.SetTrigger("Die");
+                animator.SetTrigger(DieHash);
                 GameManager.Instance.GameOver();
                 Time.timeScale = 0;
             }
         }
 
-        // Projectile Collision Logic
         if (other.TryGetComponent(out ProjectileBehavior projectile))
         {
             if (isLethalDash)
             {
-                // Dash Strike destroys projectile with VFX
                 AudioManager.Instance.PlayHit();
                 CameraShake.Instance.Shake(0.05f, 0.1f);
-                projectile.HitByPlayer(); // This now spawns VFX
+                projectile.HitByPlayer();
             }
             else
             {
-                // Standard Hit -> Death
-                animator.SetTrigger("Die");
+                animator.SetTrigger(DieHash);
                 GameManager.Instance.GameOver();
                 Time.timeScale = 0;
             }
@@ -396,7 +375,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (!speedEffect.isPlaying) speedEffect.Play();
                 var emission = speedEffect.emission;
-                emission.enabled = true; 
+                emission.enabled = true;
             }
             else if (speedEffect.isPlaying)
             {
@@ -404,7 +383,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (trail != null) 
+        if (trail != null)
         {
             trail.emitting = isPlaying && isNotDrifting;
         }
@@ -460,7 +439,7 @@ public class PlayerController : MonoBehaviour
 
         if (hit.collider != null && hit.collider.CompareTag("Platform"))
         {
-            bool movingTowards = (velocityY > 0 && hit.point.y > transform.position.y) || 
+            bool movingTowards = (velocityY > 0 && hit.point.y > transform.position.y) ||
                                  (velocityY < 0 && hit.point.y < transform.position.y);
 
             if (movingTowards)
@@ -472,40 +451,34 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
     private bool lastIsRunning = false;
     private bool lastIsGrounded = false;
     private float lastAnimSpeed = 1f;
     
     private void UpdateAnimations()
     {
-        // Use cached gm reference instead of property access
         bool isPlaying = gm != null && gm.CurrentState == GameManager.GameState.Playing;
         
-        // Only update animator if value changed
         if (isPlaying != lastIsRunning)
         {
-            animator.SetBool("IsRunning", isPlaying);
+            animator.SetBool(IsRunningHash, isPlaying);
             lastIsRunning = isPlaying;
         }
         
         bool isGrounded = onPlatform || Mathf.Abs(velocityY) < 0.1f;
         if (isGrounded != lastIsGrounded)
         {
-            animator.SetBool("IsGrounded", isGrounded);
+            animator.SetBool(IsGroundedHash, isGrounded);
             lastIsGrounded = isGrounded;
         }
         
-        // Flip sprite based on lane
         spriteRenderer.flipY = targetPosition.y > 0;
         
-        // Only update animation speed when playing and when it changes
         if (isPlaying && gm != null)
         {
-            float normalizedSpeed = gm.worldSpeed / 10f; 
+            float normalizedSpeed = gm.worldSpeed / 10f;
             float newSpeed = Mathf.Max(normalizedSpeed, 0.8f);
             
-            // Only set if changed significantly (avoid float comparison issues)
             if (Mathf.Abs(newSpeed - lastAnimSpeed) > 0.05f)
             {
                 animator.speed = newSpeed;

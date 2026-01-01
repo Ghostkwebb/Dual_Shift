@@ -16,7 +16,6 @@ public class MobileOptimizer : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
         
-        // CRITICAL: Disable URP DebugManager to prevent GC allocations every frame
         DisableDebugManager();
         
         ApplyPerformanceSettings();
@@ -25,8 +24,6 @@ public class MobileOptimizer : MonoBehaviour
     
     private void DisableDebugManager()
     {
-        // URP's DebugManager causes per-frame GC allocations if enabled
-        // This is a known Unity issue - disabling it eliminates those allocations
         if (DebugManager.instance != null)
         {
             DebugManager.instance.enableRuntimeUI = false;
@@ -44,7 +41,6 @@ public class MobileOptimizer : MonoBehaviour
         
         if (isLowQuality)
         {
-            // Set realistic FPS target for low-end devices (45 FPS = GPU limit on Mali)
             Application.targetFrameRate = 45;
             
             Time.fixedDeltaTime = 0.033f;
@@ -56,11 +52,13 @@ public class MobileOptimizer : MonoBehaviour
             QualitySettings.skinWeights = SkinWeights.TwoBones;
             
             QualitySettings.shadowDistance = 0f;
+            QualitySettings.shadowCascades = 0;
+            QualitySettings.softParticles = false;
         }
         else
         {
             Application.targetFrameRate = FPS_TARGETS[savedFPSIndex];
-            Time.fixedDeltaTime = 0.02f; // Normal physics rate
+            Time.fixedDeltaTime = 0.02f;
         }
 
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -80,7 +78,6 @@ public class MobileOptimizer : MonoBehaviour
                 AndroidJavaObject display = windowManager.Call<AndroidJavaObject>("getDefaultDisplay");
                 AndroidJavaObject[] modes = display.Call<AndroidJavaObject[]>("getSupportedModes");
                 
-                // Always target highest available refresh rate
                 float bestRefreshRate = 60f;
                 int bestModeId = -1;
                 
@@ -94,7 +91,7 @@ public class MobileOptimizer : MonoBehaviour
                     }
                 }
                 
-                    if (bestModeId > 0)
+                if (bestModeId > 0)
                 {
                     layoutParams.Set("preferredDisplayModeId", bestModeId);
                     activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
