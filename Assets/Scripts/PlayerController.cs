@@ -64,6 +64,9 @@ public class PlayerController : MonoBehaviour
     private static readonly int DieHash = Animator.StringToHash("Die");
 
     private Collider2D[] hitResults = new Collider2D[10];
+    
+    private bool isInvincible = false;
+    [SerializeField] private float reviveInvincibilityDuration = 2.0f;
 
     private void Awake()
     {
@@ -308,6 +311,7 @@ public class PlayerController : MonoBehaviour
         
         if (other.CompareTag("Obstacle"))
         {
+            if (isInvincible) return;
             animator.SetTrigger(DieHash);
             GameManager.Instance.GameOver();
             Time.timeScale = 0;
@@ -316,6 +320,7 @@ public class PlayerController : MonoBehaviour
         
         if (other.CompareTag("Enemy"))
         {
+            if (isInvincible) return;
             bool enemyAlreadyDead = false;
             if (other.TryGetComponent(out GruntAI grunt)) enemyAlreadyDead = grunt.IsDead;
             else if (other.TryGetComponent(out ShooterAI shooter)) enemyAlreadyDead = shooter.IsDead;
@@ -490,5 +495,38 @@ public class PlayerController : MonoBehaviour
             animator.speed = 1f;
             lastAnimSpeed = 1f;
         }
+    }
+    
+    public void ActivateReviveInvincibility()
+    {
+        StartCoroutine(InvincibilityRoutine());
+    }
+
+    private System.Collections.IEnumerator InvincibilityRoutine()
+    {
+        isInvincible = true;
+        
+        // Visual Feedback: Flash the sprite
+        float timer = 0f;
+        float flashSpeed = 0.1f;
+        
+        while (timer < reviveInvincibilityDuration)
+        {
+            spriteRenderer.enabled = !spriteRenderer.enabled; // Toggle visibility
+            yield return new WaitForSeconds(flashSpeed);
+            timer += flashSpeed;
+        }
+
+        spriteRenderer.enabled = true; // Ensure visible at end
+        isInvincible = false;
+    }
+    
+    public void ResetAnimationState()
+    {
+        animator.ResetTrigger("Die");
+        animator.ResetTrigger("Attack");
+        
+        animator.Play("Player_Run"); 
+        animator.SetBool("IsRunning", true);
     }
 }

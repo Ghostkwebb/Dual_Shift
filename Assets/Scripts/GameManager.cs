@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject gameHUD;
+    
+    [SerializeField] private PlayerController playerController;
 
     private float score;
     private int kills;
@@ -31,6 +33,7 @@ public class GameManager : MonoBehaviour
     private float comboTimer;
     private bool isPaused = false;
     private float levelTime = 0f;
+    private int deathCount = 0;
 
     private void Awake()
     {
@@ -148,6 +151,12 @@ public class GameManager : MonoBehaviour
 
     private System.Collections.IEnumerator GameOverSequence()
     {
+        deathCount++;
+        if (deathCount % 3 == 0) 
+        {
+            AdManager.Instance.ShowInterstitial();
+        }
+        
         CurrentState = GameState.GameOver;
 
         CameraShake.Instance.Shake(1.2f, 0.5f);
@@ -242,4 +251,31 @@ public class GameManager : MonoBehaviour
             lastDisplayedCombo = displayMult;
         }
     }
+    
+    public void OnReviveButtonClicked()
+    {
+        AdManager.Instance.ShowRewarded((bool success) => {
+            if (success)
+            {
+                RevivePlayer(); 
+            }
+        });
+    }
+    
+    private void RevivePlayer()
+    {
+        CurrentState = GameState.Playing;
+        Time.timeScale = 1;
+
+        gameOverPanel.SetActive(false);
+        gameHUD.SetActive(true);
+
+        if (playerController != null)
+        {
+            playerController.ResetAnimationState();
+            playerController.ActivateReviveInvincibility();
+        }
+    }
+    
+    
 }
