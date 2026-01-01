@@ -18,6 +18,11 @@ public class ShooterAI : MonoBehaviour
 
     public bool IsDead { get; private set; } = false;
     
+    private Collider2D col;
+    private float nextFireTime;
+    private float lastShotTime;
+    private bool hasActivated;
+
     private void Awake()
     {
         if (GetComponents<ShooterAI>().Length > 1)
