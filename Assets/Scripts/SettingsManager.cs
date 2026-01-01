@@ -67,19 +67,38 @@ public class SettingsManager : MonoBehaviour
         musicSlider.onValueChanged.AddListener(SetMusicVolume);
         sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         graphicsDropdown.onValueChanged.AddListener(SetQuality);
-        fpsDropdown.onValueChanged.AddListener(SetFPS);
         if (hdrToggle != null) hdrToggle.onValueChanged.AddListener(SetHDR);
         if (fpsDisplayToggle != null) fpsDisplayToggle.onValueChanged.AddListener(SetFPSDisplay);
-    }
-    
-    private void Update()
-    {
+        
+        if (gpgsButton != null) gpgsButton.onClick.AddListener(OnGPGSButtonClick);
 
+        UpdateGPGSButton();
+        StartCoroutine(UpdateGPGSButtonRoutine());
+    }
+
+    private System.Collections.IEnumerator UpdateGPGSButtonRoutine()
+    {
+        var wait = new WaitForSeconds(1.0f);
+        while (true)
+        {
+            yield return wait;
             UpdateGPGSButton();
         }
-
+    }
     
-    private void UpdateGPGSButton()
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus)
+        {
+            UpdateGPGSButton();
+        }
+        if (hasFocus) PlayerPrefs.Save();
+    }
+
+    private string cachedUserName = null;
+    private string cachedConnectString = null;
+
+    public void UpdateGPGSButton()
     {
         if (gpgsIcon == null || gpgsButtonText == null || gpgsButton == null) return;
         
@@ -102,25 +121,43 @@ public class SettingsManager : MonoBehaviour
 
         if (isAuthenticated)
         {
-            // STATE: CONNECTED
-            string userName = "Player";
-            try { userName = Social.localUser.userName; } catch { }
-            if (string.IsNullOrEmpty(userName)) userName = "Player";
-            gpgsButtonText.text = "CONNECTED: " + userName;
-            if (connectedSprite != null) gpgsIcon.sprite = connectedSprite;
-            gpgsButton.interactable = false; 
+            if (string.IsNullOrEmpty(cachedUserName))
+            {
+                string userName = "Player";
+                try { userName = Social.localUser.userName; } catch { }
+                if (string.IsNullOrEmpty(userName)) userName = "Player";
+                cachedUserName = userName;
+                cachedConnectString = "CONNECTED: " + cachedUserName;
+            }
+            
+            if (gpgsButtonText.text != cachedConnectString)
+                gpgsButtonText.text = cachedConnectString;
+
+            if (connectedSprite != null && gpgsIcon.sprite != connectedSprite)
+                gpgsIcon.sprite = connectedSprite;
+                
+            if (gpgsButton.interactable)
+                gpgsButton.interactable = false; 
         }
         else
         {
-            // STATE: DISCONNECTED
-            gpgsButtonText.text = "CONNECT ACCOUNT";
-            if (disconnectedSprite != null) gpgsIcon.sprite = disconnectedSprite;
-            gpgsButton.interactable = true; 
+            cachedUserName = null;
+            cachedConnectString = null;
+
+            if (gpgsButtonText.text != "CONNECT ACCOUNT")
+                gpgsButtonText.text = "CONNECT ACCOUNT";
+
+            if (disconnectedSprite != null && gpgsIcon.sprite != disconnectedSprite)
+                gpgsIcon.sprite = disconnectedSprite;
+                
+            if (!gpgsButton.interactable)
+                gpgsButton.interactable = true; 
         }
 #else
-        // In Editor, just show a placeholder
-        gpgsButtonText.text = "GPGS (Editor)";
-        gpgsButton.interactable = false;
+        if (gpgsButtonText.text != "GPGS (Editor)")
+            gpgsButtonText.text = "GPGS (Editor)";
+        if (gpgsButton.interactable)
+            gpgsButton.interactable = false;
 #endif
     }
 

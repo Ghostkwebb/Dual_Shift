@@ -241,11 +241,24 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private int lastDisplayedScore = -1;
+    private int lastDisplayedCombo = -1;
+
     private void UpdateUI()
     {
-        scoreText.text = $"SCORE\n<size=150%>{((int)score).ToString("N0")}</size>";
+        int currentScore = (int)score;
+        if (currentScore != lastDisplayedScore)
+        {
+            scoreText.SetText("SCORE\n<size=150%>{0:N0}</size>", currentScore);
+            lastDisplayedScore = currentScore;
+        }
+
         int displayMult = 1 + comboMultiplier;
-        comboText.text = $"x{displayMult}";
-        comboText.gameObject.SetActive(displayMult > 1);
+        if (displayMult != lastDisplayedCombo)
+        {
+            comboText.SetText("x{0}", displayMult);
+            comboText.gameObject.SetActive(displayMult > 1);
+            lastDisplayedCombo = displayMult;
+        }
     }
 }

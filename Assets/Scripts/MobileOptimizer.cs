@@ -80,36 +80,21 @@ public class MobileOptimizer : MonoBehaviour
                 AndroidJavaObject display = windowManager.Call<AndroidJavaObject>("getDefaultDisplay");
                 AndroidJavaObject[] modes = display.Call<AndroidJavaObject[]>("getSupportedModes");
                 
-                bool isLowQuality = QualitySettings.GetQualityLevel() == 0;
-                float targetRefreshRate = isLowQuality ? 60f : 120f; // Force 60Hz on Low quality
+                // Always target highest available refresh rate
                 float bestRefreshRate = 60f;
                 int bestModeId = -1;
                 
                 foreach (var mode in modes)
                 {
                     float refreshRate = mode.Call<float>("getRefreshRate");
-                    
-                    if (isLowQuality)
+                    if (refreshRate > bestRefreshRate)
                     {
-                        // On Low quality, prefer exactly 60Hz to avoid 90÷2=45 FPS issue
-                        if (Mathf.Abs(refreshRate - 60f) < Mathf.Abs(bestRefreshRate - 60f))
-                        {
-                            bestRefreshRate = refreshRate;
-                            bestModeId = mode.Call<int>("getModeId");
-                        }
-                    }
-                    else
-                    {
-                        // On higher quality, get highest refresh rate
-                        if (refreshRate > bestRefreshRate)
-                        {
-                            bestRefreshRate = refreshRate;
-                            bestModeId = mode.Call<int>("getModeId");
-                        }
+                        bestRefreshRate = refreshRate;
+                        bestModeId = mode.Call<int>("getModeId");
                     }
                 }
                 
-                if (bestModeId > 0)
+                    if (bestModeId > 0)
                 {
                     layoutParams.Set("preferredDisplayModeId", bestModeId);
                     activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>

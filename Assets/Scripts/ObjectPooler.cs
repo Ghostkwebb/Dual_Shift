@@ -22,23 +22,23 @@ public class ObjectPooler : MonoBehaviour
         Instance = this;
 
         projectilePool = new ObjectPool<GameObject>(
-            createFunc: () => Instantiate(projectilePrefab),
+            createFunc: () => Instantiate(projectilePrefab, transform),
             actionOnGet: obj => obj?.SetActive(true),
             actionOnRelease: obj => obj?.SetActive(false),
             actionOnDestroy: obj => Destroy(obj),
-            defaultCapacity: 10,
-            maxSize: 50
+            defaultCapacity: 50,
+            maxSize: 300 
         );
         
         if (deathVFXPrefab != null)
         {
             vfxPool = new ObjectPool<PooledVFX>(
-                createFunc: () => Instantiate(deathVFXPrefab),
+                createFunc: () => Instantiate(deathVFXPrefab, transform),
                 actionOnGet: vfx => vfx?.gameObject.SetActive(true),
                 actionOnRelease: vfx => vfx?.gameObject.SetActive(false),
                 actionOnDestroy: vfx => { if (vfx != null) Destroy(vfx.gameObject); },
-                defaultCapacity: 10,
-                maxSize: 30
+                defaultCapacity: 20,
+                maxSize: 100
             );
         }
     }
@@ -46,17 +46,10 @@ public class ObjectPooler : MonoBehaviour
     
     public GameObject GetProjectile(Vector3 position, Quaternion rotation)
     {
-        GameObject proj = null;
-        
-        while (proj == null)
-        {
-            if (projectilePool.CountInactive == 0 && projectilePool.CountActive >= 50)
-            {
-                proj = Instantiate(projectilePrefab);
-                break;
-            }
-            proj = projectilePool.Get();
-        }
+        // Simply request from the pool. It will expand (create new) if empty, 
+        // and because we raised maxSize to 300, it will likely recycle them 
+        // instead of destroying them on return.
+        GameObject proj = projectilePool.Get();
 
         if (proj != null)
         {
@@ -65,6 +58,8 @@ public class ObjectPooler : MonoBehaviour
         }
         return proj;
     }
+
+
 
     public void ReturnProjectile(GameObject proj) => projectilePool.Release(proj);
 
