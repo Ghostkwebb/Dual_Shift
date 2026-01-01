@@ -46,9 +46,6 @@ public class ObjectPooler : MonoBehaviour
     
     public GameObject GetProjectile(Vector3 position, Quaternion rotation)
     {
-        // Simply request from the pool. It will expand (create new) if empty, 
-        // and because we raised maxSize to 300, it will likely recycle them 
-        // instead of destroying them on return.
         GameObject proj = projectilePool.Get();
 
         if (proj != null)

@@ -249,7 +249,7 @@ public class GameManager : MonoBehaviour
         int currentScore = (int)score;
         if (currentScore != lastDisplayedScore)
         {
-            scoreText.SetText("SCORE\n<size=150%>{0:N0}</size>", currentScore);
+            scoreText.SetText("SCORE\n<size=150%>{0}</size>", currentScore);
             lastDisplayedScore = currentScore;
         }
 

@@ -18,23 +18,50 @@ public class ShooterAI : MonoBehaviour
 
     public bool IsDead { get; private set; } = false;
     
-    private Collider2D col;
-    
-    private WaitForSeconds waitStartDelay;
-    private WaitForSeconds waitFireRate;
-
     private void Awake()
     {
+        if (GetComponents<ShooterAI>().Length > 1)
+        {
+            Destroy(this);
+            return;
+        }
+
         col = GetComponent<Collider2D>();
-        waitStartDelay = new WaitForSeconds(startDelay);
-        waitFireRate = new WaitForSeconds(fireRate);
     }
 
     private void OnEnable()
     {
         IsDead = false;
+        hasActivated = false; // Reset activation state on enable to respect logic
         if (col != null) col.enabled = true;
-        StartCoroutine(FireRoutine());
+    }
+
+    private void Update()
+    {
+        if (IsDead) return;
+
+        if (!hasActivated)
+        {
+            if (transform.position.x <= activationX)
+            {
+                hasActivated = true;
+                nextFireTime = Time.time + startDelay;
+            }
+            return;
+        }
+
+        if (Time.time >= nextFireTime)
+        {
+            animator.SetTrigger("Shoot");
+            StartCoroutine(DelayedFire(0.1f)); 
+            nextFireTime = Time.time + fireRate;
+        }
+    }
+    
+    private IEnumerator DelayedFire(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        FireProjectile();
     }
 
     public void TriggerDeath()
@@ -44,31 +71,24 @@ public class ShooterAI : MonoBehaviour
         
         if (col != null) col.enabled = false;
         
-        StopAllCoroutines();
         animator.SetTrigger("Die");
         Destroy(gameObject, 0.5f);
-    }
-
-    private IEnumerator FireRoutine()
-    {
-        yield return new WaitUntil(() => transform.position.x <= activationX);
-        yield return waitStartDelay;
-
-        while (!IsDead)
-        {
-            animator.SetTrigger("Shoot");
-            yield return waitFireRate;
-        }
     }
     
     public void FireProjectile()
     {
         if (IsDead || projectilePrefab == null) return;
+        
+        if (Time.time < lastShotTime + 0.5f) return;
+        
+        lastShotTime = Time.time;
 
         Vector3 spawnPos = transform.position + muzzleOffset;
         GameObject proj = ObjectPooler.Instance.GetProjectile(spawnPos, Quaternion.identity);
         
-        if (proj.TryGetComponent(out ProjectileBehavior behavior))
+        if (proj != null && proj.TryGetComponent(out ProjectileBehavior behavior))
+        {
             behavior.Initialize(GameManager.Instance.worldSpeed);
+        }
     }
 }
