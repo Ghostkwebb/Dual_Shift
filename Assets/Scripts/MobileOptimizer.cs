@@ -18,8 +18,8 @@ public class MobileOptimizer : MonoBehaviour
         
         DisableDebugManager();
         
-        ApplyPerformanceSettings();
         RequestHighRefreshRate();
+        ApplyPerformanceSettings();
     }
     
     private void DisableDebugManager()

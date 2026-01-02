@@ -69,6 +69,7 @@ public class SettingsManager : MonoBehaviour
         graphicsDropdown.onValueChanged.AddListener(SetQuality);
         if (hdrToggle != null) hdrToggle.onValueChanged.AddListener(SetHDR);
         if (fpsDisplayToggle != null) fpsDisplayToggle.onValueChanged.AddListener(SetFPSDisplay);
+        if (fpsDropdown != null) fpsDropdown.onValueChanged.AddListener(SetFPS);
         
         if (gpgsButton != null) gpgsButton.onClick.AddListener(OnGPGSButtonClick);
 
