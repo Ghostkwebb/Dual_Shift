@@ -150,10 +150,16 @@ public class GameManager : MonoBehaviour
 
     private System.Collections.IEnumerator GameOverSequence()
     {
-        deathCount++;
-        if (deathCount % 3 == 0) 
+        int currentDeaths = PlayerPrefs.GetInt("AdDeathCount", 0);
+        currentDeaths++;
+        PlayerPrefs.SetInt("AdDeathCount", currentDeaths);
+
+        if (currentDeaths % 3 == 0) 
         {
-            AdManager.Instance.ShowInterstitial();
+            if (AdManager.Instance != null)
+            {
+                AdManager.Instance.ShowInterstitial();
+            }
         }
         
         CurrentState = GameState.GameOver;
@@ -238,43 +244,71 @@ public class GameManager : MonoBehaviour
         int currentScore = (int)score;
         if (currentScore != lastDisplayedScore)
         {
-            scoreText.SetText("SCORE\n<size=150%>{0}</size>", currentScore);
+            if (scoreText != null) 
+                scoreText.SetText("SCORE\n<size=150%>{0}</size>", currentScore);
             lastDisplayedScore = currentScore;
         }
 
         int displayMult = 1 + comboMultiplier;
         if (displayMult != lastDisplayedCombo)
         {
-            comboText.SetText("x{0}", displayMult);
-            comboText.gameObject.SetActive(displayMult > 1);
-            lastDisplayedCombo = displayMult;
+             if (comboText != null)
+             {
+                comboText.SetText("x{0}", displayMult);
+                comboText.gameObject.SetActive(displayMult > 1);
+             }
+             lastDisplayedCombo = displayMult;
         }
     }
     
     public void OnReviveButtonClicked()
     {
-        AdManager.Instance.ShowRewarded((bool success) => {
-            if (success)
+        try
+        {
+            if (AdManager.Instance != null)
             {
-                RevivePlayer(); 
+                // CRITICAL FIX: Use the Show with Loading Screen method
+                AdManager.Instance.ShowRewardedWithLoading((bool success) => {
+                    Debug.Log($"Ad Callback Received. Success: {success}");
+                    if (success)
+                    {
+                        RevivePlayer(); 
+                    }
+                });
             }
-        });
+            else
+            {
+                Debug.LogError("AdManager.Instance is null");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Revive Error: " + e.Message);
+        }
     }
     
     private void RevivePlayer()
     {
+        Debug.Log("RevivePlayer called.");
+
+        if (gameOverPanel == null) Debug.LogError("RevivePlayer: gameOverPanel is NULL");
+        else gameOverPanel.SetActive(false);
+
+        if (gameHUD == null) Debug.LogError("RevivePlayer: gameHUD is NULL");
+        else gameHUD.SetActive(true);
+
         CurrentState = GameState.Playing;
         Time.timeScale = 1;
 
-        gameOverPanel.SetActive(false);
-        gameHUD.SetActive(true);
-
         if (playerController != null)
         {
+            Debug.Log("RevivePlayer: Resetting PlayerController.");
             playerController.ResetAnimationState();
             playerController.ActivateReviveInvincibility();
         }
+        else
+        {
+            Debug.LogError("RevivePlayer: playerController is NULL! Cannot reset.");
+        }
     }
-    
-    
 }

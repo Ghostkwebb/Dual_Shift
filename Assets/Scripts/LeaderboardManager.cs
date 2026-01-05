@@ -32,14 +32,8 @@ public class LeaderboardManager : MonoBehaviour
             PlayGamesPlatform.DebugLogEnabled = true;
             PlayGamesPlatform.Activate();
 
-            if (PlayGamesPlatform.Instance != null)
-            {
-                PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
-            }
-            else
-            {
-                Debug.LogError("[GPGS] PlayGamesPlatform.Instance is null after Activate!");
-            }
+            Debug.Log("[GPGS] Starting Authentication...");
+            PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
         }
         catch (System.Exception e)
         {
@@ -52,8 +46,11 @@ public class LeaderboardManager : MonoBehaviour
     {
         if (status == SignInStatus.Success)
         {
-            PlayGamesPlatform.Instance.ManuallyAuthenticate((manualStatus) => {
-            });
+            Debug.Log("[GPGS] Authenticated successfully.");
+        }
+        else
+        {
+            Debug.LogError($"[GPGS] Authentication Failed. Status: {status}");
         }
     }
 
