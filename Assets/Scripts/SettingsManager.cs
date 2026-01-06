@@ -14,6 +14,8 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private Slider musicSlider;
     [Tooltip("Slider for SFX volume")]
     [SerializeField] private Slider sfxSlider;
+    [Tooltip("Slider for Brightness")]
+    [SerializeField] private Slider brightnessSlider;
 
     [Header("Video")]
     [Tooltip("Dropdown for graphics quality")]
@@ -66,6 +68,7 @@ public class SettingsManager : MonoBehaviour
         
         musicSlider.onValueChanged.AddListener(SetMusicVolume);
         sfxSlider.onValueChanged.AddListener(SetSFXVolume);
+        if (brightnessSlider != null) brightnessSlider.onValueChanged.AddListener(SetBrightness);
         graphicsDropdown.onValueChanged.AddListener(SetQuality);
         if (hdrToggle != null) hdrToggle.onValueChanged.AddListener(SetHDR);
         if (fpsDisplayToggle != null) fpsDisplayToggle.onValueChanged.AddListener(SetFPSDisplay);
@@ -264,6 +267,32 @@ public class SettingsManager : MonoBehaviour
         mainMixer.SetFloat(MIXER_SFX, volume);
         PlayerPrefs.SetFloat("SFXVol", value);
     }
+    
+    public void SetBrightness(float value)
+    {
+        Debug.Log($"SettingsManager SetBrightness: {value}");
+        
+        if (HDREffectsManager.Instance == null)
+        {
+            var existing = FindFirstObjectByType<HDREffectsManager>();
+            if (existing == null)
+            {
+                Debug.LogWarning("HDREffectsManager missing! Auto-creating...");
+                new GameObject("HDREffectsManager").AddComponent<HDREffectsManager>();
+            }
+        }
+
+        if (HDREffectsManager.Instance != null)
+        {
+            HDREffectsManager.Instance.SetBrightness(value);
+        }
+        else
+        {
+            Debug.LogError("CRITICAL: Could not find or create HDREffectsManager!");
+        }
+
+        PlayerPrefs.SetFloat("Brightness", value);
+    }
 
     public void SetQuality(int index)
     {
@@ -294,7 +323,12 @@ public class SettingsManager : MonoBehaviour
         float sfx = PlayerPrefs.GetFloat("SFXVol", 0.75f);
         musicSlider.SetValueWithoutNotify(music);
         sfxSlider.SetValueWithoutNotify(sfx);
+        
+        float brightness = PlayerPrefs.GetFloat("Brightness", 0f);
+        if (brightnessSlider != null) brightnessSlider.SetValueWithoutNotify(brightness);
+        
         Invoke(nameof(ApplyAudioSettings), 0.1f);
+        SetBrightness(brightness);
 
         int quality = PlayerPrefs.GetInt("Quality", 2);
         quality = Mathf.Clamp(quality, 0, QualitySettings.names.Length - 1);

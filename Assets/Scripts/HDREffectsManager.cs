@@ -13,6 +13,7 @@ public class HDREffectsManager : MonoBehaviour
     
     private Volume postProcessVolume;
     private Bloom bloom;
+    private ColorAdjustments colorAdjustments;
     private float baseBloomIntensity = 1f;
     
     
@@ -49,12 +50,51 @@ public class HDREffectsManager : MonoBehaviour
         FindPostProcessVolume();
     }
 
+    private void Start()
+    {
+         StartCoroutine(RetryFindVolume());
+    }
+
+    private System.Collections.IEnumerator RetryFindVolume()
+    {
+        int retries = 0;
+        while (postProcessVolume == null && retries < 10)
+        {
+            yield return new WaitForSeconds(0.5f);
+            FindPostProcessVolume();
+            retries++;
+            if (postProcessVolume != null)
+            {
+                 Debug.Log("HDREffectsManager: Found Volume after retry!");
+                 // Force re-apply brightness if we have a stored value, though usually user input drives this.
+                 // We could store 'lastSetBrightness' if needed, but the main issue is just finding the volume initially.
+            }
+        }
+    }
+
     private void FindPostProcessVolume()
     {
-        postProcessVolume = FindFirstObjectByType<Volume>();
-        
-        if (postProcessVolume != null && postProcessVolume.profile != null)
+        // Find all volumes (including inactive) and prefer the global one
+        var volumes = FindObjectsByType<Volume>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var vol in volumes)
         {
+            if (vol.isGlobal)
+            {
+                postProcessVolume = vol;
+                break;
+            }
+        }
+        
+        // Fallback to first if no global found
+        if (postProcessVolume == null && volumes.Length > 0)
+            postProcessVolume = volumes[0];
+
+        if (postProcessVolume != null)
+        {
+            Debug.Log($"HDREffectsManager: Using Volume '{postProcessVolume.gameObject.name}'");
+            
+            if (postProcessVolume.profile == null) return;
+
             if (postProcessVolume.profile.TryGet(out bloom))
             {
                 baseBloomIntensity = bloom.intensity.value;
@@ -67,6 +107,77 @@ public class HDREffectsManager : MonoBehaviour
                 bloom.scatter.value = 0.7f;
                 baseBloomIntensity = 1f;
             }
+
+            if (!postProcessVolume.profile.TryGet(out colorAdjustments))
+            {
+                 colorAdjustments = postProcessVolume.profile.Add<ColorAdjustments>(true);
+            }
+            
+            // Ensure we grab the reference if it existed
+            if (colorAdjustments == null) postProcessVolume.profile.TryGet(out colorAdjustments);
+        }
+        else
+        {
+            // Debug.LogWarning("HDREffectsManager: No Volume found in scene!");
+        }
+    }
+    
+    public void SetBrightness(float value)
+    {
+        // Try finding if missing
+        if (postProcessVolume == null) FindPostProcessVolume();
+
+        // If still missing, we can't do anything yet (the retry coroutine might catch it later)
+        if (postProcessVolume != null)
+        {
+            if (colorAdjustments == null)
+            {
+                postProcessVolume.profile.TryGet(out colorAdjustments);
+                if (colorAdjustments == null) colorAdjustments = postProcessVolume.profile.Add<ColorAdjustments>(true);
+            }
+
+            if (colorAdjustments != null)
+            {
+                colorAdjustments.active = true;
+                colorAdjustments.postExposure.overrideState = true;
+                colorAdjustments.postExposure.value = value;
+                Debug.Log($"HDREffects SetBrightness: {value}");
+            }
+        }
+    }
+
+    private void DiagnoseVolumeSettings()
+    {
+        var cam = Camera.main;
+        if (cam == null) 
+        {
+             Debug.LogError("HDREffects: Main Camera not found!");
+             return;
+        }
+
+        var data = cam.GetComponent<UniversalAdditionalCameraData>();
+        if (data != null)
+        {
+             if (!data.renderPostProcessing) Debug.LogError("HDREffects: 'Render Post Processing' is UNCHECKED on Main Camera!");
+             if (postProcessVolume != null)
+             {
+                 int volumeLayer = postProcessVolume.gameObject.layer;
+                 if ((data.volumeLayerMask & (1 << volumeLayer)) == 0)
+                 {
+                     Debug.LogError($"HDREffects: Camera VolumeMask ({data.volumeLayerMask.value}) does NOT include Volume Layer '{LayerMask.LayerToName(volumeLayer)}'!");
+                 }
+             }
+        }
+        else
+        {
+            // If built-in pipeline or data missing, checking 'cam.usePhysicalProperties' logic etc, but assuming URP here.
+             Debug.LogWarning("HDREffects: standard URP CameraData not found on Main Camera.");
+        }
+        
+        if (postProcessVolume != null)
+        {
+            if (!postProcessVolume.enabled) Debug.LogError("HDREffects: Volume component is DISABLED!");
+            if (postProcessVolume.weight <= 0) Debug.LogError("HDREffects: Volume Weight is 0!");
         }
     }
     
