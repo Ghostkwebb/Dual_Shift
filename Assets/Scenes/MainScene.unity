@@ -1233,7 +1233,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 20, y: 20, z: 20, w: 20}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -3624,7 +3624,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &402498662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3897,7 +3897,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 20, y: 20, z: 20, w: 20}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -4192,7 +4192,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 20, y: 20, z: 20, w: 20}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -4940,7 +4940,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 7.5269275
+  orthographic size: 9.023938
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -7772,7 +7772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
-  m_DragThreshold: 10
+  m_DragThreshold: 30
 --- !u!4 &831152887
 Transform:
   m_ObjectHideFlags: 0
