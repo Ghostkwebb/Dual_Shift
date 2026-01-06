@@ -11,8 +11,8 @@ public class AdManager : MonoBehaviour
     public static AdManager Instance;
 
     // TEST IDs (Replace with Real IDs for Release)
-    private string interstitialId = "ca-app-pub-3940256099942544/1033173712"; 
-    private string rewardedId = "ca-app-pub-3940256099942544/5224354917"; 
+    private string interstitialId = "ca-app-pub-2195761497058047/7260698795"; //ca-app-pub-3940256099942544/1033173712
+    private string rewardedId = "ca-app-pub-2195761497058047/4682636913"; //ca-app-pub-3940256099942544/5224354917
 
     private InterstitialAd interstitialAd;
     private RewardedAd rewardedAd;
