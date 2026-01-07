@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
+using UnityEngine.SocialPlatforms;
 
 public class LeaderboardManager : MonoBehaviour
 {
@@ -22,6 +23,20 @@ public class LeaderboardManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+#if UNITY_ANDROID
+        try
+        {
+            PlayGamesPlatform.DebugLogEnabled = true;
+            PlayGamesPlatform.Activate();
+            // Explicitly force the assignment to be sure
+            Social.Active = PlayGamesPlatform.Instance;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("[GPGS] Failed to Activate: " + e.Message);
+        }
+#endif
     }
 
     private void Start()
@@ -29,15 +44,12 @@ public class LeaderboardManager : MonoBehaviour
 #if UNITY_ANDROID
         try
         {
-            PlayGamesPlatform.DebugLogEnabled = true;
-            PlayGamesPlatform.Activate();
-
             Debug.Log("[GPGS] Starting Authentication...");
             PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
         }
         catch (System.Exception e)
         {
-            Debug.LogError("[GPGS] Failed to initialize: " + e.Message);
+            Debug.LogError("[GPGS] Failed to Authenticate: " + e.Message);
         }
 #endif
     }
@@ -47,6 +59,8 @@ public class LeaderboardManager : MonoBehaviour
         if (status == SignInStatus.Success)
         {
             Debug.Log("[GPGS] Authenticated successfully.");
+            // Re-enforce Social.Active just in case
+            Social.Active = PlayGamesPlatform.Instance;
         }
         else
         {
@@ -60,7 +74,7 @@ public class LeaderboardManager : MonoBehaviour
         {
             if (PlayGamesPlatform.Instance != null && PlayGamesPlatform.Instance.IsAuthenticated())
             {
-                Social.ReportScore(score, GPGSIds.leaderboard_high_scores, (bool success) => {});
+                PlayGamesPlatform.Instance.ReportScore(score, GPGSIds.leaderboard_high_scores, (bool success) => {});
             }
         }
         catch (System.Exception e)
@@ -75,7 +89,7 @@ public class LeaderboardManager : MonoBehaviour
         {
             if (PlayGamesPlatform.Instance != null && PlayGamesPlatform.Instance.IsAuthenticated())
             {
-                Social.ReportScore(kills, GPGSIds.leaderboard_max_kills, (bool success) => {});
+                PlayGamesPlatform.Instance.ReportScore(kills, GPGSIds.leaderboard_max_kills, (bool success) => {});
             }
         }
         catch (System.Exception e)
@@ -176,7 +190,8 @@ public class LeaderboardManager : MonoBehaviour
                         userIds.Add(score.userID);
                     }
 
-                    Social.LoadUsers(userIds.ToArray(), (users) =>
+                    // Explicitly use PlayGamesPlatform instance cast to ISocialPlatform for LoadUsers
+                    ((ISocialPlatform)PlayGamesPlatform.Instance).LoadUsers(userIds.ToArray(), (users) =>
                     {
                         Dictionary<string, string> names = new Dictionary<string, string>();
                         
@@ -200,9 +215,10 @@ public class LeaderboardManager : MonoBehaviour
                                 displayName = names[score.userID];
                             }
                             
-                            if (score.userID == Social.localUser.id)
+                            // Use PlayGamesPlatform local user
+                            if (score.userID == PlayGamesPlatform.Instance.localUser.id)
                             {
-                                displayName = $"YOU ({Social.localUser.userName})";
+                                displayName = $"YOU ({PlayGamesPlatform.Instance.localUser.userName})";
                             }
 
                             rowScript.SetData(
@@ -218,7 +234,7 @@ public class LeaderboardManager : MonoBehaviour
                         myScoreRow.gameObject.SetActive(true);
                         myScoreRow.SetData(
                             data.PlayerScore.rank.ToString(),
-                            $"YOU ({Social.localUser.userName})", 
+                            $"YOU ({PlayGamesPlatform.Instance.localUser.userName})", 
                             data.PlayerScore.value.ToString()
                         );
                     }
