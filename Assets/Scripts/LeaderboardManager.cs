@@ -45,7 +45,8 @@ public class LeaderboardManager : MonoBehaviour
         try
         {
             Debug.Log("[GPGS] Starting Authentication...");
-            PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
+            // Use ManuallyAuthenticate to consistent behavior with button click
+            PlayGamesPlatform.Instance.ManuallyAuthenticate(ProcessAuthentication);
         }
         catch (System.Exception e)
         {
@@ -68,6 +69,13 @@ public class LeaderboardManager : MonoBehaviour
         else
         {
             Debug.LogError($"[GPGS] Authentication Failed. Status: {status}");
+        }
+        
+        // Force update Settings UI even if it is inactive (hidden)
+        SettingsManager[] settingsFn = FindObjectsByType<SettingsManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var settings in settingsFn)
+        {
+             settings.UpdateGPGSButton();
         }
     }
 
@@ -175,7 +183,17 @@ public class LeaderboardManager : MonoBehaviour
             
             if (!PlayGamesPlatform.Instance.IsAuthenticated())
             {
-                PlayGamesPlatform.Instance.ManuallyAuthenticate(ProcessAuthentication);
+                PlayGamesPlatform.Instance.ManuallyAuthenticate((status) => {
+                    ProcessAuthentication(status);
+                    if (status == SignInStatus.Success)
+                    {
+                        if (customLeaderboardPanel != null)
+                        {
+                            customLeaderboardPanel.SetActive(true);
+                            OpenHighScoreTab();
+                        }
+                    }
+                });
                 return;
             }
 
