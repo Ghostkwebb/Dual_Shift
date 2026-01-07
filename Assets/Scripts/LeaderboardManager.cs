@@ -61,11 +61,75 @@ public class LeaderboardManager : MonoBehaviour
             Debug.Log("[GPGS] Authenticated successfully.");
             // Re-enforce Social.Active just in case
             Social.Active = PlayGamesPlatform.Instance;
+            
+            // Sync cloud scores to local device
+            SyncCloudScores();
         }
         else
         {
             Debug.LogError($"[GPGS] Authentication Failed. Status: {status}");
         }
+    }
+
+    private void SyncCloudScores()
+    {
+#if UNITY_ANDROID
+        if (PlayGamesPlatform.Instance == null || !PlayGamesPlatform.Instance.IsAuthenticated()) return;
+
+        Debug.Log("[GPGS] Starting Score Sync...");
+
+        // 1. Sync High Score
+        PlayGamesPlatform.Instance.LoadScores(
+            GPGSIds.leaderboard_high_scores,
+            LeaderboardStart.PlayerCentered,
+            1,
+            LeaderboardCollection.Public,
+            LeaderboardTimeSpan.AllTime,
+            (data) =>
+            {
+                if (data.Valid && data.PlayerScore != null)
+                {
+                    long cloudScore = data.PlayerScore.value;
+                    float localScore = PlayerPrefs.GetFloat("BestScore", 0);
+                    
+                    Debug.Log($"[GPGS] Cloud Score: {cloudScore}, Local Score: {localScore}");
+
+                    if (cloudScore > localScore)
+                    {
+                        Debug.Log("[GPGS] Cloud score is higher. Updating local BestScore.");
+                        PlayerPrefs.SetFloat("BestScore", cloudScore);
+                        PlayerPrefs.Save();
+                    }
+                }
+            }
+        );
+
+        // 2. Sync Max Kills
+        PlayGamesPlatform.Instance.LoadScores(
+             GPGSIds.leaderboard_max_kills,
+             LeaderboardStart.PlayerCentered,
+             1,
+             LeaderboardCollection.Public,
+             LeaderboardTimeSpan.AllTime,
+             (data) =>
+             {
+                 if (data.Valid && data.PlayerScore != null)
+                 {
+                     long cloudKills = data.PlayerScore.value;
+                     int localKills = PlayerPrefs.GetInt("MaxKills", 0);
+                     
+                     Debug.Log($"[GPGS] Cloud Kills: {cloudKills}, Local Kills: {localKills}");
+
+                     if (cloudKills > localKills)
+                     {
+                         Debug.Log("[GPGS] Cloud kills are higher. Updating local MaxKills.");
+                         PlayerPrefs.SetInt("MaxKills", (int)cloudKills);
+                         PlayerPrefs.Save();
+                     }
+                 }
+             }
+         );
+#endif
     }
 
     public void SubmitScore(long score)
