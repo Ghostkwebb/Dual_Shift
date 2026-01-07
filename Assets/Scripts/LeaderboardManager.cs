@@ -18,6 +18,23 @@ public class LeaderboardManager : MonoBehaviour
     [SerializeField] private LeaderboardRowUI myScoreRow; 
     
     public static LeaderboardManager Instance;
+    [Header("Help UI")]
+    [Tooltip("Button to show when player score is missing")]
+    [SerializeField] private GameObject helpButton;
+    [Tooltip("Popup explaining privacy settings")]
+    [SerializeField] private GameObject helpPopup;
+
+    public void OpenHelpPopup()
+    {
+        if (helpPopup != null) helpPopup.SetActive(true);
+    }
+
+    public void CloseHelpPopup()
+    {
+        if (helpPopup != null) helpPopup.SetActive(false);
+    }
+    
+
 
     private void Awake()
     {
@@ -319,10 +336,16 @@ public class LeaderboardManager : MonoBehaviour
                             $"YOU ({PlayGamesPlatform.Instance.localUser.userName})", 
                             data.PlayerScore.value.ToString()
                         );
+                        
+                        // Hide help button if we have a score
+                        if (helpButton != null) helpButton.SetActive(false);
                     }
                     else
                     {
                         myScoreRow.gameObject.SetActive(false);
+                        
+                        // Show help button if score is missing
+                        if (helpButton != null) helpButton.SetActive(true);
                     }
                 }
                 else
