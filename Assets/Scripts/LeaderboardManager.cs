@@ -163,7 +163,10 @@ public class LeaderboardManager : MonoBehaviour
         {
             if (PlayGamesPlatform.Instance != null && PlayGamesPlatform.Instance.IsAuthenticated())
             {
-                PlayGamesPlatform.Instance.ReportScore(score, GPGSIds.leaderboard_high_scores, (bool success) => {});
+                PlayGamesPlatform.Instance.ReportScore(score, GPGSIds.leaderboard_high_scores, (bool success) => {
+                    if (success) Debug.Log($"[GPGS] SubmitScore Success: {score}");
+                    else Debug.LogError($"[GPGS] SubmitScore Failed: {score}");
+                });
             }
         }
         catch (System.Exception e)
@@ -178,7 +181,10 @@ public class LeaderboardManager : MonoBehaviour
         {
             if (PlayGamesPlatform.Instance != null && PlayGamesPlatform.Instance.IsAuthenticated())
             {
-                PlayGamesPlatform.Instance.ReportScore(kills, GPGSIds.leaderboard_max_kills, (bool success) => {});
+                PlayGamesPlatform.Instance.ReportScore(kills, GPGSIds.leaderboard_max_kills, (bool success) => {
+                     if (success) Debug.Log($"[GPGS] SubmitKills Success: {kills}");
+                     else Debug.LogError($"[GPGS] SubmitKills Failed: {kills}");
+                });
             }
         }
         catch (System.Exception e)
@@ -330,11 +336,26 @@ public class LeaderboardManager : MonoBehaviour
                     
                     if (data.PlayerScore != null)
                     {
+                        // Optimistic Update: Check local score vs cloud score
+                        long cloudScore = data.PlayerScore.value;
+                        long displayScore = cloudScore;
+
+                        if (leaderboardId == GPGSIds.leaderboard_high_scores)
+                        {
+                            long localScore = (long)PlayerPrefs.GetFloat("BestScore", 0);
+                            if (localScore > cloudScore) displayScore = localScore;
+                        }
+                        else if (leaderboardId == GPGSIds.leaderboard_max_kills)
+                        {
+                            long localKills = (long)PlayerPrefs.GetInt("MaxKills", 0);
+                            if (localKills > cloudScore) displayScore = localKills;
+                        }
+
                         myScoreRow.gameObject.SetActive(true);
                         myScoreRow.SetData(
                             data.PlayerScore.rank.ToString(),
                             $"YOU ({PlayGamesPlatform.Instance.localUser.userName})", 
-                            data.PlayerScore.value.ToString()
+                            displayScore.ToString()
                         );
                         
                         // Hide help button if we have a score
